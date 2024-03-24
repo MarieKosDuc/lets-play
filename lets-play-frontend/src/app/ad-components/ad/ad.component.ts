@@ -21,10 +21,9 @@ export class AdComponent implements OnInit{
   constructor(private router: Router) {}
 
   ngOnInit(): void {
-    
   }
 
   goToAd() {
-    this.router.navigateByUrl(`ads/${this.ad.id}`);
+    this.router.navigateByUrl(`ad/${this.ad.id}`);
   }
 }

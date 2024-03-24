@@ -56,6 +56,8 @@ constructor(private router: Router, private authService: AuthenticationService) 
         this.userLoggedIn = false;
         this.userInfos = null; 
 
+        this.router.navigateByUrl('/home');
+
         //TODO : gérer le reload après déconnexion
     });
 }

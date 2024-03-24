@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Cloudinary, CloudinaryConfig } from '@cloudinary/url-gen';
+import { Cloudinary } from '@cloudinary/url-gen';
 
 @Injectable({
   providedIn: 'root'
@@ -8,6 +8,8 @@ export class CloudinaryService {
   
   private cloudinary: Cloudinary;
   private cloudName: string = 'daotbgmy2';
+  private uploadPreset: string = 'ml_default';
+  private baseImageURL: string = 'https://res.cloudinary.com/daotbgmy2/image/upload/v1711275248/';
 
   constructor() {
     this.cloudinary = new Cloudinary({
@@ -25,6 +27,14 @@ export class CloudinaryService {
 
   getCloudName(): String {
     return this.cloudName;
+  }
+
+  getUploadPreset(): String { 
+    return this.uploadPreset;
+  }
+
+  getBaseImageURL(): String {
+    return this.baseImageURL;
   }
 
 }

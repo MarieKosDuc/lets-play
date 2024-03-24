@@ -2,12 +2,8 @@ import { Component } from '@angular/core';
 import { AuthenticationService } from 'src/app/authentication/services/authentication.service';
 import { User } from '../models/user.model';
 
-// Import the CloudinaryModule.
 import { CloudinaryService } from 'src/app/cloudinary/cloudinary.service';
-
-
-// Import the Cloudinary classes.
-import {Cloudinary, CloudinaryImage} from '@cloudinary/url-gen';
+import {CloudinaryImage} from '@cloudinary/url-gen';
 
 @Component({
   selector: 'app-profile',
@@ -19,9 +15,8 @@ export class ProfileComponent {
   user!: User | null;
   public newPassword: String = '';
   public confirmNewPassword: String = '';
-  img!: CloudinaryImage;
   myWidget: any;
-  uploadPreset = 'ml_default'; // replace with your own upload preset
+  uploadPreset: String = this.cloudinaryService.getUploadPreset();
   myCloudName: String = this.cloudinaryService.getCloudName();
 
 
@@ -35,24 +30,20 @@ export class ProfileComponent {
     
     const cld = this.cloudinaryService.getCloudinary();
 
-    console.log(cld);
-    console.log(this.uploadPreset);
 
     // @ts-ignore: Unreachable code error
     this.myWidget = cloudinary.createUploadWidget(
       {
         cloudName: this.myCloudName,
         uploadPreset: this.uploadPreset,
-        // cropping: true, //add a cropping step
-        // showAdvancedOptions: true,  //add advanced options (public_id and tag)
+        cropping: true, //add a cropping step
         sources: [ "local", "url"], // restrict the upload sources to URL and local files
-        // multiple: false,  //restrict upload to a single file
-        // folder: "user_images", //upload files to the specified folder
+        multiple: false,  //restrict upload to a single file
         tags: ["users", "profile"], //add the given tags to the uploaded files
-        // context: {alt: "user_uploaded"}, //add the given context data to the uploaded files
+        context: {alt: "Image de profil"}, //add the given context data to the uploaded files
         // clientAllowedFormats: ["images"], //restrict uploading to image files only
         maxImageFileSize: 2000000,  //restrict file size to less than 2MB
-        // maxImageWidth: 2000, //Scales the image down to a width of 2000 pixels before uploading
+        maxImageWidth: 1000, //Scales the image down to a width of 2000 pixels before uploading
       },
         // @ts-ignore: Unreachable code error
       (error, result) => {
@@ -71,7 +62,7 @@ export class ProfileComponent {
     this.myWidget.open();
   }
 
-  updateProfile() {
+  updateProfile() { //TODO : ne pas updater le mot de passe si vide
     if (this.newPassword === this.confirmNewPassword && this.user) {
       this.authService.updateUser(this.newPassword, this.user.id).subscribe(() => {
         this.newPassword = '';
@@ -79,14 +70,5 @@ export class ProfileComponent {
       });
     }
   }
-
-  updateProfilePicture(event: any) {
-    
-    // const file = event.target.files[0];
-    // this.authService.updateProfilePicture(file).subscribe(() => {
-    //   this.ngOnInit();
-    // });
-  }
-  
 
 }

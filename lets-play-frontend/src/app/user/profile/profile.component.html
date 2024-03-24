@@ -1,9 +1,6 @@
 <div id="user-card" class="card flex flex-col items-center">
   <h2 class="profile-name text-center font-bold">{{user?.username}}</h2>
-  <label for="profile-picture" class="cursor-pointer">
-    <input type="file" id="profile-picture" class="hidden" (change)="updateProfilePicture($event)">
-    <img id="profile-pic" class="profile-picture h-20 w-20 rounded-full object-cover border border-gray-400" src="{{user?.profilePicture}}" alt="Photo de profil">
-  </label>
+  <img id="profile-pic" class="profile-picture h-20 w-20 rounded-full object-cover border border-gray-400" src="{{user?.profilePicture}}" alt="Photo de profil">
   <button id="upload_widget" (click)="openWidget()" class="button">
     Changer ma photo de profil
   </button>

@@ -1,6 +1,6 @@
 export interface User {
-    id: String,
-    username: String,
-    profilePicture: String,
-    roles: String[]
+    id: string,
+    username: string,
+    profilePicture: string,
+    roles: string[]
 }

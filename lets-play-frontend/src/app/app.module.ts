@@ -4,11 +4,13 @@ import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { ToastrModule } from 'ngx-toastr';
 
 import { CloudinaryModule } from '@cloudinary/ng';
+import {NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 
-import { AppRoutingModule } from './modules/app-routing.module';
+import { AppRoutingModule } from './router/app-routing.module';
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
 import { AdComponent } from './ad-components/ad/ad.component';
@@ -19,7 +21,9 @@ import { SearchComponent } from './search/search.component';
 import { LoginComponent } from './authentication/login/login.component';
 import { SignupComponent } from './authentication/signup/signup.component';
 import { FooterComponent } from './footer/footer.component';
-import { ProfileComponent } from './user/profile/profile.component'; //TODO : r√©organiser en plusieurs modules, importer ces modules ici
+import { ProfileComponent } from './user/profile/profile.component';
+import { AdCreateComponent } from './ad-components/ad-create/ad-create.component';
+import { AdImageComponent } from './ad-components/ad-image/ad-image.component'; //TODO : r√©organiser en plusieurs modules, importer ces modules ici
 
 
 @NgModule({
@@ -34,7 +38,9 @@ import { ProfileComponent } from './user/profile/profile.component'; //TODO : r√
     LoginComponent,
     SignupComponent,
     FooterComponent,
-    ProfileComponent
+    ProfileComponent,
+    AdCreateComponent,
+    AdImageComponent
   ],
   imports: [
     HttpClientModule,
@@ -43,7 +49,9 @@ import { ProfileComponent } from './user/profile/profile.component'; //TODO : r√
     BrowserAnimationsModule,
     ToastrModule.forRoot(),
     FormsModule,
-    CloudinaryModule
+    ReactiveFormsModule,
+    CloudinaryModule,
+    NgMultiSelectDropDownModule.forRoot()
   ],
   providers: [],
   bootstrap: [AppComponent]
