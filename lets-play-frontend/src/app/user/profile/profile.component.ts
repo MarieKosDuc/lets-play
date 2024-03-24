@@ -7,7 +7,7 @@ import { CloudinaryService } from 'src/app/cloudinary/cloudinary.service';
 
 
 // Import the Cloudinary classes.
-import {Cloudinary, CloudinaryImage, CloudinaryConfig} from '@cloudinary/url-gen';
+import {Cloudinary, CloudinaryImage} from '@cloudinary/url-gen';
 
 @Component({
   selector: 'app-profile',
@@ -21,29 +21,27 @@ export class ProfileComponent {
   public confirmNewPassword: String = '';
   img!: CloudinaryImage;
   myWidget: any;
-  uploadPreset = "ml_default"; // replace with your own upload preset
+  uploadPreset = 'ml_default'; // replace with your own upload preset
+  myCloudName: String = this.cloudinaryService.getCloudName();
 
 
-  constructor(private authService: AuthenticationService, private cloudinaryService: CloudinaryService,
-    private cloudinary: Cloudinary) {}
+  constructor(private authService: AuthenticationService, private cloudinaryService: CloudinaryService) {}
+
 
   ngOnInit() {
     this.authService.getCurrentUser().subscribe((user: User | null) => {
       this.user = user;
     });
-
-    const cloudinaryConfig: CloudinaryConfig = this.cloudinaryService.getCloudinaryConfig();
-
     
-    const cld = new Cloudinary(cloudinaryConfig);
+    const cld = this.cloudinaryService.getCloudinary();
 
-    // cld.image returns a CloudinaryImage with the configuration set.
-    this.img = cld.image('sample');
+    console.log(cld);
+    console.log(this.uploadPreset);
 
     // @ts-ignore: Unreachable code error
     this.myWidget = cloudinary.createUploadWidget(
       {
-        cloud: cld,
+        cloudName: this.myCloudName,
         uploadPreset: this.uploadPreset,
         // cropping: true, //add a cropping step
         // showAdvancedOptions: true,  //add advanced options (public_id and tag)
@@ -52,10 +50,9 @@ export class ProfileComponent {
         // folder: "user_images", //upload files to the specified folder
         tags: ["users", "profile"], //add the given tags to the uploaded files
         // context: {alt: "user_uploaded"}, //add the given context data to the uploaded files
-        clientAllowedFormats: ["images"], //restrict uploading to image files only
+        // clientAllowedFormats: ["images"], //restrict uploading to image files only
         maxImageFileSize: 2000000,  //restrict file size to less than 2MB
         // maxImageWidth: 2000, //Scales the image down to a width of 2000 pixels before uploading
-        // theme: "purple", //change to a purple theme
       },
         // @ts-ignore: Unreachable code error
       (error, result) => {
@@ -63,7 +60,7 @@ export class ProfileComponent {
           console.log("Done! Here is the image info: ", result.info);
           // @ts-ignore: Unreachable code error
           document
-            .getElementById("uploadedimage")
+            .getElementById("profile-pic")
             .setAttribute("src", result.info.secure_url);
         }
       }
@@ -71,7 +68,7 @@ export class ProfileComponent {
   }
 
   openWidget() {
-
+    this.myWidget.open();
   }
 
   updateProfile() {

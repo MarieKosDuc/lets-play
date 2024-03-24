@@ -10,4 +10,9 @@ services:
       POSTGRES_DB: letsplay
       POSTGRES_USER: letsplay
       POSTGRES_PASSWORD: letsplay@2023
+    volumes:
+      - letsplay-data:/var/lib/postgresql/data
     restart: always
+
+volumes:
+  letsplay-data:

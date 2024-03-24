@@ -2,24 +2,11 @@
   <h2 class="profile-name text-center font-bold">{{user?.username}}</h2>
   <label for="profile-picture" class="cursor-pointer">
     <input type="file" id="profile-picture" class="hidden" (change)="updateProfilePicture($event)">
-    <img class="profile-picture h-20 w-20 rounded-full object-cover border border-gray-400" src="{{img}}" alt="Photo de profil">
-    <advanced-image [cldImg]="img"  class="profile-picture h-20 w-20 rounded-full object-cover border border-gray-400"></advanced-image>
+    <img id="profile-pic" class="profile-picture h-20 w-20 rounded-full object-cover border border-gray-400" src="{{user?.profilePicture}}" alt="Photo de profil">
   </label>
   <button id="upload_widget" (click)="openWidget()" class="button">
     Changer ma photo de profil
   </button>
-  
-  <!-- placeholder for uploaded image -->
-  <img id="uploadedimage" />
-
-  <!-- cloudinary upload widget -->
-  <script
-    src="https://widget.cloudinary.com/v2.0/global/all.js"
-    type="text/javascript"
-  ></script>
-
-  <!-- local upload instantiation -->
-  <script src="upload_widget.js" type="text/javascript"></script>
 
   <div class="profile-info mt-4">    
     <label for="newPassword" class="mt-2">Nouveau mot de passe :</label>

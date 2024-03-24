@@ -41,9 +41,9 @@ export class AuthenticationService {
     );
   }
 
-  register(email: String, username: String, password: String){
+  register(email: String, username: String, profilePicture: String, password: String){
     const url = this.baseUrl + '/register'
-    return this.http.post<User>(url, {email, username, password}, httpOptions);
+    return this.http.post<User>(url, {email, username, profilePicture, password}, httpOptions);
   }
 
   updateUser(password: String, id: String): Observable<User> {

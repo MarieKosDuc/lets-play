@@ -1,8 +1,11 @@
 <div class = "card">
+    <div class="flex items-center justify-center mt-6">
     Crée ton compte !
+    </div>
+
     <form #signupForm="ngForm" (ngSubmit)="onSubmit(signupForm)">
         <label for="userName">Nom d'utilisateur :</label><br>
-        <input type="text" id="userName" placeholder="name@mail.com" name="userName" ngModel required class="field">
+        <input type="text" id="userName" placeholder="Ton nom" name="userName" ngModel required class="field">
         <label for="email">Adresse e-mail :</label><br>
         <input type="text" id="email" placeholder="e-mail" name="email" ngModel required email class="field">
         <label for="password">Mot de passe (minimum 8 caractères, un chiffre, un caractère spécial):</label><br>
@@ -11,5 +14,9 @@
         <input type="password" placeholder="Mot de passe" name="confirmPassword" ngModel required class="field">
         <button type="submit" [disabled]="signupForm.form.invalid" class = "button">S'inscrire</button>
     </form>
-    <div *ngIf="hasError">{{ error }}</div>
+    <div *ngIf="hasMessage">{{ message }}</div>
+
+    <div>
+        <p class="text-sm text-center text-gray-900 dark:text-gray-300">Déjà un compte ? <a routerLink="/register" class="text-blue-600 hover:underline">Connecte-toi !</a></p>
+    </div>
 </div>

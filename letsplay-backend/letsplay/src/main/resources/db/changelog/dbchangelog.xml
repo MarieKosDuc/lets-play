@@ -36,6 +36,9 @@
             <column  name="email"  type="varchar(50)">
                 <constraints  nullable="false"/>
             </column>
+            <column  name="profile_picture"  type="varchar(255)">
+                <constraints  nullable="true"/>
+            </column>
             <column  name="password"  type="varchar(255)">
                 <constraints  nullable="false"/>
             </column>

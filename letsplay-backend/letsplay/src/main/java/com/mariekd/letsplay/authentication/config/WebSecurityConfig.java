@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.CorsConfigurer;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -56,11 +57,9 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/users/login").permitAll()
                         .requestMatchers("/api/users/logout").permitAll()
                         .requestMatchers("/api/ads/get/**").permitAll()
-                        //.requestMatchers("/**").permitAll() // à modifier pour que seule la création soit accessible
                         .anyRequest().authenticated()
                 )
-                .csrf(AbstractHttpConfigurer::disable
-                );
+                .csrf(AbstractHttpConfigurer::disable);
 
         http.authenticationProvider(authenticationProvider(userDetailsService));
 

@@ -23,6 +23,9 @@ public class User {
     @Column(length = 255, nullable = false, name="password")
     private String password;
 
+    @Column(length = 255, nullable = true, name="profile_picture")
+    private String profilePicture;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -32,11 +35,12 @@ public class User {
     @OneToMany(mappedBy = "postedBy", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Ad> ads;
 
-    public User(UUID id, String name, String email, String password, Role role, Set<Ad> ads) {
+    public User(UUID id, String name, String email, String password, Role role, String profilePicture, Set<Ad> ads) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.profilePicture = profilePicture;
         this.ads = ads;
         this.roles = new HashSet<>();
         if (role != null) {
@@ -80,6 +84,13 @@ public class User {
         this.password = password;
     }
 
+    public String getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
+    }
 
     public Set<Role> getRoles() {
         return roles;

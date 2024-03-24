@@ -1,6 +1,8 @@
 <div class="card">
-    <!-- TO DO : style -->
-    Connecte-toi pour accéder à ton espace personnel !
+    <div class="flex items-center justify-center mt-6">
+        Connecte-toi pour accéder à ton espace personnel !
+    </div>
+
     <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)" class="max-w-sm mx-auto">
        
         <input type="email" name="email" placeholder="e-mail" ngModel required class="field">

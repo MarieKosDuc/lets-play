@@ -70,7 +70,7 @@ public class AuthController {
         LOGGER.info("User {} / {} logged in", userDetails.getUsername(), connecterUser.getName());
 
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwt)
-                        .body(new UserInfoResponse(userDetails.id(), connecterUser.getName(), roles));
+                        .body(new UserInfoResponse(userDetails.id(), connecterUser.getName(), connecterUser.getProfilePicture(), roles));
     }
 
     @PostMapping("/logout")
@@ -93,16 +93,14 @@ public class AuthController {
             if (!userService.existsByEmail(userInfos.email()) && !userService.existsByUserName(userInfos.username())) {
                 Role userRole = roleService.findByName("USER");
 
-                User user = new User(UUID.randomUUID() , userInfos.username(), userInfos.email(), userInfos.password(), userRole, null);
+                User user = new User(UUID.randomUUID() , userInfos.username(), userInfos.email(), userInfos.password(), userRole, userInfos.profilePicture(),null);
 
                 userService.createUser(user);
-                return ResponseEntity.ok(new UserInfoResponse(user.getId(), user.getEmail(), List.of(user.getRoles().toString())));
+                return ResponseEntity.ok(new UserInfoResponse(user.getId(), user.getName(), user.getProfilePicture(), List.of(user.getRoles().toString())));
             } else {
-                throw new IllegalArgumentException("User with email " + userInfos.email() + " or name " + userInfos.username() + " already exists"); // TODO : créer une exception spécifique
+                LOGGER.error("User already exists");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("User with this name or email already exists");
             }
-        } catch (final IllegalArgumentException e) {
-            LOGGER.error("Error creating user: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Error creating user: " + e.getMessage());
         } catch (final Exception e) {
             LOGGER.error("Error creating user: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating user: " + e.getMessage());
