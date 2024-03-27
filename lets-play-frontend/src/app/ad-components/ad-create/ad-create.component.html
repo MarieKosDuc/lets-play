@@ -11,7 +11,7 @@
 
         <!-- TODO : quand clic sur musician, enlever l'image du groupe -->
         <div class="flex items-center ">
-            <label for="search">Je recherche : </label>
+            <label for="band">Je recherche : </label>
             <input type="radio" id="band" value="band" name="search" formControlName="search" (change)="setSeeking('band')"> Un groupe
             <input type="radio" id="musician" value="musician" name="search" formControlName="search"> Un musicien
             <select id="musicianType" #musicianType class="field" name="musicianType" formControlName="musicianType" *ngIf="adForm.get('search')?.value === 'musician'" 
@@ -34,7 +34,7 @@
             [placeholder]="'Sélectionne les styles de ton choix'"
             [settings]="dropdownSettings"
             [data]="dropdownList"
-            [(ngModel)]="selectedItems"
+            formControlName="selectedItems"
             (onSelect)="onItemSelect($event)"
             (onDeSelect)="onItemDeSelect($event)"
             (onSelectAll)="onSelectAll($event)"
@@ -60,7 +60,7 @@
         </select>
 
         <label for="description">Ton annonce :</label><br>
-        <textarea id="description" name="description" class="field" formControlName="description" required></textarea><br>
+        <textarea id="description" name="description" class="field h-[15em]" formControlName="description" required></textarea><br>
 
         <button type="submit" [disabled]="adForm.invalid" class="button">Poster mon annonce</button>
     </form>

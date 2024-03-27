@@ -8,7 +8,7 @@
        
         <div class="relative" tabindex="0" (keydown)="handleKeyPress($event)">
             <a *ngIf="userLoggedIn; else loginLink" (click)="toggleDropdown()" class="text-white text-xl hover:text-red-600 cursor-pointer invisible lg:visible" aria-haspopup="true">
-                {{ userInfos?.username }}
+                <img id="profile-pic" class="profile-picture h-10 w-10 rounded-full object-cover border border-gray-400" src="{{userInfos?.profilePicture}}" alt="Photo de profil">
             </a>
             <ng-template #loginLink>
                 <a routerLink="login" routerLinkActive="underline" class="text-white text-xl hover:text-red-600 cursor-pointer invisible lg:visible">CONNEXION / INSCRIPTION</a>

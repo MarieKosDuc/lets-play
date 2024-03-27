@@ -13,7 +13,13 @@ export class AdsListComponent implements OnInit {
   constructor(private adService: AdService) { }
 
   ngOnInit(): void {
-    this.ads = this.adService.getAllAds();
-  } 
+    this.adService.getAllAds().subscribe(
+      (ads: Ad[]) => {
+        this.ads = ads;
+      },
+      (error) => {
+        console.error('Error fetching ads:', error);
+      }
+    );  } 
 
 }

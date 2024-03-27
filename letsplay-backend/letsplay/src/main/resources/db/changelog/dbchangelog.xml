@@ -132,7 +132,7 @@
             <column  name="location"  type="integer">
                 <constraints nullable="false"/>
             </column>
-            <column  name="description"  type="varchar(100)">
+            <column  name="description"  type="text">
                 <constraints nullable="true"/>
             </column>
         </createTable>

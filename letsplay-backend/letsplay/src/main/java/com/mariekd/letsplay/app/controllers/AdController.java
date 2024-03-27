@@ -23,6 +23,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/ads")
+//@CrossOrigin(maxAge = 3600)
 @CrossOrigin(maxAge = 3600)
 public class AdController {
 

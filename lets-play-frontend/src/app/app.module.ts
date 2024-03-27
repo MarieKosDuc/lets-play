@@ -16,14 +16,12 @@ import { HeaderComponent } from './header/header.component';
 import { AdComponent } from './ad-components/ad/ad.component';
 import { AdsListComponent } from './ad-components/ads-list/ads-list.component';
 import { ScrollToTopComponent } from './scroll-to-top/scroll-to-top.component';
-import { SingleAdComponent } from './ad-components/single-ad/single-ad.component';
 import { SearchComponent } from './search/search.component';
 import { LoginComponent } from './authentication/login/login.component';
 import { SignupComponent } from './authentication/signup/signup.component';
 import { FooterComponent } from './footer/footer.component';
 import { ProfileComponent } from './user/profile/profile.component';
-import { AdCreateComponent } from './ad-components/ad-create/ad-create.component';
-import { AdImageComponent } from './ad-components/ad-image/ad-image.component'; //TODO : réorganiser en plusieurs modules, importer ces modules ici
+import { AdCreateComponent } from './ad-components/ad-create/ad-create.component'; //TODO : réorganiser en plusieurs modules, importer ces modules ici
 
 
 @NgModule({
@@ -33,15 +31,12 @@ import { AdImageComponent } from './ad-components/ad-image/ad-image.component'; 
     AdComponent,
     AdsListComponent,
     ScrollToTopComponent,
-    SingleAdComponent,
     SearchComponent,
     LoginComponent,
     SignupComponent,
     FooterComponent,
     ProfileComponent,
-    AdCreateComponent,
-    AdImageComponent
-  ],
+    AdCreateComponent  ],
   imports: [
     HttpClientModule,
     BrowserModule,

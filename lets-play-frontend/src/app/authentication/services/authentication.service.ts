@@ -1,11 +1,15 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import { User } from 'src/app/user/models/user.model'
+
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 
+import { User } from 'src/app/user/models/user.model'
+
+
 const httpOptions = {
-  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+  headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+  withCredentials: true
 };
 
 @Injectable({

@@ -1,17 +1,19 @@
 <div id="ad-card-bg" class="card">
     <div id="ad-card" class="lg:mx-10 sm:mx-1">
-        <h2 id="band/musician name" class="text-lg font-medium text-center py-2">{{ ad.title | uppercase}} recherche {{ ad.seeking | uppercase }} </h2>
+        <h2 id="band/musician name" class="text-lg font-medium text-center py-2">{{ ad.title | uppercase}} </h2>
         <div id="style/posted at" class="flex justify-between pb-1">
-            <p>{{ ad.style }}</p>
+            <p>{{ ad.styles }}</p>
             <p>Mis en ligne le {{ ad.createdAt | date: 'd MMMM yyyy' }}</p>
         </div>
         <div id="picture" class="w-6/6 h-96 z-1 relative bg-black ">
-            <img [src]="ad.image" [alt]="title" class="object-cover w-full h-full">
+            <img [src]="ad.image" alt="image de l'annonce" class="object-cover w-full h-full">
         </div>
 
         <div id="ad" class="h-2/5 mx-12 -my-4 p-4 relative z-10 bg-backgroundMain">
             <p id="ad-text" class="p-2">{{ ad.description }}</p>
-            <button class="flex justify-end button" (click)="goToAd()">PLUS</button>
+            <button class="flex justify-end button" *ngIf="!isSingleAd" (click)="goToAd()">PLUS</button>
+            <!-- TODO : ajouter fonctionnement du contact -->
+            <button class="flex justify-end button" *ngIf="isSingleAd" (click)="goToAd()">CONTACT</button> 
         </div>
     </div>
 </div>

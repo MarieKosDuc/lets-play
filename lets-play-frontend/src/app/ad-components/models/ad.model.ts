@@ -1,21 +1,24 @@
 export class Ad {
     id!: number;
     createdAt!: Date;
+    postedBy!: string;
     title!: string;
-    userType!: string;
-    seeking!: string;
+    seekingMusicianType!: string;
     image: string | undefined;
-    style!: string;
+    styles!: string[];
+    location!: string;
     description!: string;
 
-    constructor(id: number, createdAt: Date, title: string, userType: string, seeking: string, image: string | undefined, style: string, description: string) {
+    constructor(id: number, createdAt: Date, postedBy: string, title: string, seekingMusicianType: string, image: string | undefined, styles: string[], location: string,
+        description: string) {
         this.id = id;
         this.createdAt = createdAt;
+        this.postedBy = postedBy;
         this.title = title;
-        this.userType = userType;
-        this.seeking = seeking;
+        this.seekingMusicianType = seekingMusicianType;
         this.image = image;
-        this.style = style;
+        this.styles = styles;
+        this.location = location;
         this.description = description;
     }
 }

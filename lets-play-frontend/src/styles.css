@@ -59,6 +59,13 @@ body {
   }
 }
 
+@media (min-width: 1600px){
+  .card {
+    margin-right: 30rem;
+    margin-left: 30rem;
+  }
+}
+
 .field {
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;

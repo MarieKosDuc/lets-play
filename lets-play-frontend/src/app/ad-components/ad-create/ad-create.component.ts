@@ -8,6 +8,7 @@ import { AdCreation } from '../models/adCreation.model';
 
 import { CloudinaryService } from 'src/app/cloudinary/cloudinary.service';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
+import { AdService } from '../services/ad.service';
 
 
 @Component({
@@ -28,10 +29,6 @@ export class AdCreateComponent {
 
   seeking!: string;
 
-  searchType!: string;
-  musicianType!: string;
-  finalType!: string;
-
   myWidget: any;
   uploadPreset: String = this.cloudinaryService.getUploadPreset();
   myCloudName: String = this.cloudinaryService.getCloudName();
@@ -51,14 +48,15 @@ export class AdCreateComponent {
 
   
   constructor(private authService: AuthenticationService, private cloudinaryService: CloudinaryService,
+      private adService: AdService,
      private formbuilder: FormBuilder) {
       this.adForm = this.formbuilder.group({
         title: ['', Validators.required],
         search: ['', Validators.required],
         musicianType: [''],
-        styles: [''],
         location: ['', Validators.required],
-        description: ['', Validators.required]
+        description: ['', Validators.required],
+        selectedItems: ['', Validators.required]
       });
      }
 
@@ -73,6 +71,12 @@ export class AdCreateComponent {
       itemsShowLimit: 3,
       allowSearchFilter: true
     };
+
+    this.authService.getCurrentUser().subscribe((user: User | null) => {
+      if(user != null){
+        this.user = user;
+      }
+    })
 
     // @ts-ignore: Unreachable code error
     this.myWidget = cloudinary.createUploadWidget(
@@ -102,7 +106,6 @@ export class AdCreateComponent {
   }
 
   setSeeking(value: string) {
-    console.log("set seeking value : " + value);
     this.seeking = value;
     this.setDefaultImage(value);
   }
@@ -110,7 +113,6 @@ export class AdCreateComponent {
 
   setDefaultImage(value: string) {
     this.imageSrc = this.baseUrl + value + '.jpg';
-    console.log("image source mise à jour : " + this.imageSrc);
   }
 
   onItemSelect(item: any) {
@@ -140,8 +142,7 @@ export class AdCreateComponent {
     const selectedRegion = this.adForm.get('location')?.value ?? '';
     const title = this.adForm.get('title')?.value ?? '';
     const description = this.adForm.get('description')?.value ?? '';
-    const styles = this.selectedItems;
-
+    const musicStyles = this.selectedItems;
 
     this.adData = {
       createdAt: new Date(),
@@ -149,13 +150,31 @@ export class AdCreateComponent {
       userId: connectedUserId,
       seeking: this.seeking,
       image: this.imageSrc,
-      styles: styles,
+      styles: musicStyles,
       location: selectedRegion,
-      description: description
+      description: description,
     }
 
-    console.log('Ad created');
     console.log(this.adData);
+
+    this.adService.createAd(this.adData).subscribe(
+      (response) => {
+        console.log(response);
+        this.message = "Annonce créée avec succès";
+        this.hasMessage = true;
+        setTimeout(() => {
+          this.hasMessage = false;
+        }, 2000)
+      },
+      (error) => {
+        this.message = "Une erreur est survenue lors de la création de l'annonce : " + error.message;
+        console.log(error);
+        this.hasMessage = true;
+        setTimeout(() => {
+          this.hasMessage = false;
+        }, 2000)
+      }
+    )
   }
 
 }

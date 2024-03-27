@@ -63,7 +63,8 @@
               "browserTarget": "lets-play:build:production"
             },
             "development": {
-              "browserTarget": "lets-play:build:development"
+              "browserTarget": "lets-play:build:development",
+              "proxyConfig": "src/proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"
