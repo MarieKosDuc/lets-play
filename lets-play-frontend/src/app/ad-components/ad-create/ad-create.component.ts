@@ -5,6 +5,7 @@ import { Validators } from '@angular/forms';
 import { AuthenticationService } from 'src/app/authentication/services/authentication.service';
 import { User } from 'src/app/user/models/user.model';
 import { AdCreation } from '../models/adCreation.model';
+import { musicStylesEnum } from 'src/app/search/models/musicStylesEnum';
 
 import { CloudinaryService } from 'src/app/cloudinary/cloudinary.service';
 import { AdService } from '../services/ad.service';
@@ -35,11 +36,7 @@ export class AdCreateComponent {
   imageSrc: string = '';
   baseUrl: String = this.cloudinaryService.getBaseImageURL();
 
-  dropdownList = [
-    { item_id: 1, item_text: 'Death metal' },
-    { item_id: 2, item_text: 'Thrash metal' },
-    { item_id: 3, item_text: 'Other' }
-  ];;
+  dropdownList = [...Object.keys(musicStylesEnum).map((key) => ({ item_id: key, item_text: musicStylesEnum[key as keyof typeof musicStylesEnum] }))]
   selectedItems: string[] = [];
   dropdownSettings = {};
 
@@ -140,7 +137,7 @@ export class AdCreateComponent {
     const selectedRegion = this.adForm.get('location')?.value ?? '';
     const title = this.adForm.get('title')?.value ?? '';
     const description = this.adForm.get('description')?.value ?? '';
-    const musicStyles = this.selectedItems;
+    const metalGenres = Object.keys(musicStylesEnum).filter(key => this.selectedItems.includes(musicStylesEnum[key as keyof typeof musicStylesEnum]));
 
     this.adData = {
       createdAt: new Date(),
@@ -148,7 +145,7 @@ export class AdCreateComponent {
       userId: connectedUserId,
       seeking: this.seeking,
       image: this.imageSrc,
-      styles: musicStyles,
+      styles: metalGenres,
       location: selectedRegion,
       description: description,
     }

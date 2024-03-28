@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Ad } from '../models/ad.model';
 import { AdService } from '../services/ad.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-ads-list',
@@ -10,16 +11,24 @@ import { AdService } from '../services/ad.service';
 export class AdsListComponent implements OnInit {
   @Input() ads: Ad[] = [];
 
-  constructor(private adService: AdService) { }
+  constructor(private adService: AdService, private router: Router) { }
 
   ngOnInit(): void {
-    this.adService.getAllAds().subscribe(
-      (ads: Ad[]) => {
-        this.ads = ads;
-      },
-      (error) => {
-        console.error('Error fetching ads:', error);
-      }
-    );  } 
+    if (this.router.url === '/home') {
+      this.getAllAds();
+    } else {
+      this.ads = this.adService.ads;
+    }
+  } 
+    getAllAds() {
+      this.adService.getAllAds().subscribe(
+        (ads: Ad[]) => {
+          this.ads = ads;
+        },
+        (error) => {
+          console.error('Error fetching ads:', error);
+        }
+      );
+    }
 
 }

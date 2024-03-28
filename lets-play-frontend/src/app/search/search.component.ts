@@ -1,7 +1,10 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Validators } from '@angular/forms';
+
 import { Ad } from '../ad-components/models/ad.model';
+import { AdService } from '../ad-components/services/ad.service';
+import { musicStylesEnum } from './models/musicStylesEnum';
 
 
 @Component({
@@ -13,11 +16,7 @@ export class SearchComponent {
 
   seeking!: string;
   searchForm!: FormGroup;
-  dropdownList = [
-    { item_id: 1, item_text: 'Death metal' },
-    { item_id: 2, item_text: 'Thrash metal' },
-    { item_id: 3, item_text: 'Other' }
-  ];;
+  dropdownList = [...Object.keys(musicStylesEnum).map((key) => ({ item_id: key, item_text: musicStylesEnum[key as keyof typeof musicStylesEnum] }))];
   selectedItems: string[] = [];
   dropdownSettings = {};
 
@@ -26,7 +25,7 @@ export class SearchComponent {
   resultNumber: number = 0;
 
 
-  constructor(private formbuilder: FormBuilder) {
+  constructor(private formbuilder: FormBuilder, private adService: AdService) {
     this.searchForm = this.formbuilder.group({
       search: ['', Validators.required],
       musicianType: [''],
@@ -75,6 +74,13 @@ export class SearchComponent {
   }
 
   onSubmit() {
-    console.log(this.searchForm.value);
-    }
+    const metalGenres = Object.keys(musicStylesEnum).filter(key => this.selectedItems.includes(musicStylesEnum[key as keyof typeof musicStylesEnum]));
+
+
+    this.adService.searchAds.call(this.adService, this.searchForm.value.musicianType, metalGenres, this.searchForm.value.location).subscribe((ads: Ad[]) => {
+      this.ads = ads;
+      this.resultNumber = ads.length;
+      this.showAds = true;
+    });
+  }
 }

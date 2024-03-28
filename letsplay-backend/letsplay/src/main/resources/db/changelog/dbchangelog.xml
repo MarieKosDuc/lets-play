@@ -189,6 +189,7 @@
         />
     </changeSet>
 
+    <!--    Inserts  -->
     <changeSet id="6" author="Marie-KD"> <!-- Insertion of musician type, style, location -->
 
         <insert tableName="musician_type">
@@ -214,9 +215,6 @@
         </insert>
     </changeSet>
 
-
-
-    <!--    Inserts  -->
     <changeSet id="7" author="Marie-KD"> <!-- Insertion of roles -->
         <insert tableName="roles" schemaName="music">
             <column name="name" value="USER" />
@@ -268,14 +266,63 @@
         </insert>
     </changeSet>
 
-    <changeSet id="9" author="Marie-KD"> <!-- Insertion of styles -->
+    <changeSet id="9" author="Marie-KD"> <!-- Insertion of metal genres -->
         <insert tableName="style" schemaName="music">
-            <column name="name" value="death metal" />
+            <column name="name" value="heavy" />
         </insert>
         <insert tableName="style" schemaName="music">
-            <column name="name" value="thrash metal" />
+            <column name="name" value="thrash" />
+        </insert>
+        <insert tableName="style" schemaName="music">
+            <column name="name" value="death" />
+        </insert>
+        <insert tableName="style" schemaName="music">
+            <column name="name" value="black" />
+        </insert>
+        <insert tableName="style" schemaName="music">
+            <column name="name" value="power" />
+        </insert>
+        <insert tableName="style" schemaName="music">
+            <column name="name" value="prog" />
+        </insert>
+        <insert tableName="style" schemaName="music">
+            <column name="name" value="doom" />
+        </insert>
+        <insert tableName="style" schemaName="music">
+            <column name="name" value="symphonic" />
+        </insert>
+        <insert tableName="style" schemaName="music">
+            <column name="name" value="folk" />
+        </insert>
+        <insert tableName="style" schemaName="music">
+            <column name="name" value="indus" />
+        </insert>
+        <insert tableName="style" schemaName="music">
+            <column name="name" value="melodic" />
+        </insert>
+        <insert tableName="style" schemaName="music">
+            <column name="name" value="nu" />
+        </insert>
+        <insert tableName="style" schemaName="music">
+            <column name="name" value="alternative" />
+        </insert>
+        <insert tableName="style" schemaName="music">
+            <column name="name" value="core" />
+        </insert>
+        <insert tableName="style" schemaName="music">
+            <column name="name" value="grind" />
+        </insert>
+        <insert tableName="style" schemaName="music">
+            <column name="name" value="stoner" />
+        </insert>
+        <insert tableName="style" schemaName="music">
+            <column name="name" value="post" />
+        </insert>
+        <insert tableName="style" schemaName="music">
+            <column name="name" value="djent" />
         </insert>
     </changeSet>
+
 
 
     <changeSet id="10" author="Marie-KD"> <!-- Creation of many-to-many tables for ads liking -->

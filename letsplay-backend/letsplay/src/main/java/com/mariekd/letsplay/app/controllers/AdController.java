@@ -22,7 +22,6 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/ads")
-//@CrossOrigin(maxAge = 3600)
 @CrossOrigin(maxAge = 3600)
 public class AdController {
 
@@ -46,12 +45,14 @@ public class AdController {
     @GetMapping("/get/all")
     public List<AdDTO> getAllAds() {
         List<Ad> ads = adService.getAllAds();
+        ads.sort(Comparator.comparing(Ad::getCreatedAt).reversed());
         return ads.stream().map(AdMapper::toAdDTO).toList();
     }
 
     @GetMapping("/search")
     public List<AdDTO> getSearchedAds(@RequestParam String musicianType, @RequestParam List<String> styles, @RequestParam String location) {
         List<Ad> ads = adService.getSearchedAds(musicianType, styles, location);
+        ads.sort(Comparator.comparing(Ad::getCreatedAt).reversed());
         return ads.stream().map(AdMapper::toAdDTO).toList();
     }
 
