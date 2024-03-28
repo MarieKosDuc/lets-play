@@ -6,13 +6,12 @@ import com.mariekd.letsplay.app.entities.Ad;
 import com.mariekd.letsplay.app.entities.Location;
 import com.mariekd.letsplay.app.entities.MusicianType;
 import com.mariekd.letsplay.app.entities.Style;
-import com.mariekd.letsplay.app.request.AppRequest;
+import com.mariekd.letsplay.app.request.CreateAdRequest;
 import com.mariekd.letsplay.app.services.implementation.AdServiceImpl;
 import com.mariekd.letsplay.app.services.implementation.LocationServiceImpl;
 import com.mariekd.letsplay.app.services.implementation.MusicianTypeServiceImpl;
 import com.mariekd.letsplay.app.services.implementation.StyleServiceImpl;
 import com.mariekd.letsplay.authentication.entities.User;
-import com.mariekd.letsplay.authentication.jwt.JwtService;
 import com.mariekd.letsplay.authentication.services.implementations.UserServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
@@ -50,6 +49,12 @@ public class AdController {
         return ads.stream().map(AdMapper::toAdDTO).toList();
     }
 
+    @GetMapping("/search")
+    public List<AdDTO> getSearchedAds(@RequestParam String musicianType, @RequestParam List<String> styles, @RequestParam String location) {
+        List<Ad> ads = adService.getSearchedAds(musicianType, styles, location);
+        return ads.stream().map(AdMapper::toAdDTO).toList();
+    }
+
     @GetMapping("/get/{id}")
     public ResponseEntity<?> getAdById(@PathVariable int id) {
         Optional<Ad> ad = adService.getAdById(id);
@@ -62,7 +67,7 @@ public class AdController {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @PostMapping("/create")
-    public ResponseEntity<?> createAd(@RequestBody AppRequest creatingAd, HttpServletRequest request) {
+    public ResponseEntity<?> createAd(@RequestBody CreateAdRequest creatingAd, HttpServletRequest request) {
 
         User postingUser = userService.getUserFromRequest(request);
 
@@ -109,7 +114,7 @@ public class AdController {
 
     @PreAuthorize("hasRole('USER')")
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateAdByUser(@PathVariable int id, @RequestBody AppRequest updatingAd, HttpServletRequest request) {
+    public ResponseEntity<?> updateAdByUser(@PathVariable int id, @RequestBody CreateAdRequest updatingAd, HttpServletRequest request) {
 
         User postingUser = userService.getUserFromRequest(request);
 

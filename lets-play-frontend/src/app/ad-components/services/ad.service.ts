@@ -45,6 +45,16 @@ export class AdService {
       );
     }
 
+    searchAds(search: string, musicianTypes: string[], location: string): Observable<Ad[]> {
+
+      const url = `${this.baseUrl}/search?search=${search}&musicianTypes=${musicianTypes}&location=${location}`;
+      return this.http.get<Ad[]>(url, httpOptions).pipe(
+        tap((ads: Ad[]) => {
+          this.ads = ads;
+        })
+      );
+    }
+
     createAd(ad: AdCreation) {
       const url = this.baseUrl + `/create`;
       console.log(url, ad, httpOptions);

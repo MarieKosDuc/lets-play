@@ -1,13 +1,12 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, NgForm } from '@angular/forms';
-import { FormControl, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { Validators } from '@angular/forms';
 
 import { AuthenticationService } from 'src/app/authentication/services/authentication.service';
 import { User } from 'src/app/user/models/user.model';
 import { AdCreation } from '../models/adCreation.model';
 
 import { CloudinaryService } from 'src/app/cloudinary/cloudinary.service';
-import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { AdService } from '../services/ad.service';
 
 
@@ -35,7 +34,6 @@ export class AdCreateComponent {
 
   imageSrc: string = '';
   baseUrl: String = this.cloudinaryService.getBaseImageURL();
-  resetImageSelect: any;
 
   dropdownList = [
     { item_id: 1, item_text: 'Death metal' },

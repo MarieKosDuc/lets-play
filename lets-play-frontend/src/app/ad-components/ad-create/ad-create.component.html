@@ -26,9 +26,12 @@
         </div>
         
 
-        <img id="selected-image" *ngIf="imageSrc !== ''" src="{{imageSrc}}" alt="Image par défaut" class="w-72 h-72">
-
-        <button class="button" type="button" id="upload-image" (click)="openWidget()">Choisir une image</button>
+        <div class="flex justify-center mt-2">
+            <img id="selected-image" *ngIf="imageSrc !== ''" src="{{imageSrc}}" alt="Image par défaut" class="w-72 h-72">
+        </div>
+        <div class="flex justify-center mt-2">
+            <button class="button" type="button" id="upload-image" (click)="openWidget()">Choisir une image</button>
+        </div>
         
         <ng-multiselect-dropdown
             [placeholder]="'Sélectionne les styles de ton choix'"
@@ -62,7 +65,9 @@
         <label for="description">Ton annonce :</label><br>
         <textarea id="description" name="description" class="field h-[15em]" formControlName="description" required></textarea><br>
 
-        <button type="submit" [disabled]="adForm.invalid" class="button">Poster mon annonce</button>
+        <div class="flex justify-center mt-2">
+            <button type="submit" [disabled]="adForm.invalid" class="button">Poster mon annonce</button>
+        </div>
     </form>
     <div *ngIf="hasMessage">{{ message }}</div>
 

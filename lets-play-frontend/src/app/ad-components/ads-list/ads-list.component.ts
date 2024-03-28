@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Ad } from '../models/ad.model';
 import { AdService } from '../services/ad.service';
 
@@ -8,7 +8,7 @@ import { AdService } from '../services/ad.service';
   styleUrls: ['./ads-list.component.css']
 })
 export class AdsListComponent implements OnInit {
-  ads!: Ad[];
+  @Input() ads: Ad[] = [];
 
   constructor(private adService: AdService) { }
 
