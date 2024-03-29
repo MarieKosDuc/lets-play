@@ -8,7 +8,7 @@ import { User } from 'src/app/authentication/models/user.model'
 
 
 const httpOptions = {
-  headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+  headers: new HttpHeaders({ 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }),
   withCredentials: true
 };
 
@@ -27,7 +27,7 @@ export class AuthenticationService {
 
   login(username: string, password: string): Observable<User> {
     const url = this.baseUrl + `/login`;
-    return this.http.post<User>(url, { username, password }).pipe(
+    return this.http.post<User>(url, { username, password }, httpOptions).pipe(
       tap((user: User) => {
         this.loggedIn.next(true);
         this.currentUser.next(user);

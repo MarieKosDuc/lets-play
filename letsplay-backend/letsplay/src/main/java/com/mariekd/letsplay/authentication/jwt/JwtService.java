@@ -42,11 +42,11 @@ public class JwtService {
                 .compact();
 
         return ResponseCookie.from(jwtCookieName, jwt)
-                //.httpOnly(true)
+                .httpOnly(true)
 //                .sameSite("None")
+                .secure(false)
                 .maxAge(60 * 60 * 24) // 24 hours
-                .path("/api/*")
-                .domain("localhost")
+                .path("/")
                 .build()
                 .toString();
 

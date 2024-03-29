@@ -143,7 +143,7 @@ export class AdCreateComponent {
       createdAt: new Date(),
       title: title,
       userId: connectedUserId,
-      seeking: this.seeking,
+      musicianType: this.seeking,
       image: this.imageSrc,
       styles: metalGenres,
       location: selectedRegion,
