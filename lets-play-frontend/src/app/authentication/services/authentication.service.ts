@@ -4,7 +4,7 @@ import { environment } from 'src/environments/environment';
 
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 
-import { User } from 'src/app/user/models/user.model'
+import { User } from 'src/app/authentication/models/user.model'
 
 
 const httpOptions = {

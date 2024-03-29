@@ -49,6 +49,7 @@ public class AdController {
         return ads.stream().map(AdMapper::toAdDTO).toList();
     }
 
+    @CrossOrigin(maxAge = 3600)
     @GetMapping("/search")
     public List<AdDTO> getSearchedAds(@RequestParam String musicianType, @RequestParam List<String> styles, @RequestParam String location) {
         List<Ad> ads = adService.getSearchedAds(musicianType, styles, location);
@@ -57,7 +58,7 @@ public class AdController {
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<?> getAdById(@PathVariable int id) {
+    public ResponseEntity<?> getAdById(@PathVariable("id") int id) {
         Optional<Ad> ad = adService.getAdById(id);
         if (ad.isPresent()){
             return ResponseEntity.ok(AdMapper.toAdDTO(ad.get()));
@@ -66,7 +67,7 @@ public class AdController {
         }
     }
 
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping("/create")
     public ResponseEntity<?> createAd(@RequestBody CreateAdRequest creatingAd, HttpServletRequest request) {
 
@@ -115,7 +116,7 @@ public class AdController {
 
     @PreAuthorize("hasRole('USER')")
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateAdByUser(@PathVariable int id, @RequestBody CreateAdRequest updatingAd, HttpServletRequest request) {
+    public ResponseEntity<?> updateAdByUser(@PathVariable("id") int id, @RequestBody CreateAdRequest updatingAd, HttpServletRequest request) {
 
         User postingUser = userService.getUserFromRequest(request);
 
@@ -157,7 +158,7 @@ public class AdController {
 
     @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteAdByUser(@PathVariable int id, HttpServletRequest request) {
+    public ResponseEntity<?> deleteAdByUser(@PathVariable("id") int id, HttpServletRequest request) {
 
         User postingUser = userService.getUserFromRequest(request);
 
@@ -179,7 +180,7 @@ public class AdController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/delete/admin/{id}")
-    public ResponseEntity<?> deleteAdByAdmin(@PathVariable int id) {
+    public ResponseEntity<?> deleteAdByAdmin(@PathVariable("id") int id) {
 
         try {
             adService.deleteById(id);

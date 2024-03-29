@@ -2,9 +2,9 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Validators } from '@angular/forms';
 
-import { Ad } from '../ad-components/models/ad.model';
-import { AdService } from '../ad-components/services/ad.service';
-import { musicStylesEnum } from './models/musicStylesEnum';
+import { Ad } from '../models/ad.model';
+import { AdService } from '../services/ad.service';
+import { musicStylesEnum } from '../enums/musicStylesEnum';
 
 
 @Component({

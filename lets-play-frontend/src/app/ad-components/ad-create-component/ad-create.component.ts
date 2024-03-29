@@ -3,11 +3,11 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { Validators } from '@angular/forms';
 
 import { AuthenticationService } from 'src/app/authentication/services/authentication.service';
-import { User } from 'src/app/user/models/user.model';
+import { User } from 'src/app/authentication/models/user.model';
 import { AdCreation } from '../models/adCreation.model';
-import { musicStylesEnum } from 'src/app/search/models/musicStylesEnum';
+import { musicStylesEnum } from 'src/app/ad-components/enums/musicStylesEnum';
 
-import { CloudinaryService } from 'src/app/cloudinary/cloudinary.service';
+import { CloudinaryService } from 'src/app/layout/cloudinary/cloudinary.service';
 import { AdService } from '../services/ad.service';
 
 

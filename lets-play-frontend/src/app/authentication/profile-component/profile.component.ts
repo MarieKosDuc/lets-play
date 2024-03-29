@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { AuthenticationService } from 'src/app/authentication/services/authentication.service';
 import { User } from '../models/user.model';
 
-import { CloudinaryService } from 'src/app/cloudinary/cloudinary.service';
+import { CloudinaryService } from 'src/app/layout/cloudinary/cloudinary.service';
 import {CloudinaryImage} from '@cloudinary/url-gen';
 
 @Component({

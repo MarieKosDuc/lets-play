@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
-import { AuthenticationService } from '../authentication/services/authentication.service';
-import { User } from 'src/app/user/models/user.model';
+import { AuthenticationService } from '../../authentication/services/authentication.service';
+import { User } from 'src/app/authentication/models/user.model';
 
 @Component({
   selector: 'app-header',

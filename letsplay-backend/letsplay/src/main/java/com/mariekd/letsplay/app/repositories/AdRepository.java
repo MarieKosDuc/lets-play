@@ -4,6 +4,7 @@ import com.mariekd.letsplay.app.entities.Ad;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public interface AdRepository extends JpaRepository <Ad, Integer> {
 
     @Modifying
     @Query("DELETE FROM Ad a WHERE a.id = :id")
-    void deleteById(int id);
+    void deleteById(@Param("id") int id);
 
     Optional<Ad> findByTitle (String title);
 
@@ -25,6 +26,6 @@ public interface AdRepository extends JpaRepository <Ad, Integer> {
             "LEFT JOIN music.location l ON a.location = l.id " +
             "WHERE mt.name = :musicianType AND l.name = :location " +
             "AND s.name in (:styles)", nativeQuery = true)
-    List<Ad> findSearchedAds(String musicianType, List<String> styles, String location);
+    List<Ad> findSearchedAds(@Param("musicianType") String musicianType, @Param("styles") List<String> styles, @Param("location") String location);
 
 }
