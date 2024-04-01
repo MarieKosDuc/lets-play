@@ -25,9 +25,9 @@ jobs:
       - 
         name: Build and push back-end
         run: |
-          #cd letsplay-backend/letsplay/
+          cd letsplay-backend/letsplay/
           echo "Building back-end image"
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/letsplay-backend:latest /letsplay-backend/letsplay
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/letsplay-backend:latest .
           echo "Pushing back-end image"
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/letsplay-backend:latest
 
