@@ -19,9 +19,9 @@ jobs:
 
        # Build backend
     - name: Build backend Docker image
-      run: docker build -t backend-image -f letsplay-backend/Dockerfile letsplay-backend/ --tag letsplay-backend:$(date +%s)
+      run: docker build -t backend-image -f letsplay-backend/letsplay/Dockerfile --tag letsplay-backend:$(date +%s)
 
     # Build frontend
     - name: Build frontend
-      run: docker build -t frontend-image -f letsplay-frontend/Dockerfile letsplay-frontend/ --tag letsplay-frontend:$(date +%s)
+      run: docker build -t frontend-image -f letsplay-frontend/Dockerfile --tag letsplay-frontend:$(date +%s)
 
