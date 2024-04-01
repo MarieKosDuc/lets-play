@@ -16,3 +16,12 @@ jobs:
     - uses: actions/checkout@v3
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag letsplay:$(date +%s)
+
+       # Build backend
+    - name: Build backend Docker image
+      run: docker build -t backend-image -f letsplay-backend/Dockerfile letsplay-backend/ --tag letsplay-backend:$(date +%s)
+
+    # Build frontend
+    - name: Build frontend
+      run: docker build -t frontend-image -f letsplay-frontend/Dockerfile letsplay-frontend/ --tag letsplay-frontend:$(date +%s)
+
