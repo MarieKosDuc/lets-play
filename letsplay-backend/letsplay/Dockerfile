@@ -7,5 +7,5 @@ from eclipse-temurin:21-jdk
 workdir /app
 expose 8080
 copy target/*.jar app.jar
-copy src/main/resources/application.properties-docker /app/application.properties
+#copy src/main/resources/application.properties-docker /app/application.properties
 entrypoint ["java", "-jar", "-dspring.profiles.active=docker", "app.jar"]
