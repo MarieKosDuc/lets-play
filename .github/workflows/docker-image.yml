@@ -1,0 +1,27 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build the Docker image
+      #run: docker build . --file Dockerfile --tag letsplay:$(date +%s)
+
+       # Build backend
+    - name: Build backend Docker image
+      run: docker build -t backend-image -f letsplay-backend/letsplay/Dockerfile --tag letsplay-backend:$(date +%s)
+
+    # Build frontend
+    - name: Build frontend
+      run: docker build -t frontend-image -f letsplay-frontend/Dockerfile --tag letsplay-frontend:$(date +%s)
+
