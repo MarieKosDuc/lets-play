@@ -20,6 +20,10 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
+        name: Display contents of target directory
+        run: |
+          ls -lR letsplay-backend/target
+      -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - 
