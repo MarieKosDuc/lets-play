@@ -10,7 +10,7 @@
 	</parent>
 
 	<groupId>com.mariekd</groupId>
-	<artifactId>letsplay</artifactId>
+	<artifactId>letsplay-backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>letsplay</name>
 	<description>Let&apos;s Play Project</description>
