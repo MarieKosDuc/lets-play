@@ -22,14 +22,14 @@ jobs:
       -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - 
-        name: Build and push back-end
-        run: |
-          cd letsplay-backend/letsplay/
-          echo "Building back-end image"
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/letsplay-backend:latest .
-          echo "Pushing back-end image"
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/letsplay-backend:latest
+      #- 
+       # name: Build and push back-end
+        #run: |
+         # cd letsplay-backend/letsplay/
+          #echo "Building back-end image"
+          #docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/letsplay-backend:latest .
+          #echo "Pushing back-end image"
+          #docker push ${{ secrets.DOCKERHUB_USERNAME }}/letsplay-backend:latest
 
       - name: Build and push front-end
         run: |
