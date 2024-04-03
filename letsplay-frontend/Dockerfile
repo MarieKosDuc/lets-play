@@ -1,7 +1,7 @@
 # Build front-end
 FROM node:16-alpine as angular-builder
 WORKDIR /app/frontend
-COPY letsplay-frontend/ /app/frontend
+COPY . /app/frontend
 RUN npm install
 RUN npm run build
 
