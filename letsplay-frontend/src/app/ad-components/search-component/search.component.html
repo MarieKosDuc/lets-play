@@ -1,0 +1,73 @@
+<div id="search-card-bg" class="card p-2">
+    <form [formGroup]="searchForm" (ngSubmit)="onSubmit()">
+
+        <div id="search-band-or-musician" class="flex items-center ">
+            <label for="band" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Je recherche : </label>
+            <input type="radio" id="band" value="band" name="search" formControlName="search" (change)="setSeeking('band')" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"> Un groupe
+            <input type="radio" id="musician" value="musician" name="search" formControlName="search" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"> Un musicien
+            <select id="musicianType" #musicianType class="field" name="musicianType" formControlName="musicianType" *ngIf="searchForm.get('search')?.value === 'musician'" 
+            (change)="setSeeking(musicianType.value)">
+                <option value="guitar">Guitariste</option>
+                <option value="synths">Claviériste</option>
+                <option value="vocalist">Vocaliste</option>
+                <option value="bass">Bassiste</option>
+                <option value="drums">Batteur</option>
+                <option value="misc">Autre</option>
+            </select>
+        </div>
+
+        
+        <!-- TO DO : créer composant pour dropdown styles ? -->
+        <div>
+            <label for="default-select" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Genre</label>
+
+            <ng-multiselect-dropdown
+                    [placeholder]="'Sélectionne les styles de ton choix'"
+                    [settings]="dropdownSettings"
+                    [data]="dropdownList"
+                    formControlName="selectedItems"
+                    (onSelect)="onItemSelect($event)"
+                    (onDeSelect)="onItemDeSelect($event)"
+                    (onSelectAll)="onSelectAll($event)"
+                    (onDeSelectAll)="onDeSelectAll($event)"
+                    >
+                </ng-multiselect-dropdown>
+        </div>
+
+        <!-- TO DO : créer composant pour dropdown régions ? -->
+        <div>
+            <label for="location">Région :</label>
+            <select id="location" class="field" name="location" formControlName="location">
+                <option value="Auvergne-Rhône-Alpes">Auvergne-Rhône-Alpes</option>
+                <option value="Bourgogne-Franche-Comté">Bourgogne-Franche-Comté</option>
+                <option value="Bretagne">Bretagne</option>
+                <option value="Centre-Val-de-Loire">Centre-Val-de-Loire</option>
+                <option value="Corse">Corse</option>
+                <option value="Grand Est">Grand Est</option>
+                <option value="Hauts-de-France">Hauts-de-France</option>
+                <option value="Ile-de-France">Ile-de-France</option>
+                <option value="Normandie">Normandie</option>
+                <option value="Nouvelle-Aquitaine">Nouvelle-Aquitaine</option>
+                <option value="Occitanie">Occitanie</option>
+                <option value="Pays-de-la-Loire">Pays-de-la-Loire</option>
+                <option value="Provence-Alpes-Côte d'Azur">Provence-Alpes-Côte d'Azur</option>
+            </select>
+        </div>
+
+        <div class="flex justify-center mt-2">
+            <button type="submit" [disabled]="searchForm.invalid" class="button">C'est parti !</button>
+        </div>
+    </form>
+</div>
+
+<div id="ads-list" *ngIf="showAds" class="flex flex-col items-center justify-center mt-6">
+    <h2> {{resultNumber}} résultats trouvés !</h2>
+</div>
+<div>
+    <app-ads-list *ngFor="let ad of ads" [ads]="ads"></app-ads-list>
+</div>
+
+
+
+
+

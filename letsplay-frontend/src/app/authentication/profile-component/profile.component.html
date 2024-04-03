@@ -1,0 +1,18 @@
+<div id="user-card" class="card flex flex-col items-center">
+  <h2 class="profile-name text-center font-bold">{{user?.username}}</h2>
+  <img id="profile-pic" class="profile-picture h-20 w-20 rounded-full object-cover border border-gray-400" src="{{user?.profilePicture}}" alt="Photo de profil">
+  <button id="upload_widget" (click)="openWidget()" class="button">
+    Changer ma photo de profil
+  </button>
+
+  <div class="profile-info mt-4">    
+    <label for="newPassword" class="mt-2">Nouveau mot de passe :</label>
+    <input type="password" id="newPassword" [(ngModel)]="newPassword" name="newPassword" class="block w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:border-blue-400">
+    
+    <label for="confirmNewPassword" class="mt-2">Confirmer le nouveau mot de passe :</label>
+    <input type="password" id="confirmNewPassword" [(ngModel)]="confirmNewPassword" name="confirmNewPassword" class="block w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:border-blue-400">
+  </div>
+
+  <!-- Bouton "Enregistrer mes modifications" -->
+  <button class="button mt-2" (click)="updateProfile()">Enregistrer mes modifications</button>
+</div>
