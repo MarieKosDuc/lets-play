@@ -30,7 +30,7 @@ jobs:
           cd letsplay-backend/
           echo "Building back-end image"
           ls -a
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/letsplay-backend:latest . --progress=plain
+          docker build -f Dockerfile . -t ${{ secrets.DOCKERHUB_USERNAME }}/letsplay-backend:latest  --progress=plain
           echo "Pushing back-end image"
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/letsplay-backend:latest
 
