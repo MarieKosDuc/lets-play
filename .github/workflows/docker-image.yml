@@ -22,9 +22,14 @@ jobs:
       -
         name: Adding secrets to application.properties
         run: |
+          echo "Setting application.properties for prod build"
+          echo ${{ secrets.DB_URL }}
+          echo ${{ secrets.DB_USERNAME }}
+          echo ${{ secrets.DB_PASSWORD }}
           echo "spring.datasource.url=${{ secrets.DB_URL }}" >> ./letsplay-backend/src/main/resources/application-prod.properties
           echo "spring.datasource.username=${{ secrets.DB_USERNAME }}" >> ./letsplay-backend/src/main/resources/application-prod.properties
           echo "spring.datasource.password=${{ secrets.DB_PASSWORD }}" >> ./letsplay-backend/src/main/resources/application-prod.properties
+          echo "Here's the updated file:"
           cat ./letsplay-backend/src/main/resources/application-prod.properties
       -
         name: Set up Docker Buildx
