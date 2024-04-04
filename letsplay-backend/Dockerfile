@@ -8,5 +8,5 @@ FROM eclipse-temurin:21-jdk
 WORKDIR /app
 EXPOSE 8080
 COPY --from=maven-builder /app/target/*.jar ./app.jar
-#copy src/main/resources/application.properties-docker /app/application.properties
-CMD ["java", "-jar", "-dspring.profiles.active=docker", "app.jar"]
+COPY src/main/resources/application-prod.properties /app/application.properties
+CMD ["java", "-jar", "app.jar"]
