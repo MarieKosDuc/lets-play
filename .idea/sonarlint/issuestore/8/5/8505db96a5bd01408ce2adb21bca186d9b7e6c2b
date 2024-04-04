@@ -1,10 +1,0 @@
-
-ò
-java:S1598"ÛThis file "AdDTO.java" should be located in "com\mariekd\letsplay\app\dto" directory, not in "C:\Users\Mariekoscian_b8a3kam\Documents\Perso\lets-play\letsplay-backend\src\main\java\com\mariekd\letsplay-backend\app\dto".(ÿò´
-
-java:S4165"dRemove this useless assignment; "styles" already holds the assigned value along all execution paths.(¨üÆîüÿÿÿÿ
-V	java:S107"AConstructor has 9 parameters, which is greater than 7 authorized.(›ÿ”®
-K
-java:S1172"0Remove this unused method parameter "styleType".(©×ü¼ûÿÿÿÿ
-J
-java:S1656"/Remove or correct this useless self-assignment.(¨üÆîüÿÿÿÿ
