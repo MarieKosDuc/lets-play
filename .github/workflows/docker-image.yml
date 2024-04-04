@@ -27,7 +27,7 @@ jobs:
           echo ${{ secrets.DOCKERHUB_TOKEN }}
           echo "Setting application.properties for prod build"
           echo ${{ secrets.DB_URL }}
-          echo ${{ secrets.DB_USERNAME }}
+          echo ${{ secrets.DB_USER }}
           echo ${{ secrets.DB_PASSWORD }}
           echo "spring.datasource.url=${{ secrets.DB_URL }}" >> ./letsplay-backend/src/main/resources/application-prod.properties
           echo "spring.datasource.username=${{ secrets.DB_USERNAME }}" >> ./letsplay-backend/src/main/resources/application-prod.properties
