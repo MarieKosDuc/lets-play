@@ -1,0 +1,9 @@
+
+r
+java:S1128"URemove this unused import 'com.mariekd.letsplay.authentication.services.UserService'.(ÙÏ¤ã8¸×‹­è1
+¦
+java:S1128"ƒRemove this unused import 'org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication'.(üâÃøÿÿÿÿ8ÕŞŸ­è1
+˜
+java:S1128"{Remove this unused import 'org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity'.(Ô¦ø8ÕŞŸ­è1
+‡
+java:S1128"jRemove this unused import 'org.springframework.security.config.annotation.web.configurers.CorsConfigurer'.(ÈúàÂ8ÕŞŸ­è1
