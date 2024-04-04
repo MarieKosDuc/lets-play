@@ -8,4 +8,4 @@ FROM eclipse-temurin:21-jdk
 WORKDIR /app
 EXPOSE 8080
 COPY --from=maven-builder /app/target/*.jar ./app.jar
-CMD ["java", "-jar", "-dspring.profiles.active=prod", "app.jar"]
+CMD ["java", "-jar", "-Dspring.profiles.active=prod", "app.jar"]
