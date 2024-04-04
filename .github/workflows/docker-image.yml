@@ -22,6 +22,9 @@ jobs:
       -
         name: Adding secrets to application.properties
         run: |
+          echo "Testing GitHub secrets:"
+          echo ${{ secrets.DOCKERHUB_USERNAME }}
+          echo ${{ secrets.DOCKERHUB_TOKEN }}
           echo "Setting application.properties for prod build"
           echo ${{ secrets.DB_URL }}
           echo ${{ secrets.DB_USERNAME }}
