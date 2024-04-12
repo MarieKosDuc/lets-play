@@ -1,11 +1,19 @@
 # Build front-end
-FROM node:16-alpine as angular-builder
-WORKDIR /app/frontend
-COPY . /app/frontend
-RUN npm install
+FROM node:16-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY ./src ./src
+COPY angular.json .
+COPY tsconfig.json .
+COPY tsconfig.app.json .
+COPY tsconfig.spec.json .
+COPY tailwind.config.js .
+COPY postcss.config.js .
 RUN npm run build
 
-# nginx serve
-FROM nginx:1.21.1-alpine
-COPY --from=angular-builder /app/frontend/dist /usr/share/nginx/html
+# Serve app with Nginx
+FROM nginx:latest
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY --from=builder /app/dist/lets-play/ /usr/share/nginx/html
 EXPOSE 80
