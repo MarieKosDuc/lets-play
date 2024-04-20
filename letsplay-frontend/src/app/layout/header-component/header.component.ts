@@ -1,20 +1,34 @@
 import { Component } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
+import { Observable, Subscription } from 'rxjs';
+
 import { AuthenticationService } from '../../authentication/services/authentication.service';
-import { User } from 'src/app/authentication/models/user.model';
+import { User } from '../../authentication/models/user.model';
+import { StorageService } from '../../_services/storage.service';
+
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.css']
+  styleUrls: ['./header.component.css'],
 })
 export class HeaderComponent {
   public showDescription!: boolean;
-  public userLoggedIn!: boolean;
+  public userLoggedIn = false;
   public userInfos!: User | null;
   public showDropdown: boolean = false;
+  private userSubscription: Subscription;
 
-constructor(private router: Router, private authService: AuthenticationService) { }
+  constructor(
+    private router: Router,
+    private authService: AuthenticationService,
+    private storageService: StorageService
+  ) {
+    this.userSubscription = this.storageService.user$.subscribe((user) => {
+      this.userInfos = user;
+      this.userLoggedIn = !!user;
+    });
+  }
 
   isHomeRoute(): boolean {
     return this.router.url === '/home';
@@ -28,16 +42,8 @@ constructor(private router: Router, private authService: AuthenticationService) 
       }
     });
 
-    this.authService.isLoggedIn().subscribe((loggedIn: boolean) => {
-      this.userLoggedIn = loggedIn;
-    })
-
-    this.authService.getCurrentUser().subscribe((user: User | null) => {
-      if(user != null){
-        this.userInfos = user;
-      }
-    })
-    
+    console.log('userLoggedIn', this.storageService.isLoggedIn());
+    this.userLoggedIn = this.storageService.isLoggedIn();
   }
 
   toggleDropdown() {
@@ -45,21 +51,20 @@ constructor(private router: Router, private authService: AuthenticationService) 
   }
 
   handleKeyPress(event: KeyboardEvent) {
-    if (event.key === 'Enter' || event.key === ' ') { // Si la touche Entrée ou Espace est pressée
-        this.toggleDropdown(); // Ouvre ou ferme le menu déroulant
+    if (event.key === 'Enter' || event.key === ' ') {
+      // Si la touche Entrée ou Espace est pressée
+      this.toggleDropdown(); // Ouvre ou ferme le menu déroulant
     } //TODO : gérer le problème du menu déroulant qui s'ouvre quand on appuie sur entrée même non connecté
     //TODO : refermer le menu déroulant quand navigation
-}
+  }
 
-  logOut() { //TODO : gérer l'erreur de parsing Json
-    this.authService.logout().subscribe(() => { 
-        this.userLoggedIn = false;
-        this.userInfos = null; 
-
-        this.router.navigateByUrl('/home');
-
-        //TODO : gérer le reload après déconnexion
+  logOut() {
+    this.authService.logout().subscribe(() => {
+      this.userLoggedIn = false;
+      this.userInfos = null;
+      this.storageService.clean();
+      this.showDropdown = false;
     });
-}
+  }
 
 }

@@ -17,6 +17,8 @@ import { AppRoutingModule } from './router/app-routing.module';
 import { AppComponent } from './app.component';
 import { ProfileComponent } from './authentication/profile-component/profile.component';
 
+import { httpInterceptorProviders } from './_helpers/http.interceptor.service';
+
 
 @NgModule({
   declarations: [
@@ -36,7 +38,7 @@ import { ProfileComponent } from './authentication/profile-component/profile.com
     AdModule,
     AuthenticationModule
   ],
-  providers: [],
+  providers: [httpInterceptorProviders],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

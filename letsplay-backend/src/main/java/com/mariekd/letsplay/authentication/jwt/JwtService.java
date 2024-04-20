@@ -52,6 +52,26 @@ public class JwtService {
 
     }
 
+    public String generateJwtToken(String userName ) {
+
+        final String jwt = Jwts.builder()
+                .setSubject(userName)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date((new Date()).getTime() + 1000 * 60 * 60 * 24)) // token validity : 24 hours
+                .signWith(this.secretKey, SignatureAlgorithm.HS512)
+                .compact();
+
+        return ResponseCookie.from(jwtCookieName, jwt)
+                .httpOnly(true)
+//                .sameSite("None")
+                .secure(false)
+                .maxAge(60 * 60 * 24) // 24 hours
+                .path("/")
+                .build()
+                .toString();
+
+    }
+
     public String getUserNameFromJwtToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(this.secretKey)

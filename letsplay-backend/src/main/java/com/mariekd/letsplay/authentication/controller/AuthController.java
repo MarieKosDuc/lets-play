@@ -1,15 +1,21 @@
 package com.mariekd.letsplay.authentication.controller;
 
+import com.mariekd.letsplay.authentication.entities.RefreshToken;
 import com.mariekd.letsplay.authentication.entities.Role;
 import com.mariekd.letsplay.authentication.payload.request.SignupRequest;
+import com.mariekd.letsplay.authentication.payload.request.TokenRefreshRequest;
+import com.mariekd.letsplay.authentication.payload.response.LoginOkResponse;
+import com.mariekd.letsplay.authentication.payload.response.TokenRefreshResponse;
 import com.mariekd.letsplay.authentication.payload.response.UserInfoResponse;
 import com.mariekd.letsplay.authentication.jwt.JwtService;
 import com.mariekd.letsplay.authentication.payload.request.LoginRequest;
 import com.mariekd.letsplay.authentication.entities.User;
 import com.mariekd.letsplay.authentication.models.UserInfo;
+import com.mariekd.letsplay.authentication.services.RefreshTokenService;
 import com.mariekd.letsplay.authentication.services.implementations.RoleServiceImpl;
 import com.mariekd.letsplay.authentication.services.implementations.UserServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -20,13 +26,16 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -39,17 +48,20 @@ public class AuthController {
     private final JwtService jwtService;
     private final UserServiceImpl userService;
     private final RoleServiceImpl roleService;
+    private final RefreshTokenService refreshTokenService;
 
     public AuthController(AuthenticationManager authenticationManager,
-                          JwtService jwtService, UserServiceImpl userService, RoleServiceImpl roleService) {
+                          JwtService jwtService, UserServiceImpl userService, RoleServiceImpl roleService,
+                          RefreshTokenService refreshTokenService) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.userService = userService;
         this.roleService = roleService;
+        this.refreshTokenService = refreshTokenService;
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserInfoResponse> authenticateUser(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<LoginOkResponse> authenticateUser(@RequestBody LoginRequest loginRequest) {
 
         final Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.username(), loginRequest.password())
@@ -59,7 +71,7 @@ public class AuthController {
 
         final UserInfo userDetails = (UserInfo) authentication.getPrincipal();
 
-        String jwt = jwtService.generateJwtToken(authentication);
+        String jwt = jwtService.generateJwtToken(userDetails.getUsername());
 
         final List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -67,17 +79,44 @@ public class AuthController {
 
         User connecterUser = userService.getUserByEmail(userDetails.getUsername());
 
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getUsername());
+
+
         LOGGER.info("User {} / {} logged in", userDetails.getUsername(), connecterUser.getName());
 
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwt)
-                        .body(new UserInfoResponse(userDetails.id(), connecterUser.getName(), connecterUser.getProfilePicture(), roles));
+                        .body(new LoginOkResponse(refreshToken.getToken(), connecterUser.getId(), connecterUser.getName(),
+                                connecterUser.getProfilePicture(), connecterUser.getEmail(), roles));
     }
 
+    @PostMapping("/refreshtoken")
+    public ResponseEntity<?> refreshtoken(@Valid @RequestBody TokenRefreshRequest request) {
+        String requestRefreshToken = request.getRefreshToken();
+
+        return refreshTokenService.findByToken(requestRefreshToken)
+                .map(refreshTokenService::verifyExpiration)
+                .map(RefreshToken::getUser)
+                .map(user -> {
+                    String newJwt = jwtService.generateJwtToken(user.getEmail());
+                    return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, newJwt)
+                            .body(new TokenRefreshResponse(requestRefreshToken));
+                })
+                .orElseThrow(() -> new AccessDeniedException("Invalid refresh token"));
+    }
+
+
     @PostMapping("/logout")
-    public ResponseEntity<String> logoutUser() {
+    public ResponseEntity<?> logoutUser(HttpServletRequest request) {
         ResponseCookie cookie = jwtService.getCleanJwtCookie();
+
+        User connectedUser = userService.getUserFromRequest(request);
+        refreshTokenService.deleteByUserId(connectedUser.getId());
+
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Logged out successfully");
+
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body("Logged out successfully");
+                .body(response);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -88,7 +127,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> createUser(@RequestBody SignupRequest userInfos) {
+    public ResponseEntity<String> createUser(@RequestBody SignupRequest userInfos) {
         try {
             if (!userService.existsByEmail(userInfos.email()) && !userService.existsByUserName(userInfos.username())) {
                 Role userRole = roleService.findByName("USER");
@@ -96,7 +135,9 @@ public class AuthController {
                 User user = new User(UUID.randomUUID() , userInfos.username(), userInfos.email(), userInfos.password(), userRole, userInfos.profilePicture(),null);
 
                 userService.createUser(user);
-                return ResponseEntity.ok(new UserInfoResponse(user.getId(), user.getName(), user.getProfilePicture(), List.of(user.getRoles().toString())));
+                LOGGER.info("User created: {}", user.getName());
+
+                return ResponseEntity.ok().body("User created successfully: " + user.getName());
             } else {
                 LOGGER.error("User already exists");
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("User with this name or email already exists");

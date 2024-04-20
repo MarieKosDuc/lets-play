@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router'
 import { AuthenticationService } from '../services/authentication.service';
+import { StorageService } from 'src/app/_services/storage.service';
 
 @Component({
   selector: 'app-login',
@@ -12,8 +13,16 @@ export class LoginComponent {
 
   hasError: boolean = false;
   error: String = '';
+  isLoggedIn = false;
+  isLoginFailed = false;
 
-  constructor(private authService: AuthenticationService, private router: Router) {}
+  constructor(private authService: AuthenticationService, private router: Router, private storageService: StorageService) {}
+
+  ngOnInit(): void {
+    if (this.storageService.isLoggedIn()) {
+      this.isLoggedIn = true;
+    }
+  }
 
   onSubmit(form: NgForm) {
     this.hasError = false;
@@ -23,7 +32,12 @@ export class LoginComponent {
 
     this.authService.login(username, password).subscribe(
       (response) => {
+        this.storageService.saveUser(response);
         console.log(response);
+
+        this.isLoggedIn = true;
+        this.isLoginFailed = false; //TODO : utiliser pour l'affichage du composant ?
+
         this.error = `Te voilà connecté, ${response.username}. Bonne recherche !`
         this.hasError = true;
         setTimeout(() => {
@@ -36,6 +50,7 @@ export class LoginComponent {
           this.error = "Identifiant ou mot de passe incorrect"
         } else {
           this.error = error.message;
+          this.isLoginFailed = true;
         }
         
       }

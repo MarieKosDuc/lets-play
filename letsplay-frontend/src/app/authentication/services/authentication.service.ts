@@ -8,9 +8,10 @@ import { User } from 'src/app/authentication/models/user.model'
 
 
 const httpOptions = {
-  headers: new HttpHeaders({ 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }),
-  withCredentials: true
+  headers: new HttpHeaders({ 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' })
 };
+
+const AUTH_API = `${environment.apiUrl}/users`;
 
 @Injectable({
   providedIn: 'root'
@@ -21,13 +22,9 @@ export class AuthenticationService {
   private currentUser: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
 
   constructor(private http: HttpClient) { }
-  
-  baseUrl: String = `${environment.apiUrl}/users`;
-
 
   login(username: string, password: string): Observable<User> {
-    const url = this.baseUrl + `/login`;
-    return this.http.post<User>(url, { username, password }, httpOptions).pipe(
+    return this.http.post<User>(AUTH_API + '/login', { username, password }, httpOptions).pipe(
       tap((user: User) => {
         this.loggedIn.next(true);
         this.currentUser.next(user);
@@ -35,9 +32,12 @@ export class AuthenticationService {
     );
   }
 
+  refreshToken(token: string) {
+    return this.http.post(AUTH_API + `/refreshtoken`, { token }, httpOptions);
+  }
+
   logout(): Observable<any> {
-    const url = `${this.baseUrl}/logout`;
-    return this.http.post(url, httpOptions).pipe(
+    return this.http.post(AUTH_API + '/logout', httpOptions).pipe(
       tap(() => {
         this.loggedIn.next(false);
         this.currentUser.next(null);
@@ -46,13 +46,11 @@ export class AuthenticationService {
   }
 
   register(email: String, username: String, profilePicture: String, password: String){
-    const url = this.baseUrl + '/register'
-    return this.http.post<User>(url, {email, username, profilePicture, password}, httpOptions);
+    return this.http.post<User>(AUTH_API + '/register', {email, username, profilePicture, password}, httpOptions);
   }
 
   updateUser(password: String, id: String): Observable<User> {
-    const url = this.baseUrl + '/update' + `/${id}`;
-    return this.http.put<User>(url, { password }, httpOptions).pipe(
+    return this.http.put<User>(AUTH_API + '/update' + `/${id}`, { password }, httpOptions).pipe(
       tap((user: User) => {
         this.currentUser.next(user);
       })
