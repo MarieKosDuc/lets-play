@@ -15,6 +15,7 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: SignupComponent},
   { path: 'profile', component: ProfileComponent}, //TODO : profile/{id} to access other profiles
+  { path: 'my-ads', component: AdsListComponent},
   { path: 'create-ad', component: AdCreateComponent},  
   { path: '', redirectTo: '/home', pathMatch: 'full' }
 ]; //TODO : add authgard so that non identified users can only access ads and search

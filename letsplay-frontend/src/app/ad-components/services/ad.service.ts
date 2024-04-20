@@ -6,6 +6,8 @@ import { BehaviorSubject, Observable, tap } from 'rxjs';
 
 import { Ad } from '../models/ad.model';
 import { AdCreation } from '../models/adCreation.model';
+import { AuthenticationService } from '../../authentication/services/authentication.service';
+import { User } from 'src/app/authentication/models/user.model';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
@@ -18,13 +20,20 @@ const httpOptions = {
 
 export class AdService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private authService: AuthenticationService) { }
   
   baseUrl: String = `${environment.apiUrl}/ads`;
 
+  ads: Ad[] = [];
+  ad!: Ad;
 
-    ads: Ad[] = [];
-    ad!: Ad;
+  user!: User | null;
+
+  ngOnInit() {
+    this.authService.getCurrentUser().subscribe((user: User | null) => {
+      this.user = user;
+    });
+  }
 
     getAllAds(): Observable<Ad[]> {
       const url = this.baseUrl + `/get/all`;
@@ -41,6 +50,17 @@ export class AdService {
       return this.http.get<Ad>(url, httpOptions).pipe(
         tap((ad: Ad) => {
           this.ad = ad;
+        })
+      );
+    }
+
+    getUserAds(): Observable<Ad[]> {
+      console.log("Service fetching ads for user:", this.user?.username)
+      const url = this.baseUrl + `/get/user/${this.user?.username}`;
+
+      return this.http.get<Ad[]>(url, httpOptions).pipe(
+        tap((ads: Ad[]) => {
+          this.ads = ads;
         })
       );
     }

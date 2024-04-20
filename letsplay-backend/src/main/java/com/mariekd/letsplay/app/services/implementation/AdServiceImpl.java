@@ -55,6 +55,11 @@ public class AdServiceImpl implements AdService {
         adRepository.deleteById(id);
     }
 
+    @Override
+    public List<Ad> getAdsByUser(String userName) {
+        return adRepository.findByUserName(userName);
+    }
+
     public List<Ad> getSearchedAds(String musicianType, List<String> styles, String location) {
         return adRepository.findSearchedAds(musicianType, styles, location);
     }

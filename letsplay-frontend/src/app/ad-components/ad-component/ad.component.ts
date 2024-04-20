@@ -36,6 +36,9 @@ export class AdComponent implements OnInit{
 
   truncateText(text: string): string {
       const words = text.split(' ');
+      if (words.length <= 30) {
+          return text;
+      }
       const truncatedText = words.slice(0, 30) 
       return truncatedText.join(' ') + '...';
 

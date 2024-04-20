@@ -20,4 +20,6 @@ public interface AdService {
     Ad updateAd(int id, Ad ad);
 
     void deleteById(int id);
+
+    List<Ad> getAdsByUser(String userName);
 }
