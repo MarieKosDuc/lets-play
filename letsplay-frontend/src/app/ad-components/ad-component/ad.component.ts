@@ -41,8 +41,12 @@ export class AdComponent implements OnInit{
 
   }
 
-
   goToAd() {
     this.router.navigateByUrl(`ad/${this.ad.id}`);
   }
+
+  mailTo() {
+    //window.open(`mailto:${this.ad.email}`);
+  }
+
 }

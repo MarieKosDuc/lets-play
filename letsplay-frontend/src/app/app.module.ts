@@ -15,13 +15,13 @@ import { AuthenticationModule } from './authentication/modules/authentication.mo
 import { AppRoutingModule } from './router/app-routing.module';
 
 import { AppComponent } from './app.component';
-import { ProfileComponent } from './authentication/profile-component/profile.component';
+import { AdRecapComponent } from './ad-components/ad-recap/ad-recap.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    ProfileComponent ],
+    AdRecapComponent],
   imports: [
     HttpClientModule,
     BrowserModule,
