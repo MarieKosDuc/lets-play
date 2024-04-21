@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ToastrModule } from 'ngx-toastr';
+import { Toast, ToastrModule } from 'ngx-toastr';
 
 import { CloudinaryModule } from '@cloudinary/ng';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
@@ -15,15 +15,12 @@ import { AuthenticationModule } from './authentication/modules/authentication.mo
 import { AppRoutingModule } from './router/app-routing.module';
 
 import { AppComponent } from './app.component';
-import { ProfileComponent } from './authentication/profile-component/profile.component';
-
 import { HttpRequestInterceptor, httpInterceptorProviders } from './_helpers/auth.interceptor.service';
 
 
 @NgModule({
   declarations: [
-    AppComponent,
-    ProfileComponent ],
+    AppComponent ],
   imports: [
     HttpClientModule,
     BrowserModule,
@@ -36,7 +33,7 @@ import { HttpRequestInterceptor, httpInterceptorProviders } from './_helpers/aut
     NgMultiSelectDropDownModule.forRoot(),
     LayoutModule,
     AdModule,
-    AuthenticationModule
+    AuthenticationModule,
   ],
   providers: [{provide: HTTP_INTERCEPTORS, useClass: HttpRequestInterceptor, multi: true}],
   bootstrap: [AppComponent]

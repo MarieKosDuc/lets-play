@@ -1,5 +1,7 @@
 package com.mariekd.letsplay.authentication.services.implementations;
 
+import com.mariekd.letsplay.authentication.payload.response.TokenRefreshResponse;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -52,5 +54,11 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     @Transactional
     public int deleteByUserId(UUID userId) {
         return refreshTokenRepository.deleteByUser(userRepository.findById(userId).get());
+    }
+
+    @Override
+    @Transactional
+    public void deleteByToken(String token) {
+        refreshTokenRepository.deleteByToken(token);
     }
 }

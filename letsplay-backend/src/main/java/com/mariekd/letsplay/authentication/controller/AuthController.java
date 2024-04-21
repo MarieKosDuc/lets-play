@@ -31,10 +31,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/users")
@@ -88,19 +85,37 @@ public class AuthController {
     }
 
     @PostMapping("/refreshtoken")
-    public ResponseEntity<?> refreshtoken(@Valid @RequestBody TokenRefreshRequest request) {
+    public ResponseEntity<?> refreshtoken(@Valid @RequestBody TokenRefreshRequest request, HttpServletRequest httpRequest) {
         LOGGER.info("Refreshing token: {} ", request.getToken());
         String requestRefreshToken = request.getToken();
 
-        return refreshTokenService.findByToken(requestRefreshToken)
-                .map(refreshTokenService::verifyExpiration)
-                .map(RefreshToken::getUser)
-                .map(user -> {
-                    String newJwt = jwtService.generateJwtToken(user.getEmail());
-                    return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, newJwt)
-                            .body(new TokenRefreshResponse(requestRefreshToken));
-                })
-                .orElseThrow(() -> new AccessDeniedException("Invalid refresh token"));
+        try {
+            String jwt = jwtService.getJwtFromCookies(httpRequest);
+            User jwtUser = userService.getUserByEmail(jwtService.getUserNameFromJwtToken(jwt));
+
+            Optional<RefreshToken> optionalRefreshToken = refreshTokenService.findByToken(requestRefreshToken);
+            if (optionalRefreshToken.isPresent()) {
+
+                refreshTokenService.verifyExpiration(optionalRefreshToken.get());
+
+                User refreshTokenUser = optionalRefreshToken.get().getUser();
+
+                if (!jwtUser.getId().equals(refreshTokenUser.getId())) {
+                    throw new AccessDeniedException("Invalid refresh token");
+                }
+
+                String newJwt = jwtService.generateJwtToken(refreshTokenUser.getEmail());
+
+                return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, newJwt)
+                        .body(new TokenRefreshResponse(requestRefreshToken));
+
+            } else {
+                throw new AccessDeniedException("Invalid refresh token");
+            }
+        } catch (AccessDeniedException e) {
+            LOGGER.error("Invalid refresh token: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        }
     }
 
 

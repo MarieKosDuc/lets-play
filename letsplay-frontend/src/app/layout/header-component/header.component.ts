@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 
+import { MessageService } from 'primeng/api';
+
 import { AuthenticationService } from '../../authentication/services/authentication.service';
 import { User } from '../../authentication/models/user.model';
 import { StorageService } from '../../_services/storage.service';
@@ -12,6 +14,7 @@ import { EventBusService } from 'src/app/_shared/event-bus.service';
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
+  providers: [MessageService]
 })
 export class HeaderComponent {
   public showDescription!: boolean;
@@ -27,7 +30,8 @@ export class HeaderComponent {
     private router: Router,
     private authService: AuthenticationService,
     private storageService: StorageService,
-    private eventBusService: EventBusService
+    private eventBusService: EventBusService,
+    private MessageService: MessageService
   ) {
     this.userSubscription = this.storageService.user$.subscribe((user) => {
       this.userInfos = user;
@@ -50,9 +54,10 @@ export class HeaderComponent {
     this.userLoggedIn = this.storageService.isLoggedIn();
 
     this.eventBusSubscription = this.eventBusService
-      .on('logout', null), () => {
+      .on('logout', () => {
+        console.log('Logout event received');
         this.logOut();
-      }
+      });
   }
 
   toggleDropdown() {
@@ -68,12 +73,21 @@ export class HeaderComponent {
   }
 
   logOut() {
-    this.authService.logout().subscribe(() => {
-      this.userLoggedIn = false;
-      this.userInfos = null;
-      this.storageService.clean();
-      this.showDropdown = false;
-    });
+    this.authService.logout().subscribe(
+      (response) => {
+        this.userLoggedIn = false;
+        this.userInfos = null;
+        this.storageService.clean();
+        this.showDropdown = false;
+        setTimeout(() => {
+          this.router.navigate(['/home']);
+        }, 3000);
+        ;
+      },
+      (error) => {
+        console.log(error);
+      }
+    )
   }
 
 }

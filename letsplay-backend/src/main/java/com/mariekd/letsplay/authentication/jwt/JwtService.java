@@ -10,8 +10,11 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.WebUtils;
 
+import com.auth0.jwt.JWT;
+
 import java.security.Key;
 import java.util.Date;
+
 
 
 @Service
@@ -45,12 +48,13 @@ public class JwtService {
     }
 
     public String getUserNameFromJwtToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(this.secretKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+        return JWT.decode(token).getSubject();
+//        return Jwts.parserBuilder()
+//                .setSigningKey(this.secretKey)
+//                .build()
+//                .parseClaimsJws(token)
+//                .getBody()
+//                .getSubject();
     }
 
     public JwtValidationResult validateAndCheckExpirationJwtToken(String authToken) {

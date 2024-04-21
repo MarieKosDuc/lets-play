@@ -1,6 +1,8 @@
 package com.mariekd.letsplay.authentication.services;
 
 import com.mariekd.letsplay.authentication.entities.RefreshToken;
+import com.mariekd.letsplay.authentication.payload.response.TokenRefreshResponse;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,12 +12,15 @@ import java.util.UUID;
 @Service
 public interface RefreshTokenService {
 
-    public RefreshToken createRefreshToken(String username);
+    RefreshToken createRefreshToken(String username);
 
-    public Optional<RefreshToken> findByToken(String token);
+    Optional<RefreshToken> findByToken(String token);
 
-    public RefreshToken verifyExpiration(RefreshToken token);
+    RefreshToken verifyExpiration(RefreshToken token);
 
     @Transactional
     int deleteByUserId(UUID userId);
+
+    @Transactional
+    void deleteByToken(String token);
 }

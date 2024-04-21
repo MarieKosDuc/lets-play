@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router'
+
+
 import { AuthenticationService } from '../services/authentication.service';
 import { StorageService } from 'src/app/_services/storage.service';
 
@@ -15,6 +17,7 @@ export class LoginComponent {
   error: String = '';
   isLoggedIn = false;
   isLoginFailed = false;
+  loading: boolean = false;
 
   constructor(private authService: AuthenticationService, private router: Router, private storageService: StorageService) {}
 
@@ -26,6 +29,7 @@ export class LoginComponent {
 
   onSubmit(form: NgForm) {
     this.hasError = false;
+    this.loading = true;
 
     const username = form.value.email;
     const password = form.value.password;
@@ -36,6 +40,7 @@ export class LoginComponent {
 
         this.isLoggedIn = true;
         this.isLoginFailed = false; //TODO : utiliser pour l'affichage du composant ?
+        this.loading = false;
 
         this.error = `Te voilà connecté, ${response.username}. Bonne recherche !`
         this.hasError = true;
@@ -44,6 +49,7 @@ export class LoginComponent {
         }, 2000)        
       },
       (error) => {
+        this.loading = false;
         this.hasError = true;
         if(error.status == 403){
           this.error = "Identifiant ou mot de passe incorrect"
