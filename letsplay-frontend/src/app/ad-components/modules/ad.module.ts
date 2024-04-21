@@ -6,6 +6,9 @@ import { ReactiveFormsModule } from '@angular/forms';
 
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+
+
 import { AdComponent } from '../ad-component/ad.component';
 import { AdsListComponent } from '../ads-list-component/ads-list.component';
 import { SearchComponent } from '../search-component/search.component';
@@ -25,7 +28,8 @@ import { AdRecapComponent } from '../ad-recap/ad-recap.component';
     RouterModule,
     FormsModule,
     ReactiveFormsModule,
-    NgMultiSelectDropDownModule.forRoot()
+    NgMultiSelectDropDownModule.forRoot(),
+    ProgressSpinnerModule
   ],
   exports: [
     AdComponent,

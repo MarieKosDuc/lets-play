@@ -2,5 +2,6 @@ export interface User {
     id: string,
     username: string,
     profilePicture: string,
-    roles: string[]
+    roles: string[],
+    refreshToken: string
 }
