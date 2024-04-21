@@ -5,6 +5,7 @@ import { Observable, Subscription } from 'rxjs';
 import { AuthenticationService } from '../../authentication/services/authentication.service';
 import { User } from '../../authentication/models/user.model';
 import { StorageService } from '../../_services/storage.service';
+import { EventBusService } from 'src/app/_shared/event-bus.service';
 
 
 @Component({
@@ -19,10 +20,14 @@ export class HeaderComponent {
   public showDropdown: boolean = false;
   private userSubscription: Subscription;
 
+  private eventBusSubscription?: Subscription;
+  
+
   constructor(
     private router: Router,
     private authService: AuthenticationService,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private eventBusService: EventBusService
   ) {
     this.userSubscription = this.storageService.user$.subscribe((user) => {
       this.userInfos = user;
@@ -44,6 +49,11 @@ export class HeaderComponent {
 
     console.log('userLoggedIn', this.storageService.isLoggedIn());
     this.userLoggedIn = this.storageService.isLoggedIn();
+
+    this.eventBusSubscription = this.eventBusService
+      .on('logout', null), () => {
+        this.logOut();
+      }
   }
 
   toggleDropdown() {

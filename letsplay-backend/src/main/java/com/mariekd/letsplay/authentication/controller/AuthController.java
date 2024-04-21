@@ -6,7 +6,6 @@ import com.mariekd.letsplay.authentication.payload.request.SignupRequest;
 import com.mariekd.letsplay.authentication.payload.request.TokenRefreshRequest;
 import com.mariekd.letsplay.authentication.payload.response.LoginOkResponse;
 import com.mariekd.letsplay.authentication.payload.response.TokenRefreshResponse;
-import com.mariekd.letsplay.authentication.payload.response.UserInfoResponse;
 import com.mariekd.letsplay.authentication.jwt.JwtService;
 import com.mariekd.letsplay.authentication.payload.request.LoginRequest;
 import com.mariekd.letsplay.authentication.entities.User;
@@ -26,7 +25,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -91,7 +89,8 @@ public class AuthController {
 
     @PostMapping("/refreshtoken")
     public ResponseEntity<?> refreshtoken(@Valid @RequestBody TokenRefreshRequest request) {
-        String requestRefreshToken = request.getRefreshToken();
+        LOGGER.info("Refreshing token: {} ", request.getToken());
+        String requestRefreshToken = request.getToken();
 
         return refreshTokenService.findByToken(requestRefreshToken)
                 .map(refreshTokenService::verifyExpiration)

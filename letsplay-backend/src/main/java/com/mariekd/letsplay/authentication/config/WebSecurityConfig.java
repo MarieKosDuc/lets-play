@@ -55,6 +55,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/users/register").permitAll()
                         .requestMatchers("/api/users/login").permitAll()
+                        .requestMatchers("/api/users/refreshtoken").permitAll()
                         .requestMatchers("/api/users/logout").permitAll()
                         .requestMatchers("/api/ads/get/**").permitAll()
                         .requestMatchers("/api/ads/search").permitAll()

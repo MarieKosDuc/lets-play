@@ -33,7 +33,10 @@ export class AuthenticationService {
   }
 
   refreshToken(token: string) {
-    return this.http.post(AUTH_API + `/refreshtoken`, { token }, httpOptions);
+    const body = { 'token': token }
+    console.log("Pending request to: " + AUTH_API + `/refreshtoken`);
+    console.log("Sent body: " + JSON.stringify(body));
+    return this.http.post(AUTH_API + `/refreshtoken`, body, httpOptions);
   }
 
   logout(): Observable<any> {
