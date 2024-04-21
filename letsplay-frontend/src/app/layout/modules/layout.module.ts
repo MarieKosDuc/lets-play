@@ -4,6 +4,8 @@ import { RouterModule } from '@angular/router';
 
 import { CloudinaryModule } from '@cloudinary/ng';
 
+import { ToastModule } from 'primeng/toast';
+
 import { HeaderComponent } from '../header-component/header.component';
 import { FooterComponent } from '../footer-component/footer.component';
 import { ScrollToTopComponent } from '../scroll-to-top-component/scroll-to-top.component';
@@ -17,7 +19,8 @@ import { ScrollToTopComponent } from '../scroll-to-top-component/scroll-to-top.c
   imports: [
     CommonModule,
     RouterModule,
-    CloudinaryModule
+    CloudinaryModule,
+    ToastModule
   ],
   exports: [
     HeaderComponent,

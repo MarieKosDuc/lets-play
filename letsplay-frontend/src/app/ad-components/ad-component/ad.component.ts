@@ -25,9 +25,7 @@ export class AdComponent implements OnInit{
     if (currentRoute === 'ad/:id') {
       this.isSingleAd = true;
       const adId = this.route.snapshot.params['id'];
-      console.log(adId);
       this.adService.getAdById(adId).subscribe((ad: Ad) => {
-        console.log(ad)
         this.ad = ad;
       });
     }
