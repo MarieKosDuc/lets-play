@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 
 import { Ad } from '../models/ad.model';
 import { AdService } from '../services/ad.service';
-import { AuthenticationService } from '../../authentication/services/authentication.service';
+import { StorageService } from 'src/app/_services/storage.service';
 import { User } from '../../authentication/models/user.model';
 
 
@@ -15,21 +15,20 @@ import { User } from '../../authentication/models/user.model';
 export class AdsListComponent implements OnInit {
   @Input() ads: Ad[] = [];
 
-  constructor(private adService: AdService, private router: Router, private authService: AuthenticationService) { }
+  constructor(private adService: AdService, private router: Router, private store: StorageService) { }
 
-  protected user!: User | null;
+  protected user!: User | undefined;
   protected isRecap: boolean = false;
+  protected isLoading: boolean = true;
 
   ngOnInit(): void {
-
-    this.authService.getCurrentUser().subscribe((user: User | null) => {
-      this.user = user;
-    });
+    this.user = this.store.getUser()
 
     console.log(this.user);
 
     if (this.router.url === '/home') {
       this.getAllAds();
+      console.log('Fetching all ads' )
     } else if (this.router.url === '/my-ads') {
       this.isRecap = true;
       console.log('Fetching user ads for user:', this.user?.username, this.user?.id)
@@ -44,6 +43,7 @@ export class AdsListComponent implements OnInit {
       this.adService.getAllAds().subscribe(
         (ads: Ad[]) => {
           this.ads = ads;
+          this.isLoading = false;
         },
         (error) => {
           console.error('Error fetching ads:', error);
@@ -56,6 +56,7 @@ export class AdsListComponent implements OnInit {
         (ads: Ad[]) => {
           this.ads = ads;
           console.log('User ads:', ads);
+          this.isLoading = false;
         },
         (error) => {
           console.error('Error fetching user ads:', error);

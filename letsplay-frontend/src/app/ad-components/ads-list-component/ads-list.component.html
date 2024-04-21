@@ -1,7 +1,11 @@
+<div *ngIf="isLoading" class="flex justify-center">
+  <p-progressSpinner ariaLabel="loading"></p-progressSpinner>
+</div>
+
 <ng-container *ngIf="!isRecap">
   <app-ad *ngFor="let ad of ads" [ad]="ad"> </app-ad>
 </ng-container>
 
 <ng-container *ngIf="isRecap">
     <app-ad-recap *ngFor="let ad of ads" [ad]="ad"> </app-ad-recap>
-  </ng-container>
+</ng-container>

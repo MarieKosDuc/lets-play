@@ -2,6 +2,8 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Ad } from '../models/ad.model';
 import { AdService } from '../services/ad.service';
 import {Router, ActivatedRoute} from '@angular/router';
+import { musicStylesEnum } from '../enums/musicStylesEnum'
+
 
 @Component({
   selector: 'app-ad',
@@ -12,6 +14,7 @@ export class AdComponent implements OnInit{
   @Input() ad!: Ad;
   @Input() truncated = true;
   isSingleAd!: boolean;
+  musicStylesEnum = musicStylesEnum;
 
   constructor(private router: Router, private route: ActivatedRoute, private adService: AdService) {}
 
@@ -30,6 +33,7 @@ export class AdComponent implements OnInit{
       });
     }
 
+    this.ad.styles = this.ad.styles.map((style: string) => (musicStylesEnum as any)[style]);
   }
 
   truncateText(text: string): string {
