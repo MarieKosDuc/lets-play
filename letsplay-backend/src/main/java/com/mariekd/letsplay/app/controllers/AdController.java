@@ -68,6 +68,20 @@ public class AdController {
     }
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @GetMapping("/get/user/{userId}")
+    public ResponseEntity<?> getAdsByUser(@PathVariable("userId") String userId) {
+        UUID userUUID = UUID.fromString(userId);
+
+        List<Ad> ads = adService.getAdsByUser(userUUID);
+        if (ads.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        } else {
+            ads.sort(Comparator.comparing(Ad::getCreatedAt).reversed());
+            return ResponseEntity.ok(ads.stream().map(AdMapper::toAdDTO).toList());
+        }
+    }
+
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping("/create")
     public ResponseEntity<?> createAd(@RequestBody CreateAdRequest creatingAd, HttpServletRequest request) {
 

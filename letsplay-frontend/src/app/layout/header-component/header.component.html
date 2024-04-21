@@ -1,6 +1,6 @@
 <header>
-    <nav id="header" class="flex justify-between items-center pl-8 pr-12 py-2 bg-black">
-        <img src="assets/images/Logo.png" alt="Logo Let's Play" class="h-20">
+    <nav id="header" class="flex justify-between items-center pl-8 pr-12 py-2 w-full bg-black">
+        <a routerLink="home"><img src="assets/images/Logo.png" alt="Logo Let's Play" class="h-20"></a>
 
         <!-- TO DO : ranger les liens dans une div sans casser l'affichage -->
         <a routerLink="home" routerLinkActive="underline" class="text-white text-xl hover:text-red-600 invisible lg:visible">ACCUEIL</a>
@@ -17,7 +17,7 @@
             <!-- Menu déroulant -->
             <div *ngIf="showDropdown" class="absolute bg-white shadow-md mt-2 py-2 w-32 rounded-md z-10">
                 <a routerLink="profile" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Profil</a>
-                <a routerLink="profile" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Mes annonces</a>
+                <a routerLink="my-ads" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Mes annonces</a>
                 <a routerLink="create-ad" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Nouvelle annonce</a>
                 <a routerLink="" (click)="logOut()" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Déconnexion</a>
                 <!-- TODO : gérer déconnexion et retour à la page accueil -->
@@ -38,4 +38,6 @@
         LET’S PLAY, c’est LA plateforme qui met en relation les musiciens et groupes de metal.<br>
         Parcours nos dernières annonces et trouve tes futurs bandmates !
     </div>
+
+    <p-toast position="top-left" key="tl"></p-toast>
 </header>

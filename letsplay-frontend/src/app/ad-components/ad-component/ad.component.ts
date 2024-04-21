@@ -2,6 +2,8 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Ad } from '../models/ad.model';
 import { AdService } from '../services/ad.service';
 import {Router, ActivatedRoute} from '@angular/router';
+import { musicStylesEnum } from '../enums/musicStylesEnum'
+
 
 @Component({
   selector: 'app-ad',
@@ -12,6 +14,7 @@ export class AdComponent implements OnInit{
   @Input() ad!: Ad;
   @Input() truncated = true;
   isSingleAd!: boolean;
+  musicStylesEnum = musicStylesEnum;
 
   constructor(private router: Router, private route: ActivatedRoute, private adService: AdService) {}
 
@@ -25,24 +28,30 @@ export class AdComponent implements OnInit{
     if (currentRoute === 'ad/:id') {
       this.isSingleAd = true;
       const adId = this.route.snapshot.params['id'];
-      console.log(adId);
       this.adService.getAdById(adId).subscribe((ad: Ad) => {
-        console.log(ad)
         this.ad = ad;
       });
     }
 
+    this.ad.styles = this.ad.styles.map((style: string) => (musicStylesEnum as any)[style]);
   }
 
   truncateText(text: string): string {
       const words = text.split(' ');
+      if (words.length <= 30) {
+          return text;
+      }
       const truncatedText = words.slice(0, 30) 
       return truncatedText.join(' ') + '...';
 
   }
 
-
   goToAd() {
     this.router.navigateByUrl(`ad/${this.ad.id}`);
   }
+
+  mailTo() {
+    //window.open(`mailto:${this.ad.email}`);
+  }
+
 }

@@ -19,7 +19,7 @@ public class Ad {
     private int id;
 
     @Column(nullable = false, name="created_at")
-    private Date createdAt;
+    private Date createdAt; //TODO : remplacer par instant ?
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "posted_by", nullable = false, referencedColumnName = "user_id")
