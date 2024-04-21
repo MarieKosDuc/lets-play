@@ -48,8 +48,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException, UnauthorizedException {
-//        if(!request.getRequestURL().toString().contains("/api/users/refreshtoken") //) {
-//                || !request.getRequestURL().toString().contains("/api/users/logout")) {
             try {
                 String jwt = parseJwt(request);
 

@@ -28,11 +28,11 @@ import java.util.List;
 public class WebSecurityConfig {
 
     private final List<AntPathRequestMatcher> excludedMatchers = List.of(
-//            new AntPathRequestMatcher("/api/users/register"),
-//            new AntPathRequestMatcher("/api/users/login"),
+            new AntPathRequestMatcher("/api/users/register"),
+            new AntPathRequestMatcher("/api/users/login"),
             new AntPathRequestMatcher("/api/users/refreshtoken"),
-//            new AntPathRequestMatcher("/api/users/logout"),
-//            new AntPathRequestMatcher("/api/ads/get/**"),
+            new AntPathRequestMatcher("/api/users/logout"),
+            new AntPathRequestMatcher("/api/ads/get/**"),
             new AntPathRequestMatcher("/api/ads/search")
     );
 
