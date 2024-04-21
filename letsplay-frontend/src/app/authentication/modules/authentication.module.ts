@@ -19,7 +19,7 @@ import { ProfileComponent } from '../profile-component/profile.component';
   imports: [
     CommonModule,
     FormsModule,
-    AppRoutingModule
+    AppRoutingModule,
     ProgressSpinnerModule
   ],
   exports: [
