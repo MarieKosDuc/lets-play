@@ -47,7 +47,6 @@ export class HeaderComponent {
       }
     });
 
-    console.log('userLoggedIn', this.storageService.isLoggedIn());
     this.userLoggedIn = this.storageService.isLoggedIn();
 
     this.eventBusSubscription = this.eventBusService

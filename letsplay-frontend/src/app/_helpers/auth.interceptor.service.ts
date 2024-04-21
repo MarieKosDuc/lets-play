@@ -28,7 +28,7 @@ export class HttpRequestInterceptor implements HttpInterceptor {
 
     return next.handle(req).pipe(
       catchError((error) => {
-        console.log('error', error);
+        console.log('Error received: ' + error + ' with status: ' + error.status)
         if (
           error instanceof HttpErrorResponse &&
           error.status === 401
@@ -42,24 +42,27 @@ export class HttpRequestInterceptor implements HttpInterceptor {
   }
 
   private handle401Error(request: HttpRequest<any>, next: HttpHandler) {
+    console.log('Handling 401 error')
     if (!this.isRefreshing) {
       this.isRefreshing = true;
 
       if (this.storageService.isLoggedIn()) {
         this.refreshToken = this.storageService.getUser().refreshToken;
-        console.log('Sending refreshToken: ', this.refreshToken);
+        console.log('User logged in. Refreshing token for: ' + this.storageService.getUser());
 
         return this.authService.refreshToken(this.refreshToken || '').pipe(
           switchMap(() => {
             this.isRefreshing = false;
-
+            console.log("Authservice in action")
             return next.handle(request);
           }),
           catchError((error) => {
             this.isRefreshing = false;
+            console.log("Erreur reçue du logout : " + error)
 
-            if (error.status == '403') {
+            if (error instanceof HttpErrorResponse && error.status === 403) {
               this.eventBusService.emit(new EventData('logout', null));
+              console.log('Logout event emitted')
             }
 
             return throwError(() => error);

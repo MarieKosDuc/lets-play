@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, tap, throwError } from 'rxjs';
 
 import { User } from 'src/app/authentication/models/user.model'
 
@@ -33,12 +33,17 @@ export class AuthenticationService {
   }
 
   refreshToken(token: string) {
-    const body = { 'token': token }
-    console.log("Pending request to: " + AUTH_API + `/refreshtoken`);
-    console.log("Sent body: " + JSON.stringify(body));
-    return this.http.post(AUTH_API + `/refreshtoken`, body, httpOptions);
+    const body = { 'token': token };
+    console.log('Refreshing token with body:', body);
+    return this.http.post(AUTH_API + `/refreshtoken`, body, httpOptions).pipe(
+      tap((response) => console.log('Refresh token response:', response)), // Débogage : afficher la réponse du serveur
+      catchError((error) => {
+        console.error('Error refreshing token:', error);
+        return throwError(() => error);
+      })
+    );
   }
-
+  
   logout(): Observable<any> {
     return this.http.post(AUTH_API + '/logout', httpOptions).pipe(
       tap(() => {

@@ -53,39 +53,6 @@ public class JwtService {
                 .getSubject();
     }
 
-    public boolean isExpiredToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(this.secretKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getExpiration()
-                .before(new Date());
-    }
-
-    public boolean validateJwtToken(String authToken) {
-        try {
-            Jwts.parserBuilder()
-                    .setSigningKey(this.secretKey)
-                    .build()
-                    .parseClaimsJws(authToken)
-                    .getBody();
-            return true;
-        } catch (MalformedJwtException e) {
-            logger.error("Invalid JWT token: {}", e.getMessage());
-        } catch (ExpiredJwtException e){
-            logger.error("JWT token is expired: {}", e.getMessage());
-            throw new UnauthorizedException("JWT token is expired");
-        } catch (UnsupportedJwtException e) {
-            logger.error("JWT token is unsupported: {}", e.getMessage());
-        } catch (IllegalArgumentException e) {
-            logger.error("JWT claims string is empty: {}", e.getMessage());
-        } catch (SignatureException e) {
-            logger.error("JWT signature is invalid: {}", e.getMessage());
-        }
-        return false;
-    }
-
     public JwtValidationResult validateAndCheckExpirationJwtToken(String authToken) {
         JwtValidationResult validationResult = new JwtValidationResult();
         try {

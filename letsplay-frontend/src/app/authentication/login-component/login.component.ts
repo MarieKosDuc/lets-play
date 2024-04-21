@@ -33,7 +33,6 @@ export class LoginComponent {
     this.authService.login(username, password).subscribe(
       (response) => {
         this.storageService.saveUser(response);
-        console.log(response);
 
         this.isLoggedIn = true;
         this.isLoginFailed = false; //TODO : utiliser pour l'affichage du composant ?

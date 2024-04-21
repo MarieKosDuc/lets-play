@@ -56,7 +56,6 @@ export class AdService {
 
     createAd(ad: AdCreation) {
       const url = this.baseUrl + `/create`;
-      console.log(url, ad, httpOptions);
       return this.http.post<AdCreation>(url, ad, httpOptions);
     }
 

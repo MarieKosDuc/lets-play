@@ -28,7 +28,6 @@ export class HttpRequestInterceptor implements HttpInterceptor {
 
     return next.handle(req).pipe(
       catchError((error) => {
-        console.log('error', error);
         if (
           error instanceof HttpErrorResponse &&
           error.status === 401
@@ -52,14 +51,17 @@ export class HttpRequestInterceptor implements HttpInterceptor {
         return this.authService.refreshToken(this.refreshToken || '').pipe(
           switchMap(() => {
             this.isRefreshing = false;
+            console.log('Refreshed token')
 
             return next.handle(request);
           }),
           catchError((error) => {
             this.isRefreshing = false;
+            console.log('HTTP error', error);
 
             if (error.status == '403') {
               this.eventBusService.emit(new EventData('logout', null));
+              console.log('Logout event emitted')
             }
 
             return throwError(() => error);
