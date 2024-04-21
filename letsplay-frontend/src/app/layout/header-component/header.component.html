@@ -1,5 +1,5 @@
 <header>
-    <nav id="header" class="flex justify-between items-center pl-8 pr-12 py-2 bg-black">
+    <nav id="header" class="flex justify-between items-center pl-8 pr-12 py-2 w-full bg-black">
         <img src="assets/images/Logo.png" alt="Logo Let's Play" class="h-20">
 
         <!-- TO DO : ranger les liens dans une div sans casser l'affichage -->
@@ -17,7 +17,7 @@
             <!-- Menu déroulant -->
             <div *ngIf="showDropdown" class="absolute bg-white shadow-md mt-2 py-2 w-32 rounded-md z-10">
                 <a routerLink="profile" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Profil</a>
-                <a routerLink="profile" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Mes annonces</a>
+                <a routerLink="my-ads" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Mes annonces</a>
                 <a routerLink="create-ad" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Nouvelle annonce</a>
                 <a routerLink="" (click)="logOut()" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Déconnexion</a>
                 <!-- TODO : gérer déconnexion et retour à la page accueil -->

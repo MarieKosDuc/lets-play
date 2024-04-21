@@ -1,8 +1,9 @@
 <div id="ad-card-bg" class="card">
     <div id="ad-card">
-        <h2 id="band/musician name" class="text-lg font-medium text-center py-2">{{ ad.title | uppercase}} </h2>
+        <h2 id="ad title" class="text-lg font-medium text-center py-2">{{ ad.title | uppercase}} </h2>
         <div id="style/posted at" class="flex justify-between pb-1">
             <p>{{ ad.styles }}</p>
+            <p>{{ad.location}}</p>
             <p>Mis en ligne le {{ ad.createdAt | date: 'd MMMM yyyy' }}</p>
         </div>
         <div id="picture" class="w-6/6 h-96 z-1 relative bg-black ">

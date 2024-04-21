@@ -1,9 +1,12 @@
-import { NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule } from '@angular/core';
+import { registerLocaleData } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import * as fr from '@angular/common/locales/fr';
 import { Toast, ToastrModule } from 'ngx-toastr';
 
 import { CloudinaryModule } from '@cloudinary/ng';
@@ -20,7 +23,7 @@ import { HttpRequestInterceptor, httpInterceptorProviders } from './_helpers/aut
 
 @NgModule({
   declarations: [
-    AppComponent ],
+    AppComponent],
   imports: [
     HttpClientModule,
     BrowserModule,
@@ -35,7 +38,13 @@ import { HttpRequestInterceptor, httpInterceptorProviders } from './_helpers/aut
     AdModule,
     AuthenticationModule,
   ],
-  providers: [{provide: HTTP_INTERCEPTORS, useClass: HttpRequestInterceptor, multi: true}],
+  providers: [
+    { provide: LOCALE_ID, useValue: 'fr-FR'}, 
+    {provide: HTTP_INTERCEPTORS, useClass: HttpRequestInterceptor, multi: true}],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule { 
+  constructor() {
+    registerLocaleData(fr.default);
+  }
+}

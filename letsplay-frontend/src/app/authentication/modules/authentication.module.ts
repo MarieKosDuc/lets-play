@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { AppRoutingModule } from 'src/app/router/app-routing.module';
 
 import { FormsModule } from '@angular/forms';
 
@@ -18,6 +19,7 @@ import { ProfileComponent } from '../profile-component/profile.component';
   imports: [
     CommonModule,
     FormsModule,
+    AppRoutingModule
     ProgressSpinnerModule
   ],
   exports: [
