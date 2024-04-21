@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class AdServiceImpl implements AdService {
@@ -56,8 +57,8 @@ public class AdServiceImpl implements AdService {
     }
 
     @Override
-    public List<Ad> getAdsByUser(String userName) {
-        return adRepository.findByUserName(userName);
+    public List<Ad> getAdsByUser(UUID userId) {
+        return adRepository.findByUserId(userId);
     }
 
     public List<Ad> getSearchedAds(String musicianType, List<String> styles, String location) {

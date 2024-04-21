@@ -68,9 +68,11 @@ public class AdController {
     }
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    @GetMapping("/get/user/{userName}")
-    public ResponseEntity<?> getAdsByUser(@PathVariable("userName") String userName) {
-        List<Ad> ads = adService.getAdsByUser(userName);
+    @GetMapping("/get/user/{userId}")
+    public ResponseEntity<?> getAdsByUser(@PathVariable("userId") String userId) {
+        UUID userUUID = UUID.fromString(userId);
+
+        List<Ad> ads = adService.getAdsByUser(userUUID);
         if (ads.isEmpty()) {
             return ResponseEntity.notFound().build();
         } else {

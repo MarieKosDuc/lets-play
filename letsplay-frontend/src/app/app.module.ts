@@ -17,14 +17,12 @@ import { AuthenticationModule } from './authentication/modules/authentication.mo
 import { AppRoutingModule } from './router/app-routing.module';
 
 import { AppComponent } from './app.component';
-import { AdRecapComponent } from './ad-components/ad-recap/ad-recap.component';
 import { registerLocaleData } from '@angular/common';
 
 
 @NgModule({
   declarations: [
-    AppComponent,
-    AdRecapComponent],
+    AppComponent],
   imports: [
     HttpClientModule,
     BrowserModule,

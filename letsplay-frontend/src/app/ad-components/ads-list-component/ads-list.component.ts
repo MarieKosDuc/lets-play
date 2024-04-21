@@ -18,6 +18,7 @@ export class AdsListComponent implements OnInit {
   constructor(private adService: AdService, private router: Router, private authService: AuthenticationService) { }
 
   protected user!: User | null;
+  protected isRecap: boolean = false;
 
   ngOnInit(): void {
 
@@ -30,20 +31,15 @@ export class AdsListComponent implements OnInit {
     if (this.router.url === '/home') {
       this.getAllAds();
     } else if (this.router.url === '/my-ads') {
-      console.log('Fetching user ads for user:', this.user?.username)
-      this.adService.getUserAds().subscribe(
-        (ads: Ad[]) => {
-          this.ads = ads;
-        },
-        (error) => {
-          console.error('Error fetching user ads:', error);
-        }
-      );
+      this.isRecap = true;
+      console.log('Fetching user ads for user:', this.user?.username, this.user?.id)
+      this.getUserAds();
     }
     else {
       this.ads = this.adService.ads;
     }
   } 
+
     getAllAds() {
       this.adService.getAllAds().subscribe(
         (ads: Ad[]) => {
@@ -51,6 +47,18 @@ export class AdsListComponent implements OnInit {
         },
         (error) => {
           console.error('Error fetching ads:', error);
+        }
+      );
+    }
+
+    getUserAds() {
+      this.adService.getUserAds(this.user?.id ?? '').subscribe(
+        (ads: Ad[]) => {
+          this.ads = ads;
+          console.log('User ads:', ads);
+        },
+        (error) => {
+          console.error('Error fetching user ads:', error);
         }
       );
     }

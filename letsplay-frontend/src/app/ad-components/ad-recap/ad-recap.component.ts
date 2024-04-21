@@ -19,4 +19,8 @@ export class AdRecapComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  goToAd() {
+    this.router.navigateByUrl(`ad/${this.ad.id}`);
+  }
+
 }

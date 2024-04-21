@@ -10,13 +10,15 @@ import { AdComponent } from '../ad-component/ad.component';
 import { AdsListComponent } from '../ads-list-component/ads-list.component';
 import { SearchComponent } from '../search-component/search.component';
 import { AdCreateComponent } from '../ad-create-component/ad-create.component';
+import { AdRecapComponent } from '../ad-recap/ad-recap.component';
 
 @NgModule({
   declarations: [
     AdComponent,
     AdsListComponent,
     SearchComponent,
-    AdCreateComponent
+    AdCreateComponent,
+    AdRecapComponent
   ],
   imports: [
     CommonModule,
@@ -29,7 +31,8 @@ import { AdCreateComponent } from '../ad-create-component/ad-create.component';
     AdComponent,
     AdsListComponent,
     SearchComponent,
-    AdCreateComponent
+    AdCreateComponent,
+    AdRecapComponent
   ]
 })
 export class AdModule { }
