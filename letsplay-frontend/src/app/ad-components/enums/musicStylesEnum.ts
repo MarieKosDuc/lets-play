@@ -16,5 +16,5 @@ export enum musicStylesEnum {
     grind = "Grindcore",
     stoner = "Stoner",
     post = "Post Metal",
-    gjent = "Djent"
+    djent = "Djent"
 }

@@ -81,7 +81,7 @@ export class HeaderComponent {
         this.showDropdown = false;
         setTimeout(() => {
           this.router.navigate(['/home']);
-        }, 3000);
+        }, 1000);
         ;
       },
       (error) => {

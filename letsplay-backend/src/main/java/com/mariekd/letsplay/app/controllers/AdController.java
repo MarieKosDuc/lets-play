@@ -76,6 +76,7 @@ public class AdController {
         if (ads.isEmpty()) {
             return ResponseEntity.notFound().build();
         } else {
+            ads.sort(Comparator.comparing(Ad::getCreatedAt).reversed());
             return ResponseEntity.ok(ads.stream().map(AdMapper::toAdDTO).toList());
         }
     }
