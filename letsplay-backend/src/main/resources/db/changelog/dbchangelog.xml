@@ -365,7 +365,7 @@
         />
     </changeSet>
 
-    <changeSet id="12" author="Marie-KD">
+    <changeSet id="12" author="Marie-KD">   <!-- Set autoincrement to refreshtoken table -->
         <addAutoIncrement columnDataType="int"
                           columnName="id"
                           defaultOnNull="false"
@@ -374,6 +374,50 @@
                           schemaName="music"
                           tableName="refresh_token"/>
     </changeSet>
+
+    <changeSet  id="valid_user"  author="Marie-KD">    <!-- Adding "valid" column to users table -->
+        <addColumn tableName="app_user">
+            <column name="valid"
+                    type="BOOLEAN"
+                    defaultValueBoolean="false">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="valid_account_token" author="Marie-KD"> <!-- Creation of refresh token table -->
+    <createTable  tableName="valid_account_token" schemaName="music">
+        <column name="id" type="INT">
+            <constraints primaryKey="true" nullable="false"/>
+        </column>
+        <column name="token" type="VARCHAR(255)">
+            <constraints nullable="false"/>
+        </column>
+        <column name="expiry_date" type="TIMESTAMP">
+            <constraints nullable="false"/>
+        </column>
+        <column name="user_id" type="uuid">
+            <constraints nullable="false"/>
+        </column>
+    </createTable>
+
+        <addAutoIncrement columnDataType="int"
+                          columnName="id"
+                          defaultOnNull="false"
+                          generationType="ALWAYS"
+                          incrementBy="1"
+                          schemaName="music"
+                          tableName="valid_account_token"/>
+
+    <addForeignKeyConstraint
+            baseTableSchemaName="music"
+            baseTableName="valid_account_token"
+            baseColumnNames="user_id"
+            referencedTableName="app_user"
+            referencedColumnNames="user_id"
+            constraintName="fk_user_id"
+    />
+</changeSet>
 
 
 </databaseChangeLog>

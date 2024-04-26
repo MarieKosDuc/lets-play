@@ -26,6 +26,9 @@ public class User {
     @Column(length = 255, nullable = true, name="profile_picture")
     private String profilePicture;
 
+    @Column(name = "valid")
+    private boolean valid;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -35,12 +38,14 @@ public class User {
     @OneToMany(mappedBy = "postedBy", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Ad> ads;
 
-    public User(UUID id, String name, String email, String password, Role role, String profilePicture, Set<Ad> ads) {
+    public User(UUID id, String name, String email, String password, String profilePicture,
+                Boolean valid, Role role, Set<Ad> ads) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.profilePicture = profilePicture;
+        this.valid = valid;
         this.ads = ads;
         this.roles = new HashSet<>();
         if (role != null) {
@@ -92,6 +97,10 @@ public class User {
         this.profilePicture = profilePicture;
     }
 
+    public boolean isValid() { return valid; }
+
+    public void setValid(boolean valid) { this.valid = valid; }
+
     public Set<Role> getRoles() {
         return roles;
     }
@@ -114,4 +123,5 @@ public class User {
                 ", name='" + name + '\'' +
                 '}';
     }
+
 }

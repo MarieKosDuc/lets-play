@@ -1,7 +1,9 @@
 package com.mariekd.letsplay.authentication.controller;
 
+import com.mariekd.letsplay.app.services.EmailService;
 import com.mariekd.letsplay.authentication.entities.RefreshToken;
 import com.mariekd.letsplay.authentication.entities.Role;
+import com.mariekd.letsplay.authentication.entities.ValidAccountToken;
 import com.mariekd.letsplay.authentication.payload.request.SignupRequest;
 import com.mariekd.letsplay.authentication.payload.request.TokenRefreshRequest;
 import com.mariekd.letsplay.authentication.payload.response.LoginOkResponse;
@@ -11,6 +13,7 @@ import com.mariekd.letsplay.authentication.payload.request.LoginRequest;
 import com.mariekd.letsplay.authentication.entities.User;
 import com.mariekd.letsplay.authentication.models.UserInfo;
 import com.mariekd.letsplay.authentication.services.RefreshTokenService;
+import com.mariekd.letsplay.authentication.services.ValidAccountTokenService;
 import com.mariekd.letsplay.authentication.services.implementations.RoleServiceImpl;
 import com.mariekd.letsplay.authentication.services.implementations.UserServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,44 +47,58 @@ public class AuthController {
     private final UserServiceImpl userService;
     private final RoleServiceImpl roleService;
     private final RefreshTokenService refreshTokenService;
+    private final ValidAccountTokenService validAccountTokenService;
+
+    private final EmailService emailService;
 
     public AuthController(AuthenticationManager authenticationManager,
                           JwtService jwtService, UserServiceImpl userService, RoleServiceImpl roleService,
-                          RefreshTokenService refreshTokenService) {
+                          RefreshTokenService refreshTokenService, ValidAccountTokenService validAccountTokenService, EmailService emailService) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.userService = userService;
         this.roleService = roleService;
         this.refreshTokenService = refreshTokenService;
+        this.validAccountTokenService = validAccountTokenService;
+        this.emailService = emailService;
     }
 
     @PostMapping("/login")
     public ResponseEntity<LoginOkResponse> authenticateUser(@RequestBody LoginRequest loginRequest) {
 
-        final Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.username(), loginRequest.password())
-        );
+        try {
+            final Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.username(), loginRequest.password())
+            );
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        final UserInfo userDetails = (UserInfo) authentication.getPrincipal();
+            final UserInfo userDetails = (UserInfo) authentication.getPrincipal();
 
-        String jwt = jwtService.generateJwtToken(userDetails.getUsername());
+            String jwt = jwtService.generateJwtToken(userDetails.getUsername());
 
-        final List<String> roles = userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .toList();
+            final List<String> roles = userDetails.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .toList();
 
-        User connecterUser = userService.getUserByEmail(userDetails.getUsername());
+            User connecterUser = userService.getUserByEmail(userDetails.getUsername());
 
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getUsername());
+            if (!connecterUser.isValid()) {
+                throw new AccessDeniedException("User is not valid");
+            }
+
+            RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getUsername());
 
 
-        LOGGER.info("User {} / {} logged in", userDetails.getUsername(), connecterUser.getName());
+            LOGGER.info("User {} / {} logged in", userDetails.getUsername(), connecterUser.getName());
 
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwt)
-                        .body(new LoginOkResponse(refreshToken.getToken(), connecterUser.getId(), connecterUser.getName(),
-                                connecterUser.getProfilePicture(), connecterUser.getEmail(), roles));
+            return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwt)
+                    .body(new LoginOkResponse(refreshToken.getToken(), connecterUser.getId(), connecterUser.getName(),
+                            connecterUser.getProfilePicture(), connecterUser.getEmail(), roles));
+        } catch (AccessDeniedException e) {
+            LOGGER.error("Error authenticating user: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
     }
 
     @PostMapping("/refreshtoken")
@@ -133,12 +150,6 @@ public class AuthController {
                 .body(response);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/all")
-    public List<User> getAllUsers() {
-        LOGGER.info("Getting all users: {} ", userService.getAllUsers());
-        return userService.getAllUsers();
-    }
 
     @PostMapping("/register")
     public ResponseEntity<String> createUser(@RequestBody SignupRequest userInfos) {
@@ -146,10 +157,21 @@ public class AuthController {
             if (!userService.existsByEmail(userInfos.email()) && !userService.existsByUserName(userInfos.username())) {
                 Role userRole = roleService.findByName("USER");
 
-                User user = new User(UUID.randomUUID() , userInfos.username(), userInfos.email(), userInfos.password(), userRole, userInfos.profilePicture(),null);
+                User user = new User(UUID.randomUUID() , userInfos.username(), userInfos.email(), userInfos.password(), userInfos.profilePicture(),
+                        false, userRole, null);
 
                 userService.createUser(user);
                 LOGGER.info("User created: {}", user.getName());
+
+                ValidAccountToken validationToken = validAccountTokenService.createValidationToken(user);
+
+                emailService.sendHtmlEmail(user.getEmail(), "Validation de ton compte Let's Play",
+                        "Bienvenue sur Let's Play !", "Pour valider ton compte, clique sur le lien suivant :" +
+                                "\n Attention, ce lien est valable 24h ! \n",
+                        "http://localhost:8080/api/users/verify/" + validationToken.getToken());
+
+                LOGGER.info("Validation email sent to: {}", user.getEmail(), " with token: {}", validationToken.getToken());
+
 
                 return ResponseEntity.ok().body("User created successfully: " + user.getName());
             } else {
@@ -159,6 +181,28 @@ public class AuthController {
         } catch (final Exception e) {
             LOGGER.error("Error creating user: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating user: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/verify/{token}")
+    public ResponseEntity<String> validateUser(@PathVariable("token") String token) {
+        try {
+            ValidAccountToken checkedToken = validAccountTokenService.findByToken(token) // Ne fonctionne pas
+                    .orElseThrow(() -> new RuntimeException("Token not found"));
+
+            User user = checkedToken.getUser();
+
+            user.setValid(true);
+            userService.updateUser(user.getId(), user);
+
+            validAccountTokenService.deleteByToken(token);
+
+            LOGGER.info("User validated: {}", user.getName());
+
+            return ResponseEntity.ok().body("User validated successfully: " + user.getName());
+        } catch (final Exception e) {
+            LOGGER.error("Error validating user: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error validating user: " + e.getMessage()); //TODO changer type d'erreur
         }
     }
 
@@ -190,6 +234,12 @@ public class AuthController {
             userService.deleteUser(id);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/all")
+    public List<User> getAllUsers() {
+        LOGGER.info("Getting all users: {} ", userService.getAllUsers());
+        return userService.getAllUsers();
+    }
 
     public boolean isUserAuthorizedToModify(UUID userId, HttpServletRequest request) {
         User connectedUser = userService.getUserFromRequest(request);

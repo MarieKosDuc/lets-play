@@ -31,8 +31,7 @@ public class JwtService {
         final String jwt = Jwts.builder()
                 .setSubject(userName)
                 .setIssuedAt(new Date())
-                //.setExpiration(new Date((new Date()).getTime() + 1000 * 60 * 60 * 24)) // token validity : 24 hours
-                .setExpiration(new Date((new Date()).getTime() + 30000)) // token validity : 1 year
+                .setExpiration(new Date((new Date()).getTime() + 600000)) // token validity : 10 minutes
                 .signWith(this.secretKey, SignatureAlgorithm.HS512)
                 .compact();
 
@@ -40,7 +39,7 @@ public class JwtService {
                 .httpOnly(true)
 //                .sameSite("None")
                 .secure(false)
-                .maxAge(60 * 60 * 24) // 24 hours
+                .maxAge(600) // 10 minutes
                 .path("/")
                 .build()
                 .toString();
@@ -49,12 +48,6 @@ public class JwtService {
 
     public String getUserNameFromJwtToken(String token) {
         return JWT.decode(token).getSubject();
-//        return Jwts.parserBuilder()
-//                .setSigningKey(this.secretKey)
-//                .build()
-//                .parseClaimsJws(token)
-//                .getBody()
-//                .getSubject();
     }
 
     public JwtValidationResult validateAndCheckExpirationJwtToken(String authToken) {
