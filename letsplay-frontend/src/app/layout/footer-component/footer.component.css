@@ -1,0 +1,47 @@
+@import "../../app.component.css";
+
+footer {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1280px;
+  padding: 1rem;
+}
+
+span {
+  font-size: 0.875rem;
+  color: var(--gray-500);
+}
+
+@media (min-width: 768px) {
+  footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+ul {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--gray-500);
+}
+
+@media (min-width: 640px) {
+  ul {
+    margin-top: 0;
+  }
+}
+
+.link-right {
+  margin-right: 1rem;
+}
+
+.link:hover {
+  text-decoration: underline;
+  text-underline-offset: 8px;
+}

@@ -1,0 +1,48 @@
+#header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #000;
+  padding-left: 2rem;
+  padding-right: 3rem;
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+  height: 5rem;
+  width: 100%;
+}
+
+#logo {
+  height: 5rem;
+}
+
+.link {
+  color: #fff; 
+  font-size: 1.25rem;
+}
+
+.link:hover {
+  color: #f00;
+}
+
+@media (max-width: 640px) {
+  .link {
+    visibility: hidden;
+  }
+}
+
+#description {
+  background-color: var(--backgroundTile); 
+  text-align: center; 
+  padding-left: 0.5rem; 
+  padding-right: 0.5rem;
+  padding-top: 0.5rem; 
+  padding-bottom: 0.5rem; 
+}
+
+#profile-pic {
+  height: 2.5rem;
+  width: 2.5rem;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #CBD5E0;
+}
