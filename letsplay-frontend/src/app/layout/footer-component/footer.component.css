@@ -1,9 +1,10 @@
 @import "../../app.component.css";
 
 footer {
-  width: 100%;
+  width: auto;
   margin-left: auto;
   margin-right: auto;
+  margin-top: auto;
   max-width: 1280px;
   padding: 1rem;
 }
