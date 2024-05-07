@@ -22,6 +22,7 @@ span {
 }
 
 ul {
+  list-style-type: none;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -37,6 +38,10 @@ ul {
   }
 }
 
+.link {
+    text-decoration: none;
+}
+
 .link-right {
   margin-right: 1rem;
 }
@@ -44,4 +49,8 @@ ul {
 .link:hover {
   text-decoration: underline;
   text-underline-offset: 8px;
+}
+
+a:visited {
+    color: inherit;
 }
