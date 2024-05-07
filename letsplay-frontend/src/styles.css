@@ -132,8 +132,3 @@ body {
 .button.disabled:hover {
   background-color: #85888b;  
 }
-
-
-.custom-toast {
-  @apply bg-blue-500 text-white;
-}
