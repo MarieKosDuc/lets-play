@@ -1,40 +1,32 @@
 <header>
-    <nav id="header" class="flex justify-between items-center pl-8 pr-12 py-2 w-full bg-black">
-        <a routerLink="home"><img src="assets/images/Logo.png" alt="Logo Let's Play" class="h-20"></a>
-
-        <!-- TO DO : ranger les liens dans une div sans casser l'affichage -->
-        <a routerLink="home" routerLinkActive="underline" class="text-white text-xl hover:text-red-600 invisible lg:visible">ACCUEIL</a>
-        <a routerLink="search" routerLinkActive="underline" class="text-white text-xl hover:text-red-600 invisible lg:visible">RECHERCHER</a>
+    <nav id="header">
+        <a routerLink="home"><img src="assets/images/Logo.png" alt="Logo Let's Play" id="logo"></a>
+        <a routerLink="home" routerLinkActive="underline" class="link">ACCUEIL</a>
+        <a routerLink="search" routerLinkActive="underline" class="link">RECHERCHER</a>
        
         <div class="relative" tabindex="0" (keydown)="handleKeyPress($event)">
-            <a *ngIf="userLoggedIn; else loginLink" (click)="toggleDropdown()" class="text-white text-xl hover:text-red-600 cursor-pointer invisible lg:visible" aria-haspopup="true">
-                <img id="profile-pic" class="profile-picture h-10 w-10 rounded-full object-cover border border-gray-400" src="{{userInfos?.profilePicture}}" alt="Photo de profil">
+            <a *ngIf="userLoggedIn; else loginLink" (click)="toggleDropdown()" class="link" aria-haspopup="true">
+                <img id="profile-pic" src="{{userInfos?.profilePicture}}" alt="Photo de profil">
             </a>
             <ng-template #loginLink>
-                <a routerLink="login" routerLinkActive="underline" class="text-white text-xl hover:text-red-600 cursor-pointer invisible lg:visible">CONNEXION / INSCRIPTION</a>
+                <a routerLink="login" routerLinkActive="underline" class="link">CONNEXION / INSCRIPTION</a>
             </ng-template>
         
             <!-- Menu déroulant -->
+            <!-- to do : reprendre avec un composant PrimeNg -->
             <div *ngIf="showDropdown" class="absolute bg-white shadow-md mt-2 py-2 w-32 rounded-md z-10">
                 <a routerLink="profile" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Profil</a>
                 <a routerLink="my-ads" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Mes annonces</a>
                 <a routerLink="create-ad" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Nouvelle annonce</a>
                 <a routerLink="" (click)="logOut()" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Déconnexion</a>
-                <!-- TODO : gérer déconnexion et retour à la page accueil -->
             </div>
         </div>
 
         <div class="visible lg:invisible">
-            <!-- Bouton pour le menu dépliant (burger menu) -->
-            <button id="burger-menu" class="text-white focus:outline-none">
-                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
-                </svg>
-            </button>
+        <!-- TO DO : créer le menu dépliant pour les petits écrans et gérer le media query -->
         </div>
-        <!-- TO DO : créer le menu dépliant pour les petits écrans -->
     </nav>
-    <div id="description" *ngIf="showDescription" class="bg-backgroundTile text-center px-2 py-2" >
+    <div id="description" *ngIf="showDescription" >
         LET’S PLAY, c’est LA plateforme qui met en relation les musiciens et groupes de metal.<br>
         Parcours nos dernières annonces et trouve tes futurs bandmates !
     </div>
