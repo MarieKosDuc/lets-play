@@ -18,14 +18,7 @@
 .link {
   color: #fff; 
   font-size: 1.25rem;
-}
-
-.active_route {
-  text-decoration: underline;
-}
-
-.link:not(.active_route) {
-  text-decoration: none; 
+  text-decoration: none;
 }
 
 .link:hover {
