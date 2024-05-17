@@ -6,11 +6,17 @@
        
         <div class="relative" tabindex="0" (keydown)="handleKeyPress($event)">
             <a *ngIf="userLoggedIn; else loginLink" (click)="toggleDropdown()" class="link" aria-haspopup="true">
-                <img id="profile-pic" src="{{userInfos?.profilePicture}}" alt="Photo de profil">
+                <img id="profile-pic" src="{{userInfos?.profilePicture}}" alt="Photo de profil" >
+                <p-menu #menu [model]="items" [popup]="true" />
             </a>
             <ng-template #loginLink>
                 <a routerLink="login" routerLinkActive="underline" class="link">CONNEXION / INSCRIPTION</a>
             </ng-template>
+
+            <div class="">
+                <p-menu #menu [model]="items" [popup]="true" />
+                <p-button (click)="menu.toggle($event)"/>
+            </div>
         
             <!-- Menu déroulant -->
             <!-- to do : reprendre avec un composant PrimeNg -->

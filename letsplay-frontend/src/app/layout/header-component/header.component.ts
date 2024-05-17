@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
-import { Observable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 
-import { MessageService } from 'primeng/api';
+import { MenuItem, MessageService } from 'primeng/api';
+
+import { Menu, MenuModule } from 'primeng/menu';
 
 import { AuthenticationService } from '../../authentication/services/authentication.service';
 import { User } from '../../authentication/models/user.model';
@@ -16,11 +18,14 @@ import { EventBusService } from 'src/app/_shared/event-bus.service';
   styleUrls: ['./header.component.css'],
   providers: [MessageService]
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit {
   public showDescription!: boolean;
   public userLoggedIn = false;
   public userInfos!: User | null;
   public showDropdown: boolean = false;
+  public items: MenuItem[] | undefined;
+
+
   private userSubscription: Subscription;
 
   private eventBusSubscription?: Subscription;
@@ -58,6 +63,9 @@ export class HeaderComponent {
         console.log('Logout event received');
         this.logOut();
       });
+    
+    this.items = [
+    ];
   }
 
   toggleDropdown() {
