@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router'
+
 import { Subscription } from 'rxjs';
 
 import { MenuItem, MessageService } from 'primeng/api';
@@ -65,19 +66,36 @@ export class HeaderComponent implements OnInit {
       });
     
     this.items = [
+      {
+        items: [
+            {
+                label: 'Profil',
+                command: () => {
+                  this.router.navigate(['/profile']);
+              }
+            },
+            {
+                label: 'Mes annonces',
+                command: () => {
+                  this.router.navigate(['/my-ads']);
+              }
+            },
+            {
+              label: 'Nouvelle annonce',
+              command: () => {
+                this.router.navigate(['/create-ad']);
+            }
+          },
+          {
+            label: 'Déconnexion',
+            command: () => {
+              this.logOut();
+          }
+        }
+        ]
+    }
+
     ];
-  }
-
-  toggleDropdown() {
-    this.showDropdown = !this.showDropdown;
-  }
-
-  handleKeyPress(event: KeyboardEvent) {
-    if (event.key === 'Enter' || event.key === ' ') {
-      // Si la touche Entrée ou Espace est pressée
-      this.toggleDropdown(); // Ouvre ou ferme le menu déroulant
-    } //TODO : gérer le problème du menu déroulant qui s'ouvre quand on appuie sur entrée même non connecté
-    //TODO : refermer le menu déroulant quand navigation
   }
 
   logOut() {

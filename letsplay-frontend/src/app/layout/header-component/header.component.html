@@ -4,28 +4,18 @@
         <a routerLink="home" routerLinkActive="underline" class="link">ACCUEIL</a>
         <a routerLink="search" routerLinkActive="underline" class="link">RECHERCHER</a>
        
-        <div class="relative" tabindex="0" (keydown)="handleKeyPress($event)">
-            <a *ngIf="userLoggedIn; else loginLink" (click)="toggleDropdown()" class="link" aria-haspopup="true">
-                <img id="profile-pic" src="{{userInfos?.profilePicture}}" alt="Photo de profil" >
-                <p-menu #menu [model]="items" [popup]="true" />
+        <div class="relative">
+            <a *ngIf="userLoggedIn; else loginLink">
+                <div>
+                    <p-menu #menu [model]="items" [popup]="true" />
+                    <button (click)="menu.toggle($event)">
+                        <img id="profile-pic" src="{{userInfos?.profilePicture}}" alt="Photo de profil" >
+                    </button>
+                </div>
             </a>
             <ng-template #loginLink>
                 <a routerLink="login" routerLinkActive="underline" class="link">CONNEXION / INSCRIPTION</a>
             </ng-template>
-
-            <div class="">
-                <p-menu #menu [model]="items" [popup]="true" />
-                <p-button (click)="menu.toggle($event)"/>
-            </div>
-        
-            <!-- Menu déroulant -->
-            <!-- to do : reprendre avec un composant PrimeNg -->
-            <div *ngIf="showDropdown" class="absolute bg-white shadow-md mt-2 py-2 w-32 rounded-md z-10">
-                <a routerLink="profile" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Profil</a>
-                <a routerLink="my-ads" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Mes annonces</a>
-                <a routerLink="create-ad" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Nouvelle annonce</a>
-                <a routerLink="" (click)="logOut()" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Déconnexion</a>
-            </div>
         </div>
 
         <div class="visible lg:invisible">

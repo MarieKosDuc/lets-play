@@ -40,6 +40,11 @@
   padding-bottom: 0.5rem; 
 }
 
+button {
+  background-color: #000;
+  border: none;
+}
+
 #profile-pic {
   height: 2.5rem;
   width: 2.5rem;
