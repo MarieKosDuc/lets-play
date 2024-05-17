@@ -1,0 +1,10 @@
+#regeneration-password {
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.login-links {
+    font-size: .875rem;
+    line-height: 1.25rem;
+    text-decoration: none;
+}

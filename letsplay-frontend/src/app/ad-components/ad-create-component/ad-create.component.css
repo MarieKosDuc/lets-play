@@ -1,0 +1,21 @@
+#form-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+  width: 100%;
+}
+
+.selected-image {
+  width: 18rem; /* w-72 */
+  height: 18rem; /* h-72 */
+}
+
+#description {
+  height: 15rem;
+}
+
+form {
+    width: 100% !important;
+}
