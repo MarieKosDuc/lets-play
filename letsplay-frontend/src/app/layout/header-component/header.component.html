@@ -1,31 +1,48 @@
 <header>
-    <nav id="header">
+    <nav id="header-large">
         <a routerLink="home"><img src="assets/images/Logo.png" alt="Logo Let's Play" id="logo"></a>
         <a routerLink="home" routerLinkActive="underline" class="link">ACCUEIL</a>
         <a routerLink="search" routerLinkActive="underline" class="link">RECHERCHER</a>
-       
-        <div class="relative">
-            <a *ngIf="userLoggedIn; else loginLink">
-                <div>
-                    <p-menu #menu [model]="items" [popup]="true" />
-                    <button (click)="menu.toggle($event)">
-                        <img id="profile-pic" src="{{userInfos?.profilePicture}}" alt="Photo de profil" >
-                    </button>
-                </div>
-            </a>
-            <ng-template #loginLink>
-                <a routerLink="login" routerLinkActive="underline" class="link">CONNEXION / INSCRIPTION</a>
-            </ng-template>
-        </div>
-
-        <div class="visible lg:invisible">
-        <!-- TO DO : créer le menu dépliant pour les petits écrans et gérer le media query -->
-        </div>
+    
+        <a *ngIf="userLoggedIn; else loginLink">
+            <div>
+                <p-menu #menu [model]="items" [popup]="true" />
+                <button (click)="menu.toggle($event)">
+                    <img id="profile-pic" src="{{userInfos?.profilePicture}}" alt="Photo de profil" >
+                </button>
+            </div>
+        </a>
+        <ng-template #loginLink>
+            <a routerLink="login" routerLinkActive="underline" class="link">CONNEXION / INSCRIPTION</a>
+        </ng-template>
     </nav>
+
+    <nav id="header-small">
+        <a routerLink="home"><img src="assets/images/Logo.png" alt="Logo Let's Play" id="logo"></a>
+
+        <a *ngIf="userLoggedIn; else connectedUserMenu">
+            <div>
+                <p-menu #menu [model]="itemsSmallConnected" [popup]="true" />
+                <button (click)="menu.toggle($event)">
+                    <img id="profile-pic" src="{{userInfos?.profilePicture}}" alt="Photo de profil" >
+                </button>
+            </div>
+        </a>
+
+        <ng-template #connectedUserMenu>
+            <p-menu #menu2 [model]="itemsSmall" [popup]="true" />
+            <button id="burger-menu" (click)="menu2.toggle($event)">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg> 
+            </button>
+        </ng-template>
+    </nav>
+
     <div id="description" *ngIf="showDescription" >
         LET’S PLAY, c’est LA plateforme qui met en relation les musiciens et groupes de metal.<br>
         Parcours nos dernières annonces et trouve tes futurs bandmates !
     </div>
 
-    <p-toast position="top-left" key="tl"></p-toast>
+    <p-toast position="top-right"></p-toast>
 </header>
