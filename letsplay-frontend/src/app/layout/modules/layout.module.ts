@@ -5,12 +5,12 @@ import { RouterModule } from '@angular/router';
 import { CloudinaryModule } from '@cloudinary/ng';
 
 import { ToastModule } from 'primeng/toast';
-import { ButtonModule } from 'primeng/button';
+import { ScrollTopModule } from 'primeng/scrolltop';
 import { MenuModule } from 'primeng/menu';
+import { Button, ButtonModule } from 'primeng/button';
 
 import { HeaderComponent } from '../header-component/header.component';
 import { FooterComponent } from '../footer-component/footer.component';
-
 import { ScrollToTopComponent } from '../scroll-to-top-component/scroll-to-top.component';
 
 @NgModule({
@@ -24,6 +24,7 @@ import { ScrollToTopComponent } from '../scroll-to-top-component/scroll-to-top.c
     RouterModule,
     CloudinaryModule,
     ToastModule,
+    ScrollTopModule,
     MenuModule,
     ButtonModule
   ],

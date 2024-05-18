@@ -1,19 +1,83 @@
-#header {
+#header-large {
   display: flex;
   justify-content: space-between;
   align-items: center;
   background-color: #000;
   padding-left: 2rem;
-  padding-right: 3rem;
+  padding-right: 8rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  height: 6rem;
+  width: auto;
+
+  & #logo {
+    height: 5rem;
+  }
+}
+
+#header-small {
+  display: none;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #000;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
   height: 5rem;
   width: auto;
+
+  & #logo {
+    height: 3rem;
+  }
+
+  & #burger-menu {
+    height: 2rem;
+    width: 2rem;
+
+    & .icon {
+        height: 1.5rem;
+        width: 1.5rem;
+        fill: none; 
+        stroke: currentColor;
+        background-color: black;
+        color: #fff;
+      }
+      
+      .icon path {
+        stroke-linecap: round; 
+        stroke-linejoin: round;
+        stroke-width: 2;
+        background-color: black;
+      }
+  }
 }
 
-#logo {
-  height: 5rem;
+
+@media (max-width: 670px) {
+  #header-large {
+    display: none;
+  }
+
+  #header-small {
+    display: flex;
+  }
 }
+
+@media (min-width: 671px) {
+  #header-large {
+    display: flex;
+  }
+
+  #header-small {
+    display: none;
+  }
+}
+
+
+
+
+
 
 .link {
   color: #fff; 
@@ -23,12 +87,6 @@
 
 .link:hover {
   color: #f00;
-}
-
-@media (max-width: 640px) {
-  .link {
-    visibility: hidden;
-  }
 }
 
 #description {

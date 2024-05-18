@@ -14,7 +14,7 @@ import { AdService } from '../services/ad.service';
 export class AdRecapComponent implements OnInit {
   @Input() ad!: Ad;
 
-  constructor(private router: Router, private adService: AdService) { }
+  constructor(private router: Router) { }
 
   ngOnInit(): void {
   }

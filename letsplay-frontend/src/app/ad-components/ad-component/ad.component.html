@@ -1,18 +1,17 @@
 <div id="ad-card" class="card">
-        <h2 id="ad title">{{ ad.title | uppercase}} </h2>
-        <div id="style-posted at" class="infos-container">
-            <p>{{ ad.styles }}</p>
-            <p>{{ad.location}}</p>
-            <p>Mis en ligne le {{ ad.createdAt | date: 'd MMMM yyyy' }}</p>
-        </div>
-        <div id="picture">
-            <img [src]="ad.image" alt="image de l'annonce">
-        </div>
+    <h2 id="ad title">{{ ad.title | uppercase}} </h2>
+    <div id="style-posted at" class="infos-container">
+        <p>{{ ad.styles }}</p>
+        <p>{{ad.location}}</p>
+        <p>Mis en ligne le {{ ad.createdAt | date: 'd MMMM yyyy' }}</p>
+    </div>
+    <div id="picture">
+        <img [src]="ad.image" alt="image de l'annonce">
+    </div>
 
-        <div id="ad-text-container">
-            <p id="ad-text" class=>{{ ad.description }}</p>
-            <button class="button" *ngIf="!isSingleAd" (click)="goToAd()">PLUS</button>
-            <!-- TODO : ajouter fonctionnement du contact -->
-            <button class="button" *ngIf="isSingleAd" (click)="goToAd()">CONTACT</button> 
-        </div>
+    <div id="ad-text-container">
+        <p id="ad-text" class=>{{ ad.description }}</p>
+        <button class="button" *ngIf="!isSingleAd" (click)="goToAd()">PLUS</button>
+        <button class="button" *ngIf="isSingleAd" (click)="goToAd()">CONTACT</button> 
+    </div>
 </div>

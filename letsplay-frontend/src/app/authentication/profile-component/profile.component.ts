@@ -28,7 +28,8 @@ export class ProfileComponent {
   ngOnInit() {
     this.storageService.user$.subscribe((user) => {
       this.user = user;
-      this.userPicture = user?.picture || '';
+
+      this.userPicture = user?.profilePicture || '';
     });
     
     const cld = this.cloudinaryService.getCloudinary();

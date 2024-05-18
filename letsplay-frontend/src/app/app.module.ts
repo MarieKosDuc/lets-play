@@ -6,7 +6,6 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import * as fr from '@angular/common/locales/fr';
-import { Toast, ToastrModule } from 'ngx-toastr';
 
 import { CloudinaryModule } from '@cloudinary/ng';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
@@ -28,7 +27,6 @@ import { HttpRequestInterceptor, httpInterceptorProviders } from './_helpers/aut
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    ToastrModule.forRoot(),
     FormsModule,
     ReactiveFormsModule,
     CloudinaryModule,

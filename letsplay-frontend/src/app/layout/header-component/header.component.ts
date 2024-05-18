@@ -1,43 +1,39 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router'
+import { Router, NavigationEnd } from '@angular/router';
 
 import { Subscription } from 'rxjs';
 
 import { MenuItem, MessageService } from 'primeng/api';
-
-import { Menu, MenuModule } from 'primeng/menu';
 
 import { AuthenticationService } from '../../authentication/services/authentication.service';
 import { User } from '../../authentication/models/user.model';
 import { StorageService } from '../../_services/storage.service';
 import { EventBusService } from 'src/app/_shared/event-bus.service';
 
-
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
-  providers: [MessageService]
+  providers: [MessageService],
 })
 export class HeaderComponent implements OnInit {
   public showDescription!: boolean;
   public userLoggedIn = false;
   public userInfos!: User | null;
-  public showDropdown: boolean = false;
   public items: MenuItem[] | undefined;
-
+  public itemsSmall: MenuItem[] | undefined;
+  public itemsSmallConnected: MenuItem[] | undefined;
 
   private userSubscription: Subscription;
 
   private eventBusSubscription?: Subscription;
-  
 
   constructor(
     private router: Router,
     private authService: AuthenticationService,
     private storageService: StorageService,
     private eventBusService: EventBusService,
-    private MessageService: MessageService
+    private messageService: MessageService
   ) {
     this.userSubscription = this.storageService.user$.subscribe((user) => {
       this.userInfos = user;
@@ -59,42 +55,108 @@ export class HeaderComponent implements OnInit {
 
     this.userLoggedIn = this.storageService.isLoggedIn();
 
-    this.eventBusSubscription = this.eventBusService
-      .on('logout', () => {
-        console.log('Logout event received');
-        this.logOut();
-      });
-    
+    this.eventBusSubscription = this.eventBusService.on('logout', () => {
+      console.log('Logout event received');
+      this.logOut();
+    });
+
     this.items = [
       {
         items: [
-            {
-                label: 'Profil',
-                command: () => {
-                  this.router.navigate(['/profile']);
-              }
+          {
+            label: 'Profil',
+            command: () => {
+              this.router.navigate(['/profile']);
             },
-            {
-                label: 'Mes annonces',
-                command: () => {
-                  this.router.navigate(['/my-ads']);
-              }
+          },
+          {
+            label: 'Mes annonces',
+            command: () => {
+              this.router.navigate(['/my-ads']);
             },
-            {
-              label: 'Nouvelle annonce',
-              command: () => {
-                this.router.navigate(['/create-ad']);
-            }
+          },
+          {
+            label: 'Nouvelle annonce',
+            command: () => {
+              this.router.navigate(['/create-ad']);
+            },
+          },
+          {
+            label: 'Favorites',
+            command: () => {
+              this.router.navigate(['/fav-ads']);
+            },
           },
           {
             label: 'Déconnexion',
             command: () => {
               this.logOut();
-          }
-        }
-        ]
-    }
+            },
+          },
+        ],
+      },
+    ];
 
+    this.itemsSmall = [
+      {
+        items: [
+          {
+            label: 'Rechercher',
+            command: () => {
+              this.router.navigate(['/search']);
+            },
+          },
+          {
+            label: 'Connexion/Inscription',
+            command: () => {
+              this.router.navigate(['/login']);
+            },
+          },
+        ],
+      },
+    ];
+
+    this.itemsSmallConnected = [
+      {
+        items: [
+          {
+            label: 'Rechercher',
+            command: () => {
+              this.router.navigate(['/search']);
+            },
+          },
+          {
+            label: 'Profil',
+            command: () => {
+              this.router.navigate(['/profile']);
+            },
+          },
+          {
+            label: 'Mes annonces',
+            command: () => {
+              this.router.navigate(['/my-ads']);
+            },
+          },
+          {
+            label: 'Nouvelle annonce',
+            command: () => {
+              this.router.navigate(['/create-ad']);
+            },
+          },
+          {
+            label: 'Favorites',
+            command: () => {
+              this.router.navigate(['/fav-ads']);
+            },
+          },
+          {
+            label: 'Déconnexion',
+            command: () => {
+              this.logOut();
+            },
+          },
+        ],
+      },
     ];
   }
 
@@ -104,16 +166,14 @@ export class HeaderComponent implements OnInit {
         this.userLoggedIn = false;
         this.userInfos = null;
         this.storageService.clean();
-        this.showDropdown = false;
+        this.messageService.add({ severity: 'info', summary: 'Déconnexion', detail: 'Te voilà deconnecté.e' });
         setTimeout(() => {
           this.router.navigate(['/home']);
         }, 1000);
-        ;
       },
       (error) => {
         console.log(error);
       }
-    )
+    );
   }
-
 }
