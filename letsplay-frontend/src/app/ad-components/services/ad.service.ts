@@ -70,7 +70,6 @@ export class AdService {
     }
 
     createAd(ad: AdCreation) {
-      console.log("Creating ad " , ad);
       return this.http.post<AdCreation>(ADS_API + `/create`, ad, httpOptions);
     }
 

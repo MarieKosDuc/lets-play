@@ -1,25 +1,27 @@
 import { Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { Router } from '@angular/router'
-
+import { Router } from '@angular/router';
 
 import { AuthenticationService } from '../services/authentication.service';
 import { StorageService } from 'src/app/_services/storage.service';
 
+import { MessageService } from 'primeng/api';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css'],
 })
 export class LoginComponent {
+  protected isLoggedIn: boolean = false;
+  protected loading: boolean = false;
 
-  hasError: boolean = false;
-  error: String = '';
-  isLoggedIn = false;
-  isLoginFailed = false;
-  loading: boolean = false;
-
-  constructor(private authService: AuthenticationService, private router: Router, private storageService: StorageService) {}
+  constructor(
+    private authService: AuthenticationService,
+    private router: Router,
+    private storageService: StorageService,
+    private messageService: MessageService
+  ) {}
 
   ngOnInit(): void {
     if (this.storageService.isLoggedIn()) {
@@ -28,8 +30,8 @@ export class LoginComponent {
   }
 
   onSubmit(form: NgForm) {
-    this.hasError = false;
     this.loading = true;
+    this.isLoggedIn = true;
 
     const username = form.value.email;
     const password = form.value.password;
@@ -39,28 +41,27 @@ export class LoginComponent {
         this.storageService.saveUser(response);
 
         this.isLoggedIn = true;
-        this.isLoginFailed = false; //TODO : utiliser pour l'affichage du composant ?
         this.loading = false;
 
-        this.error = `Te voilà connecté, ${response.username}. Bonne recherche !`
-        this.hasError = true;
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Connexion réussie',
+          detail: `Te voila connecté, ${response.username}. Bonne recherche !`,
+        });
+
         setTimeout(() => {
-          this.router.navigateByUrl('/home');
-        }, 2000)        
+          this.router.navigate(['/home']);
+        }, 2000);
       },
       (error) => {
         this.loading = false;
-        this.hasError = true;
-        if(error.status == 403){
-          this.error = "Identifiant ou mot de passe incorrect"
+        this.isLoggedIn = false;
+        if (error.status == 403) {
+          this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Identifiant ou mot de passe incorrect' });
         } else {
-          this.error = error.message;
-          this.isLoginFailed = true;
+          this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Une erreur est survenue' });
         }
-        
       }
-    
-    )
-
+    );
   }
 }

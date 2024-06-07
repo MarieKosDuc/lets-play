@@ -22,8 +22,7 @@ interface MetalStyle {
 @Component({
   selector: 'app-search',
   templateUrl: './search.component.html',
-  styleUrls: ['./search.component.css'],
-  providers: [MessageService]
+  styleUrls: ['./search.component.css']
 })
 export class SearchComponent {
   seeking!: string;

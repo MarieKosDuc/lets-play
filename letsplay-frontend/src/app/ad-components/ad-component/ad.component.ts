@@ -14,15 +14,16 @@ import { User } from 'src/app/authentication/models/user.model';
 @Component({
   selector: 'app-ad',
   templateUrl: './ad.component.html',
-  styleUrls: ['./ad.component.css'],
-  providers: [MessageService]
+  styleUrls: ['./ad.component.css']
 })
 export class AdComponent implements OnInit {
-  @Input() ad!: Ad;
-  @Input() truncated = true;
-  connectedUser!: User;
-  isSingleAd!: boolean;
-  musicStylesEnum = musicStylesEnum;
+  @Input()
+  public ad!: Ad;
+  @Input()
+  protected truncated = true;
+  protected connectedUser!: User;
+  protected isSingleAd!: boolean;
+  protected musicStylesEnum = musicStylesEnum;
 
   constructor(
     private router: Router,
@@ -70,20 +71,26 @@ export class AdComponent implements OnInit {
     this.router.navigateByUrl(`ad/${this.ad.id}`);
   }
 
+  isAuthorUser() {
+    return this.connectedUser.username === this.ad.postedBy;
+  }
+
+  updateAd() {
+    this.router.navigateByUrl(`ad/${this.ad.id}/update`);
+  }
+
   back() {
     this._location.back();
   }
 
   contact() {
     if (Object.keys(this.connectedUser).length === 0) {
-      console.log('User not connected');
       this.messageService.add({
         severity: 'error',
         summary: 'Erreur',
         detail: 'Tu dois être connecté pour répondre à une annonce',
       });
     } else {
-      console.log('User connected');
       this.router.navigateByUrl('/contact');
     }
   }

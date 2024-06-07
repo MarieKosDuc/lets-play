@@ -13,8 +13,7 @@ import { EventBusService } from 'src/app/_shared/event-bus.service';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.css'],
-  providers: [MessageService],
+  styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit {
   public showDescription!: boolean;
@@ -166,7 +165,7 @@ export class HeaderComponent implements OnInit {
         this.userLoggedIn = false;
         this.userInfos = null;
         this.storageService.clean();
-        this.messageService.add({ severity: 'info', summary: 'Déconnexion', detail: 'Te voilà deconnecté.e' });
+        this.messageService.add({ severity: 'info', summary: 'Déconnexion', detail: 'Tu es deconnecté.e' });
         setTimeout(() => {
           this.router.navigate(['/home']);
         }, 1000);

@@ -17,12 +17,8 @@ import { MessageService } from 'primeng/api';
   selector: 'app-ad-create',
   templateUrl: './ad-create.component.html',
   styleUrls: ['./ad-create.component.css'],
-  providers: [MessageService],
 })
 export class AdCreateComponent {
-  protected hasMessage: boolean = false;
-  protected message: String = '';
-
   protected user!: User | null;
 
   protected adForm!: FormGroup;
@@ -121,23 +117,19 @@ export class AdCreateComponent {
 
   onItemSelect(item: any) {
     this.selectedItems.push(item.item_text);
-    console.log(this.selectedItems);
   }
 
   onItemDeSelect(item: any) {
     const index = this.selectedItems.indexOf(item.item_text);
     this.selectedItems.splice(index, 1);
-    console.log(this.selectedItems);
   }
 
   onSelectAll(items: any) {
     this.selectedItems = items.map((item: any) => item.item_text);
-    console.log(this.selectedItems);
   }
 
   onDeSelectAll(items: any) {
     this.selectedItems = [];
-    console.log(this.selectedItems);
   }
 
   createTempAd() {
@@ -161,9 +153,6 @@ export class AdCreateComponent {
       location: selectedRegion,
       description: description,
     };
-
-    console.log(this.adData);
-
   }
 
   onSubmit() {
@@ -171,27 +160,27 @@ export class AdCreateComponent {
 
     this.adService.createAd(this.adData).subscribe(
       (response) => {
-        console.log(response);
-
-        this.messageService.add({ severity: 'success', summary: 'Annonce créée', detail: 'Annonce créée avec succès' });
-        // this.
-        // setTimeout(() => {
-        //   this.hasMessage = false;
-        // }, 2000);
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Annonce créée',
+          detail: 'Annonce créée avec succès',
+        });
         this.router.navigate(['/my-ads']);
       },
       (error) => {
-
-        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Une erreur est survenue lors de la création de l\'annonce' });
-
-        this.message =
-          "Une erreur est survenue lors de la création de l'annonce : " +
-          error.message;
-        console.log(error);
-        this.hasMessage = true;
-        setTimeout(() => {
-          this.hasMessage = false;
-        }, 2000);
+        if (error.error.message === 'Ad with this title already exists') {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erreur',
+            detail: 'Il existe déjà une annonce avec ce titre',
+          });
+        } else {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erreur',
+            detail: "Une erreur est survenue lors de la création de l'annonce",
+          });
+        }
       }
     );
   }
