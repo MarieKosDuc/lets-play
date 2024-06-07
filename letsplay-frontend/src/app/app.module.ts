@@ -8,7 +8,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import * as fr from '@angular/common/locales/fr';
 
 import { CloudinaryModule } from '@cloudinary/ng';
-import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 
 import { LayoutModule } from './layout/modules/layout.module';
 import { AdModule } from './ad-components/modules/ad.module';
@@ -25,19 +26,21 @@ import { HttpRequestInterceptor, httpInterceptorProviders } from './_helpers/aut
   imports: [
     HttpClientModule,
     BrowserModule,
+    ToastModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     FormsModule,
     ReactiveFormsModule,
     CloudinaryModule,
-    NgMultiSelectDropDownModule.forRoot(),
     LayoutModule,
     AdModule,
     AuthenticationModule,
   ],
   providers: [
     { provide: LOCALE_ID, useValue: 'fr-FR'}, 
-    {provide: HTTP_INTERCEPTORS, useClass: HttpRequestInterceptor, multi: true}],
+    {provide: HTTP_INTERCEPTORS, useClass: HttpRequestInterceptor, multi: true},
+    MessageService,
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { 

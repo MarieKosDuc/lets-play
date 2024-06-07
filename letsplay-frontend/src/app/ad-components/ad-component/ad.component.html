@@ -12,7 +12,7 @@
     <div id="ad-text-container">
         <p id="ad-text" class=>{{ ad.description }}</p>
         <button class="button" *ngIf="!isSingleAd" (click)="goToAd()">PLUS</button>
-        <button class="button" *ngIf="isSingleAd" (click)="contact()">CONTACT</button> 
+        <button class="button" *ngIf="isSingleAd && !isAuthorUser()" (click)="contact()">CONTACT</button> 
+        <button class="button" *ngIf="isSingleAd && isAuthorUser()" (click)="updateAd()">MODIFIER</button> 
     </div>
 </div>
-<p-toast position="top-right"></p-toast>

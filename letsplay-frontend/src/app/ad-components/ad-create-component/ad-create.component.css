@@ -7,7 +7,7 @@
   width: 100%;
 }
 
-.selected-image {
+#selected-image {
   max-width: 18rem; /* w-72 */
   max-height: 18rem; /* h-72 */
 }
