@@ -13,10 +13,27 @@
                 <button class="button" (click)="goToAd()">Voir l'annonce</button>
             </div>
     
-            <div id="delete-add-button">
-                <button class="button">Supprimer</button>
+            <div id="delete-add-button" *ngIf="isUserAuthor()">
+                <button class="button" (click)="showConfirm()">Supprimer</button>
+            </div>
+
+            <div id="update-add-button" *ngIf="isUserAuthor()">
+                <button class="button">Modifier</button>
             </div>
         </div>
     </div>
+
+    <p-toast 
+    position="center" 
+    key="confirm" 
+    [baseZIndex]="5000">
+        <ng-template let-message pTemplate="message">
+                <div>
+                    {{ message.summary }}
+                </div>
+                <button class="button" (click)="onConfirm()"> Oui </button>
+                <button class="button" (click)="onReject()"> Non </button>
+        </ng-template>
+</p-toast>
 </div>
 

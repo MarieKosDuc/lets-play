@@ -28,7 +28,7 @@ export class HttpRequestInterceptor implements HttpInterceptor {
 
     return next.handle(req).pipe(
       catchError((error) => {
-        console.log('Error received: ' + error + ' with status: ' + error.status)
+        console.log('Error received: ' + error.message + ' with status: ' + error.status)
         if (
           error instanceof HttpErrorResponse &&
           error.status === 401
@@ -58,7 +58,7 @@ export class HttpRequestInterceptor implements HttpInterceptor {
           }),
           catchError((error) => {
             this.isRefreshing = false;
-            console.log("Erreur reçue du logout : " + error)
+            console.log("Erreur reçue du logout : " + error.message)
 
             if (error instanceof HttpErrorResponse && error.status === 403) {
               this.eventBusService.emit(new EventData('logout', null));

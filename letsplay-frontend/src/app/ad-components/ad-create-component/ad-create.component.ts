@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 
 import { AuthenticationService } from 'src/app/authentication/services/authentication.service';
 import { User } from 'src/app/authentication/models/user.model';
@@ -10,50 +11,59 @@ import { musicStylesEnum } from 'src/app/ad-components/enums/musicStylesEnum';
 import { CloudinaryService } from 'src/app/layout/cloudinary/cloudinary.service';
 import { AdService } from '../services/ad.service';
 
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-ad-create',
   templateUrl: './ad-create.component.html',
-  styleUrls: ['./ad-create.component.css']
+  styleUrls: ['./ad-create.component.css'],
+  providers: [MessageService],
 })
 export class AdCreateComponent {
+  protected hasMessage: boolean = false;
+  protected message: String = '';
 
-  hasMessage: boolean = false;
-  message: String = '';
+  protected user!: User | null;
 
-  user!: User | null;
+  protected adForm!: FormGroup;
 
-  adForm!: FormGroup;
+  protected adData!: AdCreation;
 
-  adData!: AdCreation;
+  protected seeking!: string;
 
-  seeking!: string;
+  protected myWidget: any;
+  protected uploadPreset: String = this.cloudinaryService.getUploadPreset();
+  protected myCloudName: String = this.cloudinaryService.getCloudName();
 
-  myWidget: any;
-  uploadPreset: String = this.cloudinaryService.getUploadPreset();
-  myCloudName: String = this.cloudinaryService.getCloudName();
+  protected imageSrc: string = '';
+  protected baseUrl: String = this.cloudinaryService.getBaseImageURL();
 
-  imageSrc: string = '';
-  baseUrl: String = this.cloudinaryService.getBaseImageURL();
+  protected dropdownList = [
+    ...Object.keys(musicStylesEnum).map((key) => ({
+      item_id: key,
+      item_text: musicStylesEnum[key as keyof typeof musicStylesEnum],
+    })),
+  ];
+  protected selectedItems: string[] = [];
+  protected dropdownSettings = {};
 
-  dropdownList = [...Object.keys(musicStylesEnum).map((key) => ({ item_id: key, item_text: musicStylesEnum[key as keyof typeof musicStylesEnum] }))]
-  selectedItems: string[] = [];
-  dropdownSettings = {};
-
-
-  
-  constructor(private authService: AuthenticationService, private cloudinaryService: CloudinaryService,
-      private adService: AdService,
-     private formbuilder: FormBuilder) {
-      this.adForm = this.formbuilder.group({
-        title: ['', Validators.required],
-        search: ['', Validators.required],
-        musicianType: [''],
-        location: ['', Validators.required],
-        description: ['', Validators.required],
-        selectedItems: ['', Validators.required]
-      });
-     }
+  constructor(
+    private authService: AuthenticationService,
+    private cloudinaryService: CloudinaryService,
+    private adService: AdService,
+    private messageService: MessageService,
+    private formbuilder: FormBuilder,
+    private router: Router
+  ) {
+    this.adForm = this.formbuilder.group({
+      title: ['', Validators.required],
+      search: ['', Validators.required],
+      musicianType: [''],
+      location: ['', Validators.required],
+      description: ['', Validators.required],
+      selectedItems: ['', Validators.required],
+    });
+  }
 
   ngOnInit() {
     this.selectedItems = [];
@@ -64,14 +74,14 @@ export class AdCreateComponent {
       selectAllText: 'Select All',
       unSelectAllText: 'UnSelect All',
       itemsShowLimit: 3,
-      allowSearchFilter: true
+      allowSearchFilter: true,
     };
 
     this.authService.getCurrentUser().subscribe((user: User | null) => {
-      if(user != null){
+      if (user != null) {
         this.user = user;
       }
-    })
+    });
 
     // @ts-ignore: Unreachable code error
     this.myWidget = cloudinary.createUploadWidget(
@@ -79,17 +89,17 @@ export class AdCreateComponent {
         cloudName: this.myCloudName,
         uploadPreset: this.uploadPreset,
         cropping: true, //add a cropping step
-        sources: [ "local", "url"], // restrict the upload sources to URL and local files
-        multiple: false,  //restrict upload to a single file
-        tags: ["users", "profile"], //add the given tags to the uploaded files
-        context: {alt: "Image de profil"}, //add the given context data to the uploaded files
-        maxImageFileSize: 2000000,  //restrict file size to less than 2MB
+        sources: ['local', 'url'], // restrict the upload sources to URL and local files
+        multiple: false, //restrict upload to a single file
+        tags: ['users', 'profile'], //add the given tags to the uploaded files
+        context: { alt: 'Image de profil' }, //add the given context data to the uploaded files
+        maxImageFileSize: 2000000, //restrict file size to less than 2MB
         maxImageWidth: 1000, //Scales the image down to a width of 2000 pixels before uploading
       },
-        // @ts-ignore: Unreachable code error
+      // @ts-ignore: Unreachable code error
       (error, result) => {
-        if (!error && result && result.event === "success") {
-          console.log("Done! Here is the image info: ", result.info);
+        if (!error && result && result.event === 'success') {
+          console.log('Done! Here is the image info: ', result.info);
           this.imageSrc = result.info.secure_url;
         }
       }
@@ -105,7 +115,6 @@ export class AdCreateComponent {
     this.setDefaultImage(value);
   }
 
-
   setDefaultImage(value: string) {
     this.imageSrc = this.baseUrl + value + '.jpg';
   }
@@ -114,7 +123,6 @@ export class AdCreateComponent {
     this.selectedItems.push(item.item_text);
     console.log(this.selectedItems);
   }
-
 
   onItemDeSelect(item: any) {
     const index = this.selectedItems.indexOf(item.item_text);
@@ -132,12 +140,16 @@ export class AdCreateComponent {
     console.log(this.selectedItems);
   }
 
-  onSubmit() {
+  createTempAd() {
     const connectedUserId = this.user?.id ?? '';
     const selectedRegion = this.adForm.get('location')?.value ?? '';
     const title = this.adForm.get('title')?.value ?? '';
     const description = this.adForm.get('description')?.value ?? '';
-    const metalGenres = Object.keys(musicStylesEnum).filter(key => this.selectedItems.includes(musicStylesEnum[key as keyof typeof musicStylesEnum]));
+    const metalGenres = Object.keys(musicStylesEnum).filter((key) =>
+      this.selectedItems.includes(
+        musicStylesEnum[key as keyof typeof musicStylesEnum]
+      )
+    );
 
     this.adData = {
       createdAt: new Date(),
@@ -148,28 +160,39 @@ export class AdCreateComponent {
       styles: metalGenres,
       location: selectedRegion,
       description: description,
-    }
+    };
 
     console.log(this.adData);
+
+  }
+
+  onSubmit() {
+    this.createTempAd();
 
     this.adService.createAd(this.adData).subscribe(
       (response) => {
         console.log(response);
-        this.message = "Annonce créée avec succès";
-        this.hasMessage = true;
-        setTimeout(() => {
-          this.hasMessage = false;
-        }, 2000)
+
+        this.messageService.add({ severity: 'success', summary: 'Annonce créée', detail: 'Annonce créée avec succès' });
+        // this.
+        // setTimeout(() => {
+        //   this.hasMessage = false;
+        // }, 2000);
+        this.router.navigate(['/my-ads']);
       },
       (error) => {
-        this.message = "Une erreur est survenue lors de la création de l'annonce : " + error.message;
+
+        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Une erreur est survenue lors de la création de l\'annonce' });
+
+        this.message =
+          "Une erreur est survenue lors de la création de l'annonce : " +
+          error.message;
         console.log(error);
         this.hasMessage = true;
         setTimeout(() => {
           this.hasMessage = false;
-        }, 2000)
+        }, 2000);
       }
-    )
+    );
   }
-
 }

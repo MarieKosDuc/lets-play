@@ -1,18 +1,26 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Location } from '@angular/common';
+import { Router, ActivatedRoute } from '@angular/router';
+
+import { MessageService } from 'primeng/api';
+
 import { Ad } from '../models/ad.model';
 import { AdService } from '../services/ad.service';
-import { Router, ActivatedRoute } from '@angular/router';
+import { StorageService } from '../../_services/storage.service';
+
 import { musicStylesEnum } from '../enums/musicStylesEnum';
+import { User } from 'src/app/authentication/models/user.model';
 
 @Component({
   selector: 'app-ad',
   templateUrl: './ad.component.html',
   styleUrls: ['./ad.component.css'],
+  providers: [MessageService]
 })
 export class AdComponent implements OnInit {
   @Input() ad!: Ad;
   @Input() truncated = true;
+  connectedUser!: User;
   isSingleAd!: boolean;
   musicStylesEnum = musicStylesEnum;
 
@@ -20,10 +28,16 @@ export class AdComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private adService: AdService,
-    private _location: Location
+    private _location: Location,
+    private storageService: StorageService,
+    private messageService: MessageService
   ) {}
 
   ngOnInit(): void {
+    this.storageService.user$.subscribe((user) => {
+      this.connectedUser = user;
+    });
+
     const currentRoute = this.route.snapshot.routeConfig?.path;
     if (currentRoute === 'home') {
       this.isSingleAd = false;
@@ -60,7 +74,17 @@ export class AdComponent implements OnInit {
     this._location.back();
   }
 
-  mailTo() {
-    //window.open(`mailto:${this.ad.email}`);
+  contact() {
+    if (Object.keys(this.connectedUser).length === 0) {
+      console.log('User not connected');
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erreur',
+        detail: 'Tu dois être connecté pour répondre à une annonce',
+      });
+    } else {
+      console.log('User connected');
+      this.router.navigateByUrl('/contact');
+    }
   }
 }
