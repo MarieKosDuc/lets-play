@@ -9,7 +9,6 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ToastModule } from 'primeng/toast';
 
-
 import { AdComponent } from '../ad-component/ad.component';
 import { AdsListComponent } from '../ads-list-component/ads-list.component';
 import { SearchComponent } from '../search-component/search.component';

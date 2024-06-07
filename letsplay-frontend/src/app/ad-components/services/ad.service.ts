@@ -6,8 +6,9 @@ import { BehaviorSubject, Observable, tap } from 'rxjs';
 
 import { Ad } from '../models/ad.model';
 import { AdCreation } from '../models/adCreation.model';
-import { AuthenticationService } from '../../authentication/services/authentication.service';
 import { User } from 'src/app/authentication/models/user.model';
+
+import { StorageService } from 'src/app/_services/storage.service';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
@@ -22,16 +23,16 @@ const ADS_API = `${environment.apiUrl}/ads`;
 
 export class AdService {
 
-  constructor(private http: HttpClient, private authService: AuthenticationService) { }
+  constructor(private http: HttpClient, private storageService: StorageService) { }
   
   ads: Ad[] = [];
   ad!: Ad;
 
-  user!: User | null;
+  user?: User;
 
   ngOnInit() {
-    this.authService.getCurrentUser().subscribe((user: User | null) => {
-      this.user = user; //TODO : remplacer par storage après merge
+    this.storageService.user$.subscribe((user) => {
+      this.user = user;
     });
   }
 
@@ -69,8 +70,12 @@ export class AdService {
     }
 
     createAd(ad: AdCreation) {
-      console.log(ad);
+      console.log("Creating ad " , ad);
       return this.http.post<AdCreation>(ADS_API + `/create`, ad, httpOptions);
+    }
+
+    deleteAd(id: number) {
+      return this.http.delete(ADS_API + `/delete/${id}`, httpOptions);
     }
 
 }

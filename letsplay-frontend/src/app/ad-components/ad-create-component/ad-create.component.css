@@ -8,8 +8,8 @@
 }
 
 .selected-image {
-  width: 18rem; /* w-72 */
-  height: 18rem; /* h-72 */
+  max-width: 18rem; /* w-72 */
+  max-height: 18rem; /* h-72 */
 }
 
 #description {

@@ -53,9 +53,6 @@
     </form>
 </div>
 
-<div id="ads-list" *ngIf="showAds">
-    <h2> {{resultNumber}} résultats trouvés !</h2>
-</div>
 <div>
     <app-ads-list *ngFor="let ad of ads" [ads]="ads"></app-ads-list>
 </div>

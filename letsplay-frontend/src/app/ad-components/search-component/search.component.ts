@@ -32,9 +32,7 @@ export class SearchComponent {
   metalStyles!: MetalStyle[];
   selectedMetalStyles!: MetalStyle[];
 
-  showAds: boolean = false;
   ads!: Ad[];
-  resultNumber: number = 0;
 
   constructor(private formbuilder: FormBuilder, private adService: AdService, private messageService: MessageService) {
     this.searchForm = this.formbuilder.group({
@@ -107,8 +105,6 @@ export class SearchComponent {
       .subscribe((ads: Ad[]) => {
         this.ads = ads;
         this.showToastResults(ads);
-        this.resultNumber = ads.length;
-        this.showAds = true;
       });
   }
 }
