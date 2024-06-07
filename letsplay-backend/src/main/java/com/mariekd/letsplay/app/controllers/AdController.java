@@ -12,8 +12,11 @@ import com.mariekd.letsplay.app.services.implementation.LocationServiceImpl;
 import com.mariekd.letsplay.app.services.implementation.MusicianTypeServiceImpl;
 import com.mariekd.letsplay.app.services.implementation.StyleServiceImpl;
 import com.mariekd.letsplay.authentication.entities.User;
+import com.mariekd.letsplay.authentication.jwt.UnauthorizedException;
 import com.mariekd.letsplay.authentication.services.implementations.UserServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @RestController
-@RequestMapping("/api/ads")
+@RequestMapping(value="/api/ads", produces = MediaType.APPLICATION_JSON_VALUE)
 @CrossOrigin(maxAge = 3600)
 public class AdController {
 
@@ -58,18 +61,15 @@ public class AdController {
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<?> getAdById(@PathVariable("id") int id) {
+    public ResponseEntity<AdDTO> getAdById(@PathVariable("id") int id) {
         Optional<Ad> ad = adService.getAdById(id);
-        if (ad.isPresent()){
-            return ResponseEntity.ok(AdMapper.toAdDTO(ad.get()));
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return ad.map(value -> ResponseEntity.ok(AdMapper.toAdDTO(value)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/get/user/{userId}")
-    public ResponseEntity<?> getAdsByUser(@PathVariable("userId") String userId) {
+    public ResponseEntity<List<AdDTO>> getAdsByUser(@PathVariable("userId") String userId) {
         UUID userUUID = UUID.fromString(userId);
 
         List<Ad> ads = adService.getAdsByUser(userUUID);
@@ -83,7 +83,7 @@ public class AdController {
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping("/create")
-    public ResponseEntity<?> createAd(@RequestBody CreateAdRequest creatingAd, HttpServletRequest request) {
+    public ResponseEntity<Object> createAd(@RequestBody CreateAdRequest creatingAd, HttpServletRequest request) {
 
         User postingUser = userService.getUserFromRequest(request);
 
@@ -111,7 +111,7 @@ public class AdController {
         try {
             Optional<Ad> existingAd = adService.getAdByTitle(creatingAd.title());
             if (existingAd.isPresent()) {
-                return ResponseEntity.badRequest().body("Ad with this title already exists");
+                return setErrorResponse("Ad with this title already exists", HttpStatus.BAD_REQUEST);
             } else {
                 try {
                     adService.createAd(ad);
@@ -124,22 +124,22 @@ public class AdController {
 
             }
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error creating ad");
+            return setErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
     @PreAuthorize("hasRole('USER')")
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateAdByUser(@PathVariable("id") int id, @RequestBody CreateAdRequest updatingAd, HttpServletRequest request) {
+    public ResponseEntity<Object> updateAdByUser(@PathVariable("id") int id, @RequestBody CreateAdRequest updatingAd, HttpServletRequest request) {
 
         User postingUser = userService.getUserFromRequest(request);
 
         try {
             if (!isUserAdAuthor(id, postingUser.getName())) { //TODO : écrire test pour valider qu'un user ne peut pas modifier l'annonce d'un autre user
-                return ResponseEntity.badRequest().body("You can only update your own ads");
+                return setErrorResponse("You can only update your own ads", HttpStatus.BAD_REQUEST);
             }
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return setErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
 
         Optional<Ad> ad = adService.getAdById(id);
@@ -161,46 +161,47 @@ public class AdController {
 
             try {
                 adService.updateAd(id, ad.get());
-                return ResponseEntity.ok().body("Ad updated");}
+                AdDTO updatedAd = AdMapper.toAdDTO(ad.get());
+                return ResponseEntity.ok((updatedAd));}
             catch (Exception e) {
-                return ResponseEntity.badRequest().body("Error updating ad");
+                return setErrorResponse("Error updating ad", HttpStatus.BAD_REQUEST);
             }
         } else {
-            return ResponseEntity.badRequest().body("Ad not found");
+            return setErrorResponse("Ad not found", HttpStatus.BAD_REQUEST);
         }
     }
 
     @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteAdByUser(@PathVariable("id") int id, HttpServletRequest request) {
+    public ResponseEntity<Object> deleteAdByUser(@PathVariable("id") int id, HttpServletRequest request) {
 
         User postingUser = userService.getUserFromRequest(request);
 
         try {
             if (!isUserAdAuthor(id, postingUser.getName())) {
-                return ResponseEntity.badRequest().body("You can only delete your own ads");
+                return setErrorResponse("You can only delete your own ads", HttpStatus.BAD_REQUEST);
             }
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return setErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
 
         try {
             adService.deleteById(id);
-            return ResponseEntity.ok().body("Ad deleted");
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error deleting ad");
+            return setErrorResponse("Error deleting ad", HttpStatus.BAD_REQUEST);
         }
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/delete/admin/{id}")
-    public ResponseEntity<?> deleteAdByAdmin(@PathVariable("id") int id) {
+    public ResponseEntity<Object> deleteAdByAdmin(@PathVariable("id") int id) {
 
         try {
             adService.deleteById(id);
-            return ResponseEntity.ok().body("Ad deleted");
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error deleting ad");
+            return setErrorResponse("Error deleting ad", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -211,5 +212,11 @@ public class AdController {
         } else {
             throw new Exception("Ad not found"); //TODO : créer exception spécifique
         }
+    }
+
+    public ResponseEntity<Object> setErrorResponse(String message, HttpStatus status) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("message", message);
+        return new ResponseEntity<>(errorResponse, status);
     }
 }
