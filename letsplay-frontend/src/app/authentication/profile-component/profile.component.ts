@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { AuthenticationService } from 'src/app/authentication/services/authentication.service';
+import { StorageService } from 'src/app/_services/storage.service';
+import { AuthenticationService } from '../services/authentication.service';
 import { User } from '../models/user.model';
 
 import { CloudinaryService } from 'src/app/layout/cloudinary/cloudinary.service';
-import {CloudinaryImage} from '@cloudinary/url-gen';
 
 @Component({
   selector: 'app-profile',
@@ -13,6 +13,7 @@ import {CloudinaryImage} from '@cloudinary/url-gen';
 export class ProfileComponent {
 
   user!: User | null;
+  public userPicture: String = '';
   public newPassword: String = '';
   public confirmNewPassword: String = '';
   myWidget: any;
@@ -20,12 +21,15 @@ export class ProfileComponent {
   myCloudName: String = this.cloudinaryService.getCloudName();
 
 
-  constructor(private authService: AuthenticationService, private cloudinaryService: CloudinaryService) {}
+  constructor(private cloudinaryService: CloudinaryService, private storageService: StorageService, private authService: AuthenticationService
+  ) {}
 
 
   ngOnInit() {
-    this.authService.getCurrentUser().subscribe((user: User | null) => {
+    this.storageService.user$.subscribe((user) => {
       this.user = user;
+
+      this.userPicture = user?.profilePicture || '';
     });
     
     const cld = this.cloudinaryService.getCloudinary();
@@ -49,10 +53,7 @@ export class ProfileComponent {
       (error, result) => {
         if (!error && result && result.event === "success") {
           console.log("Done! Here is the image info: ", result.info);
-          // @ts-ignore: Unreachable code error
-          document
-            .getElementById("profile-pic")
-            .setAttribute("src", result.info.secure_url);
+          this.userPicture = result.info.secure_url;
         }
       }
     );

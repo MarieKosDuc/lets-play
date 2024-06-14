@@ -1,28 +1,26 @@
 <div class="card">
-    <div class="flex items-center justify-center mt-6">
+    <h2>
         Connecte-toi pour accéder à ton espace personnel !
-    </div>
+    </h2>
 
-    <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)" class="max-w-sm mx-auto">
+    <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)">
        
         <input type="email" name="email" placeholder="e-mail" ngModel required class="field">
         <input type="password" name="password" placeholder="mot de passe" ngModel required class="field">
-        <button type="submit" [disabled]="!loginForm.form.valid" class="button" *ngIf="!loading">Submit</button>
+        <button type="submit" [disabled]="!loginForm.form.valid" class="button" *ngIf="!loading && !isLoggedIn">Submit</button>
         <div *ngIf="loading">
             <p-progressSpinner ariaLabel="loading"></p-progressSpinner>
         </div>
     </form>
 
-    <div *ngIf="hasError">{{ error }}</div>
 
     <!-- TO DO -->
-    <div class="flex items-center justify-center mt-6">
-        <a href="#" class="text-sm font-medium text-gray-900 dark:text-gray-300 hover:underline">Mot de passe oublié ?</a>
+    <div id="regeneration-password">
+        <a href="#" class="login-links">Mot de passe oublié ?</a>
     </div>
 
-    <!-- TO DO -->
-    <div>
-        <p class="text-sm text-center text-gray-900 dark:text-gray-300">Pas encore de compte ? <a routerLink="/register" class="text-blue-600 hover:underline">Inscris-toi</a></p>
+    <div id="lien-inscription" class="login-links">
+        <p>Pas encore de compte ? <a routerLink="/register" class="login-links">Inscris-toi</a></p>
     </div>
 
 </div>

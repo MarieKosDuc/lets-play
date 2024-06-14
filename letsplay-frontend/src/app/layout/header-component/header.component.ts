@@ -1,37 +1,38 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
-import { Observable, Subscription } from 'rxjs';
 
-import { MessageService } from 'primeng/api';
+import { Subscription } from 'rxjs';
+
+import { MenuItem, MessageService } from 'primeng/api';
 
 import { AuthenticationService } from '../../authentication/services/authentication.service';
 import { User } from '../../authentication/models/user.model';
 import { StorageService } from '../../_services/storage.service';
 import { EventBusService } from 'src/app/_shared/event-bus.service';
 
-
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.css'],
-  providers: [MessageService]
+  styleUrls: ['./header.component.css']
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit {
   public showDescription!: boolean;
   public userLoggedIn = false;
   public userInfos!: User | null;
-  public showDropdown: boolean = false;
+  public items: MenuItem[] | undefined;
+  public itemsSmall: MenuItem[] | undefined;
+  public itemsSmallConnected: MenuItem[] | undefined;
+
   private userSubscription: Subscription;
 
   private eventBusSubscription?: Subscription;
-  
 
   constructor(
     private router: Router,
     private authService: AuthenticationService,
     private storageService: StorageService,
     private eventBusService: EventBusService,
-    private MessageService: MessageService
+    private messageService: MessageService
   ) {
     this.userSubscription = this.storageService.user$.subscribe((user) => {
       this.userInfos = user;
@@ -53,23 +54,109 @@ export class HeaderComponent {
 
     this.userLoggedIn = this.storageService.isLoggedIn();
 
-    this.eventBusSubscription = this.eventBusService
-      .on('logout', () => {
-        console.log('Logout event received');
-        this.logOut();
-      });
-  }
+    this.eventBusSubscription = this.eventBusService.on('logout', () => {
+      console.log('Logout event received');
+      this.logOut();
+    });
 
-  toggleDropdown() {
-    this.showDropdown = !this.showDropdown;
-  }
+    this.items = [
+      {
+        items: [
+          {
+            label: 'Profil',
+            command: () => {
+              this.router.navigate(['/profile']);
+            },
+          },
+          {
+            label: 'Mes annonces',
+            command: () => {
+              this.router.navigate(['/my-ads']);
+            },
+          },
+          {
+            label: 'Nouvelle annonce',
+            command: () => {
+              this.router.navigate(['/create-ad']);
+            },
+          },
+          {
+            label: 'Favorites',
+            command: () => {
+              this.router.navigate(['/fav-ads']);
+            },
+          },
+          {
+            label: 'Déconnexion',
+            command: () => {
+              this.logOut();
+            },
+          },
+        ],
+      },
+    ];
 
-  handleKeyPress(event: KeyboardEvent) {
-    if (event.key === 'Enter' || event.key === ' ') {
-      // Si la touche Entrée ou Espace est pressée
-      this.toggleDropdown(); // Ouvre ou ferme le menu déroulant
-    } //TODO : gérer le problème du menu déroulant qui s'ouvre quand on appuie sur entrée même non connecté
-    //TODO : refermer le menu déroulant quand navigation
+    this.itemsSmall = [
+      {
+        items: [
+          {
+            label: 'Rechercher',
+            command: () => {
+              this.router.navigate(['/search']);
+            },
+          },
+          {
+            label: 'Connexion/Inscription',
+            command: () => {
+              this.router.navigate(['/login']);
+            },
+          },
+        ],
+      },
+    ];
+
+    this.itemsSmallConnected = [
+      {
+        items: [
+          {
+            label: 'Rechercher',
+            command: () => {
+              this.router.navigate(['/search']);
+            },
+          },
+          {
+            label: 'Profil',
+            command: () => {
+              this.router.navigate(['/profile']);
+            },
+          },
+          {
+            label: 'Mes annonces',
+            command: () => {
+              this.router.navigate(['/my-ads']);
+            },
+          },
+          {
+            label: 'Nouvelle annonce',
+            command: () => {
+              this.router.navigate(['/create-ad']);
+            },
+          },
+          {
+            label: 'Favorites',
+            command: () => {
+              this.router.navigate(['/fav-ads']);
+            },
+          },
+          {
+            label: 'Déconnexion',
+            command: () => {
+              this.logOut();
+            },
+          },
+        ],
+      },
+    ];
   }
 
   logOut() {
@@ -78,16 +165,14 @@ export class HeaderComponent {
         this.userLoggedIn = false;
         this.userInfos = null;
         this.storageService.clean();
-        this.showDropdown = false;
+        this.messageService.add({ severity: 'info', summary: 'Déconnexion', detail: 'Tu es deconnecté.e' });
         setTimeout(() => {
           this.router.navigate(['/home']);
         }, 1000);
-        ;
       },
       (error) => {
         console.log(error);
       }
-    )
+    );
   }
-
 }

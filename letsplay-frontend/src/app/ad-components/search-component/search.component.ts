@@ -1,11 +1,23 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormGroup,
+  ValidationErrors,
+  Validators,
+  ValidatorFn
+} from '@angular/forms';
+
+import { MenuItem, MessageService } from 'primeng/api';
 
 import { Ad } from '../models/ad.model';
 import { AdService } from '../services/ad.service';
 import { musicStylesEnum } from '../enums/musicStylesEnum';
 
+interface MetalStyle {
+  name: string;
+  code: string;
+}
 
 @Component({
   selector: 'app-search',
@@ -13,74 +25,85 @@ import { musicStylesEnum } from '../enums/musicStylesEnum';
   styleUrls: ['./search.component.css']
 })
 export class SearchComponent {
-
   seeking!: string;
   searchForm!: FormGroup;
-  dropdownList = [...Object.keys(musicStylesEnum).map((key) => ({ item_id: key, item_text: musicStylesEnum[key as keyof typeof musicStylesEnum] }))];
-  selectedItems: string[] = [];
-  dropdownSettings = {};
 
-  showAds: boolean = false;
+  metalStyles!: MetalStyle[];
+  selectedMetalStyles!: MetalStyle[];
+
   ads!: Ad[];
-  resultNumber: number = 0;
 
-
-  constructor(private formbuilder: FormBuilder, private adService: AdService) {
+  constructor(private formbuilder: FormBuilder, private adService: AdService, private messageService: MessageService) {
     this.searchForm = this.formbuilder.group({
       search: ['', Validators.required],
       musicianType: [''],
       location: ['', Validators.required],
-      selectedItems: ['', Validators.required]
-    });
-   }
+      selectedMetalStyles: ['', Validators.required],
+    }, { validators: this.validateMusicianType() });
+    console.log(this.searchForm.controls)
+  }
 
-   ngOnInit() {
-    this.selectedItems = [];
-    this.dropdownSettings = {
-      singleSelection: false,
-      idField: 'item_id',
-      textField: 'item_text',
-      selectAllText: 'Select All',
-      unSelectAllText: 'UnSelect All',
-      itemsShowLimit: 3,
-      allowSearchFilter: true
+  ngOnInit() {
+    this.metalStyles = this.getStylesFromEnum();
+  }
+
+  validateMusicianType(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const search = control.get('search')?.value;
+      const musicianType = control.get('musicianType')?.value;
+  
+      const isMusician = search === 'musician';
+  
+      if (isMusician && !musicianType) {
+        return { noMusicianTypeSelected: true };
+      }
+  
+      return null;
     };
+  }
+  
+  
+
+  getStylesFromEnum(): MetalStyle[] {
+    return Object.keys(musicStylesEnum).map((key) => ({
+      name: musicStylesEnum[key as keyof typeof musicStylesEnum],
+      code: key,
+    }));
   }
 
   setSeeking(value: string) {
     this.seeking = value;
   }
 
-  onItemSelect(item: any) {
-    this.selectedItems.push(item.item_text);
-    console.log(this.selectedItems);
-  }
-
-
-  onItemDeSelect(item: any) {
-    const index = this.selectedItems.indexOf(item.item_text);
-    this.selectedItems.splice(index, 1);
-    console.log(this.selectedItems);
-  }
-
-  onSelectAll(items: any) {
-    this.selectedItems = items.map((item: any) => item.item_text);
-    console.log(this.selectedItems);
-  }
-
-  onDeSelectAll(items: any) {
-    this.selectedItems = [];
-    console.log(this.selectedItems);
+  showToastResults(ads: Ad[]) {
+    if (ads.length === 0) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Aucune annonce trouvée',
+        detail: 'Aucune annonce ne correspond à ta recherche',
+      });
+    } else {
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Annonces trouvées',
+        detail: 'Nous avons trouvé ' + ads.length + ' annonce(s)',
+      });
+    }
   }
 
   onSubmit() {
-    const metalGenres = Object.keys(musicStylesEnum).filter(key => this.selectedItems.includes(musicStylesEnum[key as keyof typeof musicStylesEnum]));
+    const metalGenres = this.selectedMetalStyles.map((style) => style.code);
 
-
-    this.adService.searchAds.call(this.adService, this.searchForm.value.musicianType, metalGenres, this.searchForm.value.location).subscribe((ads: Ad[]) => {
-      this.ads = ads;
-      this.resultNumber = ads.length;
-      this.showAds = true;
-    });
+    this.adService.searchAds
+      .call(
+        this.adService,
+        this.searchForm.value.musicianType,
+        metalGenres,
+        this.searchForm.value.location
+      )
+      .subscribe((ads: Ad[]) => {
+        this.ads = ads;
+        this.showToastResults(ads);
+      });
   }
 }
