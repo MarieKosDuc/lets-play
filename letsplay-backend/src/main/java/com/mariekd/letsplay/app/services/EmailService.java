@@ -45,7 +45,19 @@ public class EmailService {
         javaMailSender.send(message);
     }
 
-    public void sendContactEmail(String from, String subject, String text) {
-        //TODO : à créer
+    public void sendContactEmail(String userSenderEmail,
+                                 String to, String subject, String text) throws MessagingException {
+        MimeMessage message = javaMailSender.createMimeMessage();
+
+        message.setFrom(new InternetAddress("no-reply@letsplay-metal.fr"));
+        message.setRecipients(MimeMessage.RecipientType.TO, to);
+        message.setSubject(subject);
+
+        String htmlContent = "<p>" + text + "</p>"
+                + "<p>Ce message t'es envoyé par : <a href=mailto" + userSenderEmail + "></a> </p>"
+                + "<p>Musicalement, <br> L'équipe Let's Play</p>";
+        message.setContent(htmlContent, "text/html; charset=utf-8");
+
+        javaMailSender.send(message);
     }
 }
