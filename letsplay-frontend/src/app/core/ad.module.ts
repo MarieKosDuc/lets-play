@@ -14,6 +14,7 @@ import { AdsListComponent } from './ads-list-component/ads-list.component';
 import { SearchComponent } from './search-component/search.component';
 import { AdCreateComponent } from './ad-create-component/ad-create.component';
 import { AdRecapComponent } from './ad-recap/ad-recap.component';
+import { ContactComponent } from './contact-component/contact.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { AdRecapComponent } from './ad-recap/ad-recap.component';
     AdsListComponent,
     SearchComponent,
     AdCreateComponent,
-    AdRecapComponent
+    AdRecapComponent,
+    ContactComponent
   ],
   imports: [
     CommonModule,

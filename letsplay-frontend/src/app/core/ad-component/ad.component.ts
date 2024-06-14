@@ -96,7 +96,7 @@ export class AdComponent implements OnInit {
         detail: 'Tu dois être connecté pour répondre à une annonce',
       });
     } else {
-      this.router.navigateByUrl('/contact');
+      this.router.navigate(['/contact', this.ad?.id]);
     }
   }
 }

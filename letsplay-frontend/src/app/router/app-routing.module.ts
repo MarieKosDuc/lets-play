@@ -7,7 +7,7 @@ import { SignupComponent } from '../authentication/signup-component/signup.compo
 import { ProfileComponent } from '../authentication/profile-component/profile.component';
 import { AdCreateComponent } from '../core/ad-create-component/ad-create.component';
 import { AdComponent } from '../core/ad-component/ad.component';
-import { ContactComponent } from '../core/contact/contact.component';
+import { ContactComponent } from '../core/contact-component/contact.component';
 
 const routes: Routes = [
   { path: 'home', component: AdsListComponent },
@@ -18,7 +18,7 @@ const routes: Routes = [
   { path: 'profile', component: ProfileComponent}, //TODO : profile/{id} to access other profiles
   { path: 'my-ads', component: AdsListComponent},
   { path: 'create-ad', component: AdCreateComponent},  
-  { path: 'contact', component: ContactComponent},
+  { path: 'contact/:id', component: ContactComponent},
   { path: '', redirectTo: '/home', pathMatch: 'full' }
 ]; //TODO : add authgard so that non identified users can only access ads and search
 
