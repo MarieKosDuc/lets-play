@@ -9,9 +9,9 @@ import { ScrollTopModule } from 'primeng/scrolltop';
 import { MenuModule } from 'primeng/menu';
 import { Button, ButtonModule } from 'primeng/button';
 
-import { HeaderComponent } from '../header-component/header.component';
-import { FooterComponent } from '../footer-component/footer.component';
-import { ScrollToTopComponent } from '../scroll-to-top-component/scroll-to-top.component';
+import { HeaderComponent } from './header-component/header.component';
+import { FooterComponent } from './footer-component/footer.component';
+import { ScrollToTopComponent } from './scroll-to-top-component/scroll-to-top.component';
 
 @NgModule({
   declarations: [

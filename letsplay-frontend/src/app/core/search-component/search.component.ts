@@ -11,7 +11,7 @@ import {
 import { MenuItem, MessageService } from 'primeng/api';
 
 import { Ad } from '../models/ad.model';
-import { AdService } from '../services/ad.service';
+import { AdService } from '../ad.service';
 import { musicStylesEnum } from '../enums/musicStylesEnum';
 
 interface MetalStyle {

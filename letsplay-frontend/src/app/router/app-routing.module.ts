@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AdsListComponent } from '../ad-components/ads-list-component/ads-list.component';
-import { SearchComponent } from '../ad-components/search-component/search.component';
+import { AdsListComponent } from '../core/ads-list-component/ads-list.component';
+import { SearchComponent } from '../core/search-component/search.component';
 import { LoginComponent } from '../authentication/login-component/login.component';
 import { SignupComponent } from '../authentication/signup-component/signup.component';
 import { ProfileComponent } from '../authentication/profile-component/profile.component';
-import { AdCreateComponent } from '../ad-components/ad-create-component/ad-create.component';
-import { AdComponent } from '../ad-components/ad-component/ad.component';
-import { ContactComponent } from '../messaging/contact/contact.component';
+import { AdCreateComponent } from '../core/ad-create-component/ad-create.component';
+import { AdComponent } from '../core/ad-component/ad.component';
+import { ContactComponent } from '../core/contact/contact.component';
 
 const routes: Routes = [
   { path: 'home', component: AdsListComponent },

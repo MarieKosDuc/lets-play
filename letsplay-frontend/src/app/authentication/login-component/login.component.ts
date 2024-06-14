@@ -3,7 +3,7 @@ import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { AuthenticationService } from '../services/authentication.service';
-import { StorageService } from 'src/app/_services/storage.service';
+import { AuthStorageService } from 'src/app/shared/services/storage.service';
 
 import { MessageService } from 'primeng/api';
 
@@ -19,12 +19,12 @@ export class LoginComponent {
   constructor(
     private authService: AuthenticationService,
     private router: Router,
-    private storageService: StorageService,
+    private authStorageService: AuthStorageService,
     private messageService: MessageService
   ) {}
 
   ngOnInit(): void {
-    if (this.storageService.isLoggedIn()) {
+    if (this.authStorageService.isLoggedIn()) {
       this.isLoggedIn = true;
     }
   }
@@ -38,7 +38,7 @@ export class LoginComponent {
 
     this.authService.login(username, password).subscribe(
       (response) => {
-        this.storageService.saveUser(response);
+        this.authStorageService.saveUser(response);
 
         this.isLoggedIn = true;
         this.loading = false;

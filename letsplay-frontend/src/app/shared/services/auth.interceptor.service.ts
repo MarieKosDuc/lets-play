@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest, HTTP_INTERCEPTORS, HttpErrorResponse } from '@angular/common/http';
 
-import { StorageService } from '../_services/storage.service';
-import { AuthenticationService } from '../authentication/services/authentication.service';
+import { AuthStorageService } from './storage.service';
+import { AuthenticationService } from '../../authentication/services/authentication.service';
 
 import { Observable, throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 
-import { EventBusService } from '../_shared/event-bus.service';
-import { EventData } from '../_shared/event.class';
+import { EventBusService } from './event-bus.service';
+import { EventData } from '../models/event.class';
 
 @Injectable()
 export class HttpRequestInterceptor implements HttpInterceptor {
@@ -16,7 +16,7 @@ export class HttpRequestInterceptor implements HttpInterceptor {
   private refreshToken?: string;
 
   constructor(
-    private storageService: StorageService,
+    private authStorageService: AuthStorageService,
     private authService: AuthenticationService,
     private eventBusService: EventBusService
   ) {}
@@ -46,9 +46,9 @@ export class HttpRequestInterceptor implements HttpInterceptor {
     if (!this.isRefreshing) {
       this.isRefreshing = true;
 
-      if (this.storageService.isLoggedIn()) {
-        this.refreshToken = this.storageService.getUser().refreshToken;
-        console.log('User logged in. Refreshing token for: ' + this.storageService.getUser());
+      if (this.authStorageService.isLoggedIn()) {
+        this.refreshToken = this.authStorageService.getUser().refreshToken;
+        console.log('User logged in. Refreshing token for: ' + this.authStorageService.getUser());
 
         return this.authService.refreshToken(this.refreshToken || '').pipe(
           switchMap(() => {

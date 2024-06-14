@@ -1,8 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
-import { AdService } from '../services/ad.service';
-import { StorageService } from 'src/app/_services/storage.service';
+import { AdService } from '../ad.service';
+import { AuthStorageService } from 'src/app/shared/services/storage.service';
 import { Ad } from '../models/ad.model';
 import { User } from 'src/app/authentication/models/user.model';
 
@@ -22,12 +22,12 @@ export class AdRecapComponent implements OnInit {
   constructor(
     private router: Router,
     private adService: AdService,
-    private storageService: StorageService,
+    private authStorageService: AuthStorageService,
     private messageService: MessageService
   ) {}
 
   ngOnInit(): void {
-    this.user = this.storageService.getUser();
+    this.user = this.authStorageService.getUser();
   }
 
   isUserAuthor(): boolean {

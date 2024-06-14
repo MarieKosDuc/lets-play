@@ -5,8 +5,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { MessageService } from 'primeng/api';
 
 import { Ad } from '../models/ad.model';
-import { AdService } from '../services/ad.service';
-import { StorageService } from '../../_services/storage.service';
+import { AdService } from '../ad.service';
+import { AuthStorageService } from '../../shared/services/storage.service';
 
 import { musicStylesEnum } from '../enums/musicStylesEnum';
 import { User } from 'src/app/authentication/models/user.model';
@@ -30,12 +30,12 @@ export class AdComponent implements OnInit {
     private route: ActivatedRoute,
     private adService: AdService,
     private _location: Location,
-    private storageService: StorageService,
+    private authStorageService: AuthStorageService,
     private messageService: MessageService
   ) {}
 
   ngOnInit(): void {
-    this.storageService.user$.subscribe((user) => {
+    this.authStorageService.user$.subscribe((user) => {
       this.connectedUser = user;
     });
 
@@ -72,7 +72,12 @@ export class AdComponent implements OnInit {
   }
 
   isAuthorUser() {
-    return this.connectedUser.username === this.ad.postedBy;
+    if(this.connectedUser) {
+      return this.connectedUser.username === this.ad.postedBy;
+    }
+    else {
+      return false;
+    }
   }
 
   updateAd() {

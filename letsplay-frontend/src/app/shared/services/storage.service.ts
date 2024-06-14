@@ -6,7 +6,7 @@ const USER_KEY = 'auth-user';
 @Injectable({
   providedIn: 'root'
 })
-export class StorageService {
+export class AuthStorageService {
   public user$: Observable<any>;
 
   private userSubject: BehaviorSubject<any>;

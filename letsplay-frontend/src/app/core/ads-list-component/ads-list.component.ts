@@ -2,8 +2,8 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { Ad } from '../models/ad.model';
-import { AdService } from '../services/ad.service';
-import { StorageService } from 'src/app/_services/storage.service';
+import { AdService } from '../ad.service';
+import { AuthStorageService } from 'src/app/shared/services/storage.service';
 import { User } from '../../authentication/models/user.model';
 
 @Component({
@@ -17,7 +17,7 @@ export class AdsListComponent implements OnInit {
   constructor(
     private adService: AdService,
     private router: Router,
-    private store: StorageService
+    private authStorageService: AuthStorageService
   ) {}
 
   protected user!: User | undefined;
@@ -26,7 +26,7 @@ export class AdsListComponent implements OnInit {
   protected noAdsForUser: boolean = false;
 
   ngOnInit(): void {
-    this.user = this.store.getUser();
+    this.user = this.authStorageService.getUser();
 
     if (this.router.url === '/home') {
       this.getAllAds();

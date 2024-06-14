@@ -6,9 +6,9 @@ import { FormsModule } from '@angular/forms';
 
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
-import { LoginComponent } from '../login-component/login.component';
-import { SignupComponent } from '../signup-component/signup.component';
-import { ProfileComponent } from '../profile-component/profile.component';
+import { LoginComponent } from './login-component/login.component';
+import { SignupComponent } from './signup-component/signup.component';
+import { ProfileComponent } from './profile-component/profile.component';
 
 @NgModule({
   declarations: [

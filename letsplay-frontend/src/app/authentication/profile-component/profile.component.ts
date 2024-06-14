@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { StorageService } from 'src/app/_services/storage.service';
+import { AuthStorageService } from 'src/app/shared/services/storage.service';
 import { AuthenticationService } from '../services/authentication.service';
 import { User } from '../models/user.model';
 
@@ -21,12 +21,12 @@ export class ProfileComponent {
   myCloudName: String = this.cloudinaryService.getCloudName();
 
 
-  constructor(private cloudinaryService: CloudinaryService, private storageService: StorageService, private authService: AuthenticationService
+  constructor(private cloudinaryService: CloudinaryService, private authStorageService: AuthStorageService, private authService: AuthenticationService
   ) {}
 
 
   ngOnInit() {
-    this.storageService.user$.subscribe((user) => {
+    this.authStorageService.user$.subscribe((user) => {
       this.user = user;
 
       this.userPicture = user?.profilePicture || '';

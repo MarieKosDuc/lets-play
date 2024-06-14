@@ -6,10 +6,10 @@ import { Router } from '@angular/router';
 import { AuthenticationService } from 'src/app/authentication/services/authentication.service';
 import { User } from 'src/app/authentication/models/user.model';
 import { AdCreation } from '../models/adCreation.model';
-import { musicStylesEnum } from 'src/app/ad-components/enums/musicStylesEnum';
+import { musicStylesEnum } from '../enums/musicStylesEnum';
 
 import { CloudinaryService } from 'src/app/layout/cloudinary/cloudinary.service';
-import { AdService } from '../services/ad.service';
+import { AdService } from '../ad.service';
 
 import { MessageService } from 'primeng/api';
 

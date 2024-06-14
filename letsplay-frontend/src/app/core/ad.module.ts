@@ -9,11 +9,11 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ToastModule } from 'primeng/toast';
 
-import { AdComponent } from '../ad-component/ad.component';
-import { AdsListComponent } from '../ads-list-component/ads-list.component';
-import { SearchComponent } from '../search-component/search.component';
-import { AdCreateComponent } from '../ad-create-component/ad-create.component';
-import { AdRecapComponent } from '../ad-recap/ad-recap.component';
+import { AdComponent } from './ad-component/ad.component';
+import { AdsListComponent } from './ads-list-component/ads-list.component';
+import { SearchComponent } from './search-component/search.component';
+import { AdCreateComponent } from './ad-create-component/ad-create.component';
+import { AdRecapComponent } from './ad-recap/ad-recap.component';
 
 @NgModule({
   declarations: [

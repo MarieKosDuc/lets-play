@@ -4,11 +4,11 @@ import { environment } from 'src/environments/environment';
 
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 
-import { Ad } from '../models/ad.model';
-import { AdCreation } from '../models/adCreation.model';
+import { Ad } from './models/ad.model';
+import { AdCreation } from './models/adCreation.model';
 import { User } from 'src/app/authentication/models/user.model';
 
-import { StorageService } from 'src/app/_services/storage.service';
+import { AuthStorageService } from 'src/app/shared/services/storage.service';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
@@ -23,7 +23,7 @@ const ADS_API = `${environment.apiUrl}/ads`;
 
 export class AdService {
 
-  constructor(private http: HttpClient, private storageService: StorageService) { }
+  constructor(private http: HttpClient, private authStorageService: AuthStorageService) { }
   
   ads: Ad[] = [];
   ad!: Ad;
@@ -31,7 +31,7 @@ export class AdService {
   user?: User;
 
   ngOnInit() {
-    this.storageService.user$.subscribe((user) => {
+    this.authStorageService.user$.subscribe((user) => {
       this.user = user;
     });
   }
