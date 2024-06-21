@@ -15,7 +15,7 @@ const routes: Routes = [
   { path: 'search', component: SearchComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: SignupComponent},
-  { path: 'profile', component: ProfileComponent}, //TODO : profile/{id} to access other profiles
+  { path: 'profile', component: ProfileComponent},
   { path: 'my-ads', component: AdsListComponent},
   { path: 'create-ad', component: AdCreateComponent},  
   { path: 'contact/:id', component: ContactComponent},

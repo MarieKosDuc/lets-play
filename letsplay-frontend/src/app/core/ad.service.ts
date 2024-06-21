@@ -25,10 +25,10 @@ export class AdService {
 
   constructor(private http: HttpClient, private authStorageService: AuthStorageService) { }
   
-  ads: Ad[] = [];
-  ad!: Ad;
+  protected ads: Ad[] = [];
+  protected ad!: Ad;
 
-  user?: User;
+  protected user?: User;
 
   ngOnInit() {
     this.authStorageService.user$.subscribe((user) => {
