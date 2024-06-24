@@ -9,12 +9,14 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { LoginComponent } from './login-component/login.component';
 import { SignupComponent } from './signup-component/signup.component';
 import { ProfileComponent } from './profile-component/profile.component';
+import { AccountVerifyComponent } from './account-verify/account-verify.component';
 
 @NgModule({
   declarations: [
     LoginComponent,
     SignupComponent,
-    ProfileComponent
+    ProfileComponent,
+    AccountVerifyComponent
   ],
   imports: [
     CommonModule,
@@ -25,7 +27,8 @@ import { ProfileComponent } from './profile-component/profile.component';
   exports: [
     LoginComponent,
     SignupComponent,
-    ProfileComponent
+    ProfileComponent,
+    AccountVerifyComponent
   ]
 })
 export class AuthenticationModule { }
