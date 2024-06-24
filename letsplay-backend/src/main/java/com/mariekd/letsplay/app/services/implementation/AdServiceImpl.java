@@ -3,6 +3,8 @@ package com.mariekd.letsplay.app.services.implementation;
 import com.mariekd.letsplay.app.entities.Ad;
 import com.mariekd.letsplay.app.repositories.AdRepository;
 import com.mariekd.letsplay.app.services.AdService;
+import com.mariekd.letsplay.authentication.entities.User;
+import com.mariekd.letsplay.authentication.repositories.UserRepository;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -15,8 +17,11 @@ public class AdServiceImpl implements AdService {
 
     private final AdRepository adRepository;
 
-    public AdServiceImpl(AdRepository AdRepository) {
+    private final UserRepository userRepository;
+
+    public AdServiceImpl(AdRepository AdRepository, UserRepository userRepository) {
         this.adRepository = AdRepository;
+        this.userRepository = userRepository;
     }
 
 
