@@ -1,0 +1,19 @@
+<div class="card" *ngIf="isValidationSuccess">
+  <h2>Ton compte est maintenant validé !</h2>
+  <img src="../../../assets/images/horns-up.png" alt="Dessin horns up!" />
+  <div id="confirm-message">
+    <a routerLink="/login">Connecte-toi</a> pour créer tes annonces et répondre
+    aux celles des autres membres.
+  </div>
+</div>
+
+<div class="card" *ngIf="!isValidationSuccess">
+  <h2>Erreur de validation...</h2>
+  <div id="confirm-message">
+    <p>Il semble que ce lien ait déjà été utilisé ou qu'il soit incorrect.</p>
+    <p>
+      Si tu as besoin d'aide, n'hésite pas à
+      <a href="mailto:{{ mailto }}" class="link">contacter un administrateur</a>
+    </p>
+  </div>
+</div>

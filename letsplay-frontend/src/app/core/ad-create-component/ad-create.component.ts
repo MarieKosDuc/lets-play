@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { AuthenticationService } from 'src/app/authentication/services/authentication.service';
+import { AuthStorageService } from 'src/app/shared/services/storage.service';
 import { User } from 'src/app/authentication/models/user.model';
 import { AdCreation } from '../models/adCreation.model';
 import { musicStylesEnum } from '../enums/musicStylesEnum';
@@ -44,7 +44,7 @@ export class AdCreateComponent {
   protected dropdownSettings = {};
 
   constructor(
-    private authService: AuthenticationService,
+    private authStorageService: AuthStorageService,
     private cloudinaryService: CloudinaryService,
     private adService: AdService,
     private messageService: MessageService,
@@ -73,10 +73,8 @@ export class AdCreateComponent {
       allowSearchFilter: true,
     };
 
-    this.authService.getCurrentUser().subscribe((user: User | null) => {
-      if (user != null) {
-        this.user = user;
-      }
+    this.authStorageService.user$.subscribe((user) => {
+      this.user = user;
     });
 
     // @ts-ignore: Unreachable code error

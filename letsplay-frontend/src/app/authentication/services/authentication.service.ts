@@ -57,6 +57,11 @@ export class AuthenticationService {
     return this.http.post<User>(AUTH_API + '/register', {email, username, profilePicture, password}, httpOptions);
   }
 
+  verifyAccount(token: String): Observable<any>{
+    const url = `${AUTH_API}/verify/${token}`;
+    return this.http.post(url, httpOptions);
+  }
+
   updateUser(password: String, id: String): Observable<User> {
     return this.http.put<User>(AUTH_API + '/update' + `/${id}`, { password }, httpOptions).pipe(
       tap((user: User) => {
