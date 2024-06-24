@@ -13,15 +13,15 @@ import { EventBusService } from 'src/app/shared/services/event-bus.service';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.css']
+  styleUrls: ['./header.component.css'],
 })
 export class HeaderComponent implements OnInit {
-  public showDescription!: boolean;
-  public userLoggedIn = false;
-  public userInfos!: User | null;
-  public items: MenuItem[] | undefined;
-  public itemsSmall: MenuItem[] | undefined;
-  public itemsSmallConnected: MenuItem[] | undefined;
+  protected showDescription!: boolean;
+  protected userLoggedIn = false;
+  protected userInfos!: User | null;
+  protected items: MenuItem[] | undefined;
+  protected itemsSmall: MenuItem[] | undefined;
+  protected itemsSmallConnected: MenuItem[] | undefined;
 
   private userSubscription: Subscription;
 
@@ -53,6 +53,7 @@ export class HeaderComponent implements OnInit {
     });
 
     this.userLoggedIn = this.authStorageService.isLoggedIn();
+    this.userInfos = this.authStorageService.getUser();
 
     this.eventBusSubscription = this.eventBusService.on('logout', () => {
       console.log('Logout event received');
@@ -65,7 +66,9 @@ export class HeaderComponent implements OnInit {
           {
             label: 'Profil',
             command: () => {
-              this.router.navigate(['/profile']);
+              if (this.userInfos && this.userInfos.id) {
+                this.router.navigate(['/profile', this.userInfos.id]);
+              }
             },
           },
           {
@@ -127,7 +130,9 @@ export class HeaderComponent implements OnInit {
           {
             label: 'Profil',
             command: () => {
-              this.router.navigate(['/profile']);
+              if (this.userInfos && this.userInfos.id) {
+                this.router.navigate(['/profile', this.userInfos.id]);
+              }
             },
           },
           {
@@ -165,7 +170,11 @@ export class HeaderComponent implements OnInit {
         this.userLoggedIn = false;
         this.userInfos = null;
         this.authStorageService.clean();
-        this.messageService.add({ severity: 'info', summary: 'Déconnexion', detail: 'Tu es deconnecté.e' });
+        this.messageService.add({
+          severity: 'info',
+          summary: 'Déconnexion',
+          detail: 'Tu es deconnecté.e',
+        });
         setTimeout(() => {
           this.router.navigate(['/home']);
         }, 1000);

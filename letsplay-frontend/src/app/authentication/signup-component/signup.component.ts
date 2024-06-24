@@ -10,7 +10,8 @@ import { MessageService } from 'primeng/api';
   styleUrls: ['./signup.component.css'],
 })
 export class SignupComponent {
-  protected hasMessage: boolean = true;
+
+  protected registerOk: boolean = false;
 
   protected passwordRegex =
     /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/;
@@ -54,10 +55,10 @@ export class SignupComponent {
       .subscribe(
         (response) => {
           console.log(response);
-          this.hasMessage = true;
+          this.registerOk = true;
         },
         (error) => {
-          this.hasMessage = true;
+          this.registerOk = true;
           if (error.status == 409) {
             this.messageService.add ({ severity: 'error', summary: 'Erreur', detail: 'Cet email ou ce nom d\'utilisateur est déjà utilisé !' });
           } else {

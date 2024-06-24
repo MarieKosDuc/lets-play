@@ -103,6 +103,7 @@ body {
     display: flex;
     justify-content: flex-end;
     margin-top: 1rem;
+    max-width: 15rem;
   }
 }
 

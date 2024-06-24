@@ -1,5 +1,6 @@
 package com.mariekd.letsplay.authentication.jwt;
 
+import com.mariekd.letsplay.authentication.exceptions.UnauthorizedException;
 import com.mariekd.letsplay.authentication.services.implementations.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

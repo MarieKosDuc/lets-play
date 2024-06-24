@@ -1,7 +1,7 @@
 <div class="card">
-  <h2 *ngIf="!hasMessage">Crée ton compte !</h2>
+  <h2 *ngIf="!registerOk">Crée ton compte !</h2>
 
-  <div *ngIf="!hasMessage" class="register-component-form">
+  <div *ngIf="!registerOk" class="register-component-form">
     <form #signupForm="ngForm" (ngSubmit)="onSubmit(signupForm)">
       <label for="userName">Nom d'utilisateur :</label>
       <input
@@ -30,7 +30,6 @@
       >
       <input
         type="password"
-        id="password"
         placeholder="Mot de passe"
         name="password"
         ngModel
@@ -59,7 +58,7 @@
     </div>
   </div>
 
-  <div *ngIf="hasMessage" class="register-component-form">
+  <div *ngIf="registerOk" class="register-component-form">
     <h2>Ton compte a bien été créé !</h2>
     <p>Vérifie ta boîte mail pour l'activer.</p>
     <p style="font-style: italic;">ATTENTION ! Ce lien n'est valable que 24h !</p>

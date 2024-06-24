@@ -5,16 +5,16 @@ import lombok.Data;
 import java.util.UUID;
 
 @Data
-public class UserDTO {
+public class UserLightDTO {
     private UUID id;
     private String name;
 
-    public UserDTO(UUID id, String name) {
+    public UserLightDTO(UUID id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public UserDTO() {
+    public UserLightDTO() {
     }
 
     public UUID getId() {

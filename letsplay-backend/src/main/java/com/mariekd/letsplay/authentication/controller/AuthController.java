@@ -1,7 +1,25 @@
 package com.mariekd.letsplay.authentication.controller;
 
-import com.mariekd.letsplay.app.dto.UserDTO;
-import com.mariekd.letsplay.app.dto.mappers.UserMapper;
+import com.mariekd.letsplay.authentication.exceptions.UnauthorizedException;
+import com.mariekd.letsplay.authentication.payload.request.UserUpdateRequest;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+
 import com.mariekd.letsplay.app.services.EmailService;
 import com.mariekd.letsplay.authentication.entities.RefreshToken;
 import com.mariekd.letsplay.authentication.entities.Role;
@@ -18,22 +36,6 @@ import com.mariekd.letsplay.authentication.services.RefreshTokenService;
 import com.mariekd.letsplay.authentication.services.ValidAccountTokenService;
 import com.mariekd.letsplay.authentication.services.implementations.RoleServiceImpl;
 import com.mariekd.letsplay.authentication.services.implementations.UserServiceImpl;
-import jakarta.mail.MessagingException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -210,18 +212,36 @@ public class AuthController {
     }
 
     @PreAuthorize("hasRole('USER')")
-    @PutMapping("/{id}")
-    public User updateUser(@PathVariable UUID id, @RequestBody User user, HttpServletRequest request) {
+    @PutMapping("/password/{id}")
+    public ResponseEntity<Object> updatePassword(@PathVariable UUID id, @RequestBody String password, HttpServletRequest request) {
+        if (isUserAuthorizedToModify(id, request))
+            try {
+                userService.updateUserPassword(id, password);
+                return setResponseMessage("Password modified successfully", HttpStatus.OK);
+            } catch (final Exception e) {
+                LOGGER.error("Error modifying password: {}", e.getMessage());
+                return setResponseMessage("Error changing password: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        else {
+            throw new UnauthorizedException("You are not authorized to modify this user");
+        }
+    }
 
+    @PreAuthorize("hasRole('USER')")
+    @PutMapping("/{id}")
+    public User updateUser(@PathVariable UUID id, @RequestBody UserUpdateRequest updateRequest, HttpServletRequest request) {
         if (isUserAuthorizedToModify(id, request)) {
             try {
-                return userService.updateUser(id, user); // A MODIFIER
-            } catch (final Exception e) { // A MODIFIER
+                User user = userService.getUserById(id);
+                user.setName(updateRequest.name());
+                user.setProfilePicture(updateRequest.profilePicture());
+                return userService.updateUser(id, user);
+            } catch (final Exception e) {
                 LOGGER.error("Error updating user: {}", e.getMessage());
                 throw new RuntimeException("Error updating user: " + e.getMessage()); // A modifier ?
             }
         } else {
-            throw new AccessDeniedException("You are not authorized to modify this user");
+            throw new UnauthorizedException("You are not authorized to modify this user");
         }
     }
 
@@ -232,7 +252,7 @@ public class AuthController {
         if (isUserAuthorizedToModify(id, request)) {
             userService.deleteUser(id);
         } else {
-            throw new AccessDeniedException("You are not authorized to delete this user");
+            throw new UnauthorizedException("You are not authorized to delete this user");
         }
     }
 
@@ -255,7 +275,7 @@ public class AuthController {
         if (connectedUser.getId().equals(userId)) {
             return true;
         } else {
-            throw new AccessDeniedException("You are not authorized to modify this user");
+            throw new UnauthorizedException("You are not authorized to modify this user");
         }
     }
 
