@@ -1,6 +1,7 @@
 package com.mariekd.letsplay.app.services;
 
 import com.mariekd.letsplay.app.entities.Ad;
+import com.mariekd.letsplay.authentication.entities.User;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
@@ -23,4 +24,5 @@ public interface AdService {
     void deleteById(int id);
 
     List<Ad> getAdsByUser(UUID userId);
+
 }

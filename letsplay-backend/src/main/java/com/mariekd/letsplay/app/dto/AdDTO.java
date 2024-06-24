@@ -18,7 +18,7 @@ public class AdDTO {
     private String description;
 
     public AdDTO(int id, Date createdAt, String postedBy, String title,
-                 String seekingMusicianType, String image, String styleType,
+                 String seekingMusicianType, String image, String[] styles,
                  String location, String description) {
         this.id = id;
         this.createdAt = createdAt;

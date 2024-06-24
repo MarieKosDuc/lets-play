@@ -16,8 +16,10 @@ import com.mariekd.letsplay.authentication.services.RefreshTokenService;
 import com.mariekd.letsplay.authentication.services.ValidAccountTokenService;
 import com.mariekd.letsplay.authentication.services.implementations.RoleServiceImpl;
 import com.mariekd.letsplay.authentication.services.implementations.UserServiceImpl;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -48,8 +50,10 @@ public class AuthController {
     private final RoleServiceImpl roleService;
     private final RefreshTokenService refreshTokenService;
     private final ValidAccountTokenService validAccountTokenService;
-
     private final EmailService emailService;
+
+    @Value("${letsplay.app.url}")
+    private String appUrl;
 
     public AuthController(AuthenticationManager authenticationManager,
                           JwtService jwtService, UserServiceImpl userService, RoleServiceImpl roleService,
@@ -165,10 +169,7 @@ public class AuthController {
 
                 ValidAccountToken validationToken = validAccountTokenService.createValidationToken(user);
 
-                emailService.sendHtmlEmail(user.getEmail(), "Validation de ton compte Let's Play",
-                        "Bienvenue sur Let's Play !", "Pour valider ton compte, clique sur le lien suivant :" +
-                                "\n Attention, ce lien est valable 24h ! \n",
-                        "http://localhost:8080/api/users/verify/" + validationToken.getToken());
+                sendValidationEmail(user, validationToken);
 
                 LOGGER.info("Validation email sent to: {}", user.getEmail(), " with token: {}", validationToken.getToken());
 
@@ -202,7 +203,7 @@ public class AuthController {
             return ResponseEntity.ok().body("User validated successfully: " + user.getName());
         } catch (final Exception e) {
             LOGGER.error("Error validating user: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error validating user: " + e.getMessage()); //TODO changer type d'erreur
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error validating user: " + e.getMessage()); //TODO changer type d'erreur
         }
     }
 
@@ -251,4 +252,12 @@ public class AuthController {
         }
     }
 
+    private void sendValidationEmail(User user, ValidAccountToken validationToken) throws MessagingException {
+        String welcomeMessage = String.format("Bienvenue sur Let's Play, %s !", user.getName());
+        String validationLink = appUrl + validationToken.getToken();
+
+        emailService.sendConfirmAccountEmail(user.getEmail(), "Validation de ton compte Let's Play",
+                welcomeMessage, "Pour valider ton compte, clique sur le lien suivant : " +
+                        "\n Attention, ce lien est valable 24h ! \n", validationLink);
+    }
 }
