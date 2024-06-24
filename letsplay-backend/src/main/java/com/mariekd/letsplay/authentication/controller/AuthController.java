@@ -1,5 +1,7 @@
 package com.mariekd.letsplay.authentication.controller;
 
+import com.mariekd.letsplay.app.dto.UserDTO;
+import com.mariekd.letsplay.app.dto.mappers.UserMapper;
 import com.mariekd.letsplay.app.services.EmailService;
 import com.mariekd.letsplay.authentication.entities.RefreshToken;
 import com.mariekd.letsplay.authentication.entities.Role;
@@ -156,7 +158,7 @@ public class AuthController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<String> createUser(@RequestBody SignupRequest userInfos) {
+    public ResponseEntity<?> createUser(@RequestBody SignupRequest userInfos) {
         try {
             if (!userService.existsByEmail(userInfos.email()) && !userService.existsByUserName(userInfos.username())) {
                 Role userRole = roleService.findByName("USER");
@@ -173,22 +175,22 @@ public class AuthController {
 
                 LOGGER.info("Validation email sent to: {}", user.getEmail(), " with token: {}", validationToken.getToken());
 
+                return setResponseMessage("User created successfully: " + user.getName(), HttpStatus.CREATED);
 
-                return ResponseEntity.ok().body("User created successfully: " + user.getName());
             } else {
                 LOGGER.error("User already exists");
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("User with this name or email already exists");
+                return setResponseMessage("User with this name or email already exists", HttpStatus.CONFLICT);
             }
         } catch (final Exception e) {
             LOGGER.error("Error creating user: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating user: " + e.getMessage());
+            return setResponseMessage("Error creating user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PostMapping("/verify/{token}")
-    public ResponseEntity<String> validateUser(@PathVariable("token") String token) {
+    public ResponseEntity<Object> validateUser(@PathVariable("token") String token) {
         try {
-            ValidAccountToken checkedToken = validAccountTokenService.findByToken(token) // Ne fonctionne pas
+            ValidAccountToken checkedToken = validAccountTokenService.findByToken(token)
                     .orElseThrow(() -> new RuntimeException("Token not found"));
 
             User user = checkedToken.getUser();
@@ -200,10 +202,10 @@ public class AuthController {
 
             LOGGER.info("User validated: {}", user.getName());
 
-            return ResponseEntity.ok().body("User validated successfully: " + user.getName());
+            return setResponseMessage("User validated successfully: " + user.getName(), HttpStatus.OK);
         } catch (final Exception e) {
             LOGGER.error("Error validating user: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error validating user: " + e.getMessage()); //TODO changer type d'erreur
+            return setResponseMessage("Error validating user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -212,13 +214,18 @@ public class AuthController {
     public User updateUser(@PathVariable UUID id, @RequestBody User user, HttpServletRequest request) {
 
         if (isUserAuthorizedToModify(id, request)) {
-            return userService.updateUser(id, user);
+            try {
+                return userService.updateUser(id, user); // A MODIFIER
+            } catch (final Exception e) { // A MODIFIER
+                LOGGER.error("Error updating user: {}", e.getMessage());
+                throw new RuntimeException("Error updating user: " + e.getMessage()); // A modifier ?
+            }
         } else {
             throw new AccessDeniedException("You are not authorized to modify this user");
         }
     }
 
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable UUID id, HttpServletRequest request){
 
@@ -242,7 +249,7 @@ public class AuthController {
         return userService.getAllUsers();
     }
 
-    public boolean isUserAuthorizedToModify(UUID userId, HttpServletRequest request) {
+    private boolean isUserAuthorizedToModify(UUID userId, HttpServletRequest request) {
         User connectedUser = userService.getUserFromRequest(request);
 
         if (connectedUser.getId().equals(userId)) {
@@ -252,12 +259,19 @@ public class AuthController {
         }
     }
 
+    private ResponseEntity<Object> setResponseMessage(String message, HttpStatus status) {
+        Map<String, String> responseMessage = new HashMap<>();
+        responseMessage.put("message", message);
+        return new ResponseEntity<>(responseMessage, status);
+    }
+
     private void sendValidationEmail(User user, ValidAccountToken validationToken) throws MessagingException {
         String welcomeMessage = String.format("Bienvenue sur Let's Play, %s !", user.getName());
-        String validationLink = appUrl + validationToken.getToken();
+        String validationLink = appUrl + "/verify/" + validationToken.getToken();
 
         emailService.sendConfirmAccountEmail(user.getEmail(), "Validation de ton compte Let's Play",
                 welcomeMessage, "Pour valider ton compte, clique sur le lien suivant : " +
-                        "\n Attention, ce lien est valable 24h ! \n", validationLink);
+                        "\n Attention, ce lien est valable 24h ! \n",
+                "<a href='" + validationLink + "'>Valider mon compte</a>");
     }
 }

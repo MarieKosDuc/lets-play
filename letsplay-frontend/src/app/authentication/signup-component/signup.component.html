@@ -1,62 +1,68 @@
 <div class="card">
-  <h2>Crée ton compte !</h2>
+  <h2 *ngIf="!hasMessage">Crée ton compte !</h2>
 
-  <form #signupForm="ngForm" (ngSubmit)="onSubmit(signupForm)">
-    <label for="userName">Nom d'utilisateur :</label><br />
-    <input
-      type="text"
-      id="userName"
-      placeholder="Ton nom"
-      name="userName"
-      ngModel
-      required
-      class="field"
-    />
-    <label for="email">Adresse e-mail :</label><br />
-    <input
-      type="text"
-      id="email"
-      placeholder="e-mail"
-      name="email"
-      ngModel
-      required
-      email
-      class="field"
-    />
-    <label for="password"
-      >Mot de passe (minimum 8 caractères, un chiffre, un caractère
-      spécial):</label
-    ><br />
-    <input
-      type="password"
-      id="password"
-      placeholder="Mot de passe"
-      name="password"
-      ngModel
-      required
-      class="field"
-    />
-    <label for="confirmPassword">Confirmer le mot de passe :</label><br />
-    <input
-      type="password"
-      placeholder="Mot de passe"
-      name="confirmPassword"
-      ngModel
-      required
-      class="field"
-    />
-    <button type="submit" [disabled]="signupForm.form.invalid" class="button">
-      S'inscrire
-    </button>
-  </form>
-  <div *ngIf="hasMessage">{{ message }}</div>
-
-  <div>
-    <p class="text-sm text-center text-gray-900 dark:text-gray-300">
-      Déjà un compte ?
-      <a routerLink="/login" class="text-blue-600 hover:underline"
-        >Connecte-toi !</a
+  <div *ngIf="!hasMessage" class="register-component-form">
+    <form #signupForm="ngForm" (ngSubmit)="onSubmit(signupForm)">
+      <label for="userName">Nom d'utilisateur :</label>
+      <input
+        type="text"
+        id="userName"
+        placeholder="Ton nom"
+        name="userName"
+        ngModel
+        required
+        class="field"
+      />
+      <label for="email">Adresse e-mail :</label>
+      <input
+        type="text"
+        id="email"
+        placeholder="e-mail"
+        name="email"
+        ngModel
+        required
+        email
+        class="field"
+      />
+      <label for="password"
+        >Mot de passe (minimum 8 caractères, un chiffre, un caractère
+        spécial):</label
       >
-    </p>
+      <input
+        type="password"
+        id="password"
+        placeholder="Mot de passe"
+        name="password"
+        ngModel
+        required
+        class="field"
+      />
+      <label for="confirmPassword">Confirmer le mot de passe :</label>
+      <input
+        type="password"
+        placeholder="Mot de passe"
+        name="confirmPassword"
+        ngModel
+        required
+        class="field"
+      />
+      <button type="submit" [disabled]="signupForm.form.invalid" class="button">
+        S'inscrire
+      </button>
+    </form>
+
+    <div>
+      <p>
+        Déjà un compte ?
+        <a routerLink="/login">Connecte-toi !</a>
+      </p>
+    </div>
+  </div>
+
+  <div *ngIf="hasMessage" class="register-component-form">
+    <h2>Ton compte a bien été créé !</h2>
+    <p>Vérifie ta boîte mail pour l'activer.</p>
+    <p style="font-style: italic;">ATTENTION ! Ce lien n'est valable que 24h !</p>
+    <button class="button" (click)="backToHome()">Retour à l'accueil</button>
   </div>
 </div>
