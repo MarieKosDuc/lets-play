@@ -1,3 +1,11 @@
+.message-component-form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
 #message-text-input {
     height: 15rem;
 }
@@ -6,3 +14,4 @@
     text-align: center;
     font-size: small;
 }
+

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { User } from 'src/app/authentication/models/user.model';
 
 const USER_KEY = 'auth-user';
 
@@ -7,7 +8,7 @@ const USER_KEY = 'auth-user';
   providedIn: 'root'
 })
 export class AuthStorageService {
-  public user$: Observable<any>;
+  public user$: Observable<User>;
 
   private userSubject: BehaviorSubject<any>;
 

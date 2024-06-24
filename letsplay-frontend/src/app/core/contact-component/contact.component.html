@@ -4,21 +4,36 @@
     <a [routerLink]="['/ad', ad?.id]">{{ ad?.title }}</a>
   </h2>
 
-  <form [formGroup]="contactForm" (ngSubmit)="onSubmit()">
-    <textarea
-      id="message-text-input"
-      name="description"
-      class="field"
-      formControlName="description"
-      required
-    ></textarea>
+  <div class="message-component-form" *ngIf="!messageSent">
+    <form [formGroup]="contactForm" (ngSubmit)="onSubmit()">
+      <textarea
+        id="message-text-input"
+        name="textMessage"
+        class="field"
+        formControlName="textMessage"
+        required
+      ></textarea>
 
-    <button type="submit" class="button" [disabled]="">Envoyer</button>
-  </form>
+      <button type="submit" class="button" [disabled]="contactForm.invalid">
+        Envoyer
+      </button>
+    </form>
 
-  <p id="response-info">
-    Ce message sera envoyé par e-mail à l'auteur de l'annonce. Afin d'être
-    certain.e de ne pas rater sa réponse, pense à bien surveiller le dossier
-    "Courrier indésirable de tes emails !"
-  </p>
+    <p id="response-info">
+      Ce message sera envoyé par e-mail à l'auteur de l'annonce. Afin d'être
+      certain.e de ne pas rater sa réponse, pense à bien surveiller le dossier
+      "Courrier indésirable de tes emails !"
+    </p>
+  </div>
+
+  <div class="message-component-form" *ngIf="messageSent">
+    <p id="response-info">
+      Ton message a bien été envoyé à l'auteur de l'annonce. Tu devrais recevoir
+      une réponse très prochainement !
+    </p>
+    <button class="button"
+    (click)="backToAd()">
+     Retour à l'annonce
+    </button>
+  </div>
 </div>

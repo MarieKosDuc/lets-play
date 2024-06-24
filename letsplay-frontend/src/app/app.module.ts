@@ -17,7 +17,9 @@ import { AuthenticationModule } from './authentication/authentication.module';
 import { AppRoutingModule } from './router/app-routing.module';
 
 import { AppComponent } from './app.component';
+
 import { HttpRequestInterceptor, httpInterceptorProviders } from './shared/services/auth.interceptor.service';
+import { EmailingService } from './shared/services/emailing.service';
 
 
 @NgModule({
@@ -39,7 +41,7 @@ import { HttpRequestInterceptor, httpInterceptorProviders } from './shared/servi
   providers: [
     { provide: LOCALE_ID, useValue: 'fr-FR'}, 
     {provide: HTTP_INTERCEPTORS, useClass: HttpRequestInterceptor, multi: true},
-    MessageService,
+    MessageService, EmailingService
   ],
   bootstrap: [AppComponent]
 })
