@@ -7,8 +7,8 @@ import { MenuItem, MessageService } from 'primeng/api';
 
 import { AuthenticationService } from '../../authentication/services/authentication.service';
 import { User } from '../../authentication/models/user.model';
-import { StorageService } from '../../_services/storage.service';
-import { EventBusService } from 'src/app/_shared/event-bus.service';
+import { AuthStorageService } from '../../shared/services/storage.service';
+import { EventBusService } from 'src/app/shared/services/event-bus.service';
 
 @Component({
   selector: 'app-header',
@@ -30,11 +30,11 @@ export class HeaderComponent implements OnInit {
   constructor(
     private router: Router,
     private authService: AuthenticationService,
-    private storageService: StorageService,
+    private authStorageService: AuthStorageService,
     private eventBusService: EventBusService,
     private messageService: MessageService
   ) {
-    this.userSubscription = this.storageService.user$.subscribe((user) => {
+    this.userSubscription = this.authStorageService.user$.subscribe((user) => {
       this.userInfos = user;
       this.userLoggedIn = !!user;
     });
@@ -52,7 +52,7 @@ export class HeaderComponent implements OnInit {
       }
     });
 
-    this.userLoggedIn = this.storageService.isLoggedIn();
+    this.userLoggedIn = this.authStorageService.isLoggedIn();
 
     this.eventBusSubscription = this.eventBusService.on('logout', () => {
       console.log('Logout event received');
@@ -164,7 +164,7 @@ export class HeaderComponent implements OnInit {
       (response) => {
         this.userLoggedIn = false;
         this.userInfos = null;
-        this.storageService.clean();
+        this.authStorageService.clean();
         this.messageService.add({ severity: 'info', summary: 'Déconnexion', detail: 'Tu es deconnecté.e' });
         setTimeout(() => {
           this.router.navigate(['/home']);
