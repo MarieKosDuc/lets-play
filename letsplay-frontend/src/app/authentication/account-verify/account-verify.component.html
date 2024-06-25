@@ -1,4 +1,9 @@
-<div class="card" *ngIf="isValidationSuccess">
+<div class="card" *ngIf="loading">
+  <h2>Attente de validation</h2>
+  <p-progressSpinner ariaLabel="loading"></p-progressSpinner>
+</div>
+
+<div class="card" *ngIf="isValidationSuccess && !loading">
   <h2>Ton compte est maintenant validé !</h2>
   <img src="../../../assets/images/horns-up.png" alt="Dessin horns up!" />
   <div id="confirm-message">
@@ -7,7 +12,7 @@
   </div>
 </div>
 
-<div class="card" *ngIf="!isValidationSuccess">
+<div class="card" *ngIf="!isValidationSuccess !loading">
   <h2>Erreur de validation...</h2>
   <div id="confirm-message">
     <p>Il semble que ce lien ait déjà été utilisé ou qu'il soit incorrect.</p>

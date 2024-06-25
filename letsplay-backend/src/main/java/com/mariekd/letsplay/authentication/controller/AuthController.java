@@ -1,10 +1,11 @@
 package com.mariekd.letsplay.authentication.controller;
 
+import com.mariekd.letsplay.authentication.entities.*;
 import com.mariekd.letsplay.authentication.exceptions.UnauthorizedException;
 import com.mariekd.letsplay.authentication.payload.request.*;
 import com.mariekd.letsplay.authentication.payload.response.UserInfoResponse;
-import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.MimeMessage;
+import com.mariekd.letsplay.authentication.services.ResetPasswordTokenService;
+import com.mariekd.letsplay.authentication.services.implementations.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -24,18 +25,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 import com.mariekd.letsplay.app.services.EmailService;
-import com.mariekd.letsplay.authentication.entities.RefreshToken;
-import com.mariekd.letsplay.authentication.entities.Role;
-import com.mariekd.letsplay.authentication.entities.ValidAccountToken;
 import com.mariekd.letsplay.authentication.payload.response.LoginOkResponse;
 import com.mariekd.letsplay.authentication.payload.response.TokenRefreshResponse;
 import com.mariekd.letsplay.authentication.jwt.JwtService;
-import com.mariekd.letsplay.authentication.entities.User;
 import com.mariekd.letsplay.authentication.models.UserInfo;
-import com.mariekd.letsplay.authentication.services.RefreshTokenService;
-import com.mariekd.letsplay.authentication.services.ValidAccountTokenService;
-import com.mariekd.letsplay.authentication.services.implementations.RoleServiceImpl;
-import com.mariekd.letsplay.authentication.services.implementations.UserServiceImpl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,22 +45,25 @@ public class AuthController {
     private final JwtService jwtService;
     private final UserServiceImpl userService;
     private final RoleServiceImpl roleService;
-    private final RefreshTokenService refreshTokenService;
-    private final ValidAccountTokenService validAccountTokenService;
+    private final RefreshTokenServiceImpl refreshTokenService;
+    private final ValidAccountTokenServiceImpl validAccountTokenService;
+    private final ResetPasswordTokenServiceImpl resetPasswordTokenService;
     private final EmailService emailService;
 
     @Value("${letsplay.app.url}")
     private String appUrl;
 
-    public AuthController(AuthenticationManager authenticationManager,
-                          JwtService jwtService, UserServiceImpl userService, RoleServiceImpl roleService,
-                          RefreshTokenService refreshTokenService, ValidAccountTokenService validAccountTokenService, EmailService emailService) {
+    public AuthController(AuthenticationManager authenticationManager, JwtService jwtService, UserServiceImpl userService,
+                          RoleServiceImpl roleService, RefreshTokenServiceImpl refreshTokenService,
+                          ValidAccountTokenServiceImpl validAccountTokenService, ResetPasswordTokenServiceImpl resetPasswordTokenService,
+                          EmailService emailService) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.userService = userService;
         this.roleService = roleService;
         this.refreshTokenService = refreshTokenService;
         this.validAccountTokenService = validAccountTokenService;
+        this.resetPasswordTokenService = resetPasswordTokenService;
         this.emailService = emailService;
     }
 
@@ -222,11 +218,9 @@ public class AuthController {
     public void forgotPassword(@RequestBody PasswordResetRequest passwordResetRequest) {
         User user = userService.getUserByEmail(passwordResetRequest.email());
         if (user != null) {
-            ValidAccountToken validationToken = validAccountTokenService.createValidationToken(user);
+            ResetPasswordToken resetToken = resetPasswordTokenService.createResetPasswordToken(user);
             try {
-//                emailService.sendForgotPasswordEmail(user.getEmail(),
-//                        appUrl + "/resetpassword/" + validationToken.getToken());
-                sendForgotPasswordEmail(user.getEmail(), appUrl + "/resetpassword/" + validationToken.getToken());
+                sendForgotPasswordEmail(user.getEmail(), appUrl + "/resetpassword/" + resetToken.getToken());
                 LOGGER.info("Forgot password email sent to: {}", user.getEmail());
             } catch (MessagingException e) {
                 LOGGER.error("Error sending forgot password email: {}", e.getMessage());
@@ -235,16 +229,15 @@ public class AuthController {
     }
 
     @PostMapping("/resetpassword/{token}")
-    public ResponseEntity<Object> resetPassword(@PathVariable("token") String token, @RequestBody String newPassword) {
+    public ResponseEntity<Object> resetPassword(@PathVariable String token, @RequestBody NewPasswordRequest request) {
         try {
-            ValidAccountToken checkedToken = validAccountTokenService.findByToken(token)
+            ResetPasswordToken checkedToken = resetPasswordTokenService.findByToken(token)
                     .orElseThrow(() -> new RuntimeException("Token not found"));
 
             User user = checkedToken.getUser();
-            user.setPassword(newPassword);
-            userService.updateUserPassword(user.getId(), newPassword);
+            userService.updateUserPassword(user.getId(), request.password());
 
-            validAccountTokenService.deleteByToken(token);
+            resetPasswordTokenService.deleteByToken(token);
 
             LOGGER.info("Password reset for user: {}", user.getName());
 

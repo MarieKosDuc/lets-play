@@ -11,6 +11,7 @@ import { AuthenticationService } from '../services/authentication.service';
   styleUrl: './account-verify.component.css'
 })
 export class AccountVerifyComponent {
+  protected loading: boolean = true;
   protected isValidationSuccess: boolean = false;
   protected mailto: string = environment.contact_email;
   protected token: string = '';
@@ -26,9 +27,11 @@ export class AccountVerifyComponent {
 
     this.authService.verifyAccount(this.token).subscribe(
       (response) => {
+        this.loading = false;
         this.isValidationSuccess = true;
       },
       (error) => {
+        this.loading = false;
         this.isValidationSuccess = false;
       }
     );

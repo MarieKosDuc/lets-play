@@ -385,7 +385,7 @@
         </addColumn>
     </changeSet>
 
-    <changeSet id="valid_account_token" author="Marie-KD"> <!-- Creation of refresh token table -->
+    <changeSet id="valid_account_token" author="Marie-KD"> <!-- Creation of valid account token table -->
     <createTable  tableName="valid_account_token" schemaName="music">
         <column name="id" type="INT">
             <constraints primaryKey="true" nullable="false"/>
@@ -417,7 +417,38 @@
             referencedColumnNames="user_id"
             constraintName="fk_user_id"
     />
-</changeSet>
+    </changeSet>
+
+    <changeSet id="reset_password_token" author="Marie-KD"> <!-- Creation of reset password token table -->
+        <createTable  tableName="reset_password_token" schemaName="music">
+            <column name="id" type="INT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="token" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addAutoIncrement columnDataType="int"
+                          columnName="id"
+                          defaultOnNull="false"
+                          generationType="ALWAYS"
+                          incrementBy="1"
+                          schemaName="music"
+                          tableName="reset_password_token"/>
+
+        <addForeignKeyConstraint
+                baseTableSchemaName="music"
+                baseTableName="reset_password_token"
+                baseColumnNames="user_id"
+                referencedTableName="app_user"
+                referencedColumnNames="user_id"
+                constraintName="fk_user_id"
+        />
+    </changeSet>
 
 
 </databaseChangeLog>
