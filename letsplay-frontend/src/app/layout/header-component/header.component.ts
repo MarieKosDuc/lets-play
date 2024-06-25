@@ -72,12 +72,6 @@ export class HeaderComponent implements OnInit {
             },
           },
           {
-            label: 'Mes annonces',
-            command: () => {
-              this.router.navigate(['/my-ads']);
-            },
-          },
-          {
             label: 'Nouvelle annonce',
             command: () => {
               this.router.navigate(['/create-ad']);
@@ -133,12 +127,6 @@ export class HeaderComponent implements OnInit {
               if (this.userInfos && this.userInfos.id) {
                 this.router.navigate(['/profile', this.userInfos.id]);
               }
-            },
-          },
-          {
-            label: 'Mes annonces',
-            command: () => {
-              this.router.navigate(['/my-ads']);
             },
           },
           {

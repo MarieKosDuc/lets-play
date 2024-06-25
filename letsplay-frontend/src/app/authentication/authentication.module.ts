@@ -10,6 +10,7 @@ import { LoginComponent } from './login-component/login.component';
 import { SignupComponent } from './signup-component/signup.component';
 import { ProfileComponent } from '../core/profile-component/profile.component';
 import { AccountVerifyComponent } from './account-verify/account-verify.component';
+import { ForgottenPasswordComponent } from './forgotten-password/forgotten-password.component';
 import { AdModule } from "../core/ad.module";
 
 @NgModule({
@@ -17,13 +18,15 @@ import { AdModule } from "../core/ad.module";
         LoginComponent,
         SignupComponent,
         ProfileComponent,
-        AccountVerifyComponent
+        AccountVerifyComponent,
+        ForgottenPasswordComponent,
     ],
     exports: [
         LoginComponent,
         SignupComponent,
         ProfileComponent,
-        AccountVerifyComponent
+        AccountVerifyComponent,
+        ForgottenPasswordComponent,
     ],
     imports: [
         CommonModule,

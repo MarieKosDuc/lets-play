@@ -1,7 +1,10 @@
 package com.mariekd.letsplay.authentication.controller;
 
 import com.mariekd.letsplay.authentication.exceptions.UnauthorizedException;
-import com.mariekd.letsplay.authentication.payload.request.UserUpdateRequest;
+import com.mariekd.letsplay.authentication.payload.request.*;
+import com.mariekd.letsplay.authentication.payload.response.UserInfoResponse;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -24,12 +27,9 @@ import com.mariekd.letsplay.app.services.EmailService;
 import com.mariekd.letsplay.authentication.entities.RefreshToken;
 import com.mariekd.letsplay.authentication.entities.Role;
 import com.mariekd.letsplay.authentication.entities.ValidAccountToken;
-import com.mariekd.letsplay.authentication.payload.request.SignupRequest;
-import com.mariekd.letsplay.authentication.payload.request.TokenRefreshRequest;
 import com.mariekd.letsplay.authentication.payload.response.LoginOkResponse;
 import com.mariekd.letsplay.authentication.payload.response.TokenRefreshResponse;
 import com.mariekd.letsplay.authentication.jwt.JwtService;
-import com.mariekd.letsplay.authentication.payload.request.LoginRequest;
 import com.mariekd.letsplay.authentication.entities.User;
 import com.mariekd.letsplay.authentication.models.UserInfo;
 import com.mariekd.letsplay.authentication.services.RefreshTokenService;
@@ -69,6 +69,13 @@ public class AuthController {
         this.refreshTokenService = refreshTokenService;
         this.validAccountTokenService = validAccountTokenService;
         this.emailService = emailService;
+    }
+
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @GetMapping("/{id}")
+    public UserInfoResponse getUser(@PathVariable UUID id) {
+        User user = userService.getUserById(id);
+        return new UserInfoResponse(user.getId(), user.getName(), user.getProfilePicture());
     }
 
     @PostMapping("/login")
@@ -211,6 +218,43 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/resetpassword")
+    public void forgotPassword(@RequestBody PasswordResetRequest passwordResetRequest) {
+        User user = userService.getUserByEmail(passwordResetRequest.email());
+        if (user != null) {
+            ValidAccountToken validationToken = validAccountTokenService.createValidationToken(user);
+            try {
+//                emailService.sendForgotPasswordEmail(user.getEmail(),
+//                        appUrl + "/resetpassword/" + validationToken.getToken());
+                sendForgotPasswordEmail(user.getEmail(), appUrl + "/resetpassword/" + validationToken.getToken());
+                LOGGER.info("Forgot password email sent to: {}", user.getEmail());
+            } catch (MessagingException e) {
+                LOGGER.error("Error sending forgot password email: {}", e.getMessage());
+            }
+        }
+    }
+
+    @PostMapping("/resetpassword/{token}")
+    public ResponseEntity<Object> resetPassword(@PathVariable("token") String token, @RequestBody String newPassword) {
+        try {
+            ValidAccountToken checkedToken = validAccountTokenService.findByToken(token)
+                    .orElseThrow(() -> new RuntimeException("Token not found"));
+
+            User user = checkedToken.getUser();
+            user.setPassword(newPassword);
+            userService.updateUserPassword(user.getId(), newPassword);
+
+            validAccountTokenService.deleteByToken(token);
+
+            LOGGER.info("Password reset for user: {}", user.getName());
+
+            return setResponseMessage("Password reset successfully for user: " + user.getName(), HttpStatus.OK);
+        } catch (final Exception e) {
+            LOGGER.error("Error resetting password: {}", e.getMessage());
+            return setResponseMessage("Error resetting password: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PreAuthorize("hasRole('USER')")
     @PutMapping("/password/{id}")
     public ResponseEntity<Object> updatePassword(@PathVariable UUID id, @RequestBody String password, HttpServletRequest request) {
@@ -257,17 +301,18 @@ public class AuthController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/admin/{id}")
-    public void deleteUserByAdmin(@PathVariable UUID id){
-            userService.deleteUser(id);
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/all")
     public List<User> getAllUsers() {
         LOGGER.info("Getting all users: {} ", userService.getAllUsers());
         return userService.getAllUsers();
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/admin/{id}")
+    public void deleteUserByAdmin(@PathVariable UUID id){
+            userService.deleteUser(id);
+    }
+
 
     private boolean isUserAuthorizedToModify(UUID userId, HttpServletRequest request) {
         User connectedUser = userService.getUserFromRequest(request);
@@ -289,9 +334,15 @@ public class AuthController {
         String welcomeMessage = String.format("Bienvenue sur Let's Play, %s !", user.getName());
         String validationLink = appUrl + "/verify/" + validationToken.getToken();
 
-        emailService.sendConfirmAccountEmail(user.getEmail(), "Validation de ton compte Let's Play",
+        emailService.sendConfirmEmail(user.getEmail(), "Validation de ton compte Let's Play",
                 welcomeMessage, "Pour valider ton compte, clique sur le lien suivant : " +
                         "\n Attention, ce lien est valable 24h ! \n",
-                "<a href='" + validationLink + "'>Valider mon compte</a>");
+                validationLink, "Valider mon compte");
+    }
+
+    private void sendForgotPasswordEmail(String userEmail, String url) throws MessagingException {
+        emailService.sendConfirmEmail(userEmail, "Réinitialisation de ton mot de passe Let's Play",
+                "Alors, on a oublié son mot de passe ?", "Pour réinitialiser ton mot de passe, clique sur le lien suivant :",
+                url,"Je définis un nouveau mot de passe");
     }
 }

@@ -31,7 +31,8 @@ public class WebSecurityConfig {
             new AntPathRequestMatcher("/api/users/register"),
             new AntPathRequestMatcher("/api/users/login"),
             new AntPathRequestMatcher("/api/users/verify/**"),
-            new AntPathRequestMatcher("/api/users/renewpassword"),
+            new AntPathRequestMatcher("/api/users/resetpassword"),
+            new AntPathRequestMatcher("/api/users/resetpassword/**"),
             new AntPathRequestMatcher("/api/users/refreshtoken"),
             new AntPathRequestMatcher("/api/users/logout"),
             new AntPathRequestMatcher("/api/ads/get/**"),
@@ -74,7 +75,8 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/users/login").permitAll()
                         .requestMatchers("/api/users/refreshtoken").permitAll()
                         .requestMatchers("/api/users/verify/**").permitAll()
-                        .requestMatchers("/api/users/renewpassword").permitAll()
+                        .requestMatchers("/api/users/resetpassword").permitAll()
+                        .requestMatchers("/api/users/resetpassword/**").permitAll()
                         .requestMatchers("/api/users/logout").permitAll()
                         .requestMatchers("/api/ads/get/**").permitAll()
                         .requestMatchers("/api/ads/search").permitAll()

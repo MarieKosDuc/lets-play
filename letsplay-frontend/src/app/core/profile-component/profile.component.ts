@@ -9,8 +9,7 @@ import { AdService } from '../ad.service';
 import { ActivatedRoute } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { profileToUpdate } from '../../shared/models/profileToUpdate.model';
-import { Form, FormGroup, NgForm } from '@angular/forms';
-import * as e from 'cors';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-profile',
@@ -20,7 +19,8 @@ import * as e from 'cors';
 export class ProfileComponent {
   @Input() ads: Ad[] = [];
 
-  protected user!: User | null;
+  protected currentUser!: User | null; // Attention à la différenciation entre utilisateur connecté et profil d'un autre utilisateur
+  protected profileUser!: User | null;
   protected isConnectedUser: boolean = false;
   protected noAdsForUser: boolean = false;
 
@@ -45,27 +45,29 @@ export class ProfileComponent {
   ) {}
 
   ngOnInit() {
+  
     this.authStorageService.user$.subscribe((user) => {
-      this.user = user;
+      this.currentUser = user;
 
       this.userPicture = user?.profilePicture || '';
     });
 
-    if (this.user?.id === this.activatedRoute.snapshot.params['id']) {
+    if (this.currentUser?.id === this.activatedRoute.snapshot.params['id']) {
       this.isConnectedUser = true;
+      this.profileUser = this.currentUser;
+    } else {
+      this.authService.getUserById(this.activatedRoute.snapshot.params['id']).subscribe(
+        (user: User) => {
+          this.profileUser = user;
+        },
+        (error) => {
+          console.error('Error fetching user:', error);
+          this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Erreur lors de la récupération de l\'utilisateur' });
+        }
+      );
     }
 
-    this.adService.getUserAds(this.user?.id || '').subscribe(
-      (ads: Ad[]) => {
-        this.ads = ads;
-      },
-      (error) => {
-        console.error('Error fetching ads:', error);
-        if (error.status === 404) {
-          this.noAdsForUser = true;
-        }
-      }
-    );
+    this.getUserAds(this.profileUser?.id || '');
 
     const cld = this.cloudinaryService.getCloudinary();
 
@@ -99,6 +101,20 @@ export class ProfileComponent {
     this.myWidget.open();
   }
 
+  getUserAds(id: string) {
+    this.adService.getUserAds(id).subscribe(
+      (ads: Ad[]) => {
+        this.ads = ads;
+      },
+      (error) => {
+        console.error('Error fetching ads:', error);
+        if (error.status === 404) {
+          this.noAdsForUser = true;
+        }
+      }
+    );
+  }
+
   onSubmit(form: NgForm){
     const password = form.value.newPassword;
 
@@ -123,14 +139,14 @@ export class ProfileComponent {
   }
 
   updateProfilePicture(pictureUrl: string) {
-    if(this.user) {
+    if(this.currentUser) {
 
       const request: profileToUpdate = {
-        name: this.user.username,
+        name: this.currentUser.username,
         profilePicture: pictureUrl,
       };
 
-      this.authService.updateUser(this.user.id, request).subscribe(
+      this.authService.updateUser(this.currentUser.id, request).subscribe(
         (user: User) => {
           this.authStorageService.saveUser(user);
           this.messageService.add({ severity: 'success', summary: 'Succès', detail: 'Image de profil mise à jour' });
@@ -145,8 +161,8 @@ export class ProfileComponent {
   }
 
   updatePassword(password: string) {
-    if (this.user) {
-      this.authService.updatePassword(this.user.id, password).subscribe(
+    if (this.currentUser) {
+      this.authService.updatePassword(this.currentUser.id, password).subscribe(
         data => {
           this.messageService.add({ severity: 'success', summary: 'Succès', detail: 'Mot de passe mis à jour' });
         },

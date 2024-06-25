@@ -116,7 +116,7 @@ public class UserServiceImpl implements UserService {
             String userName = jwtService.getUserNameFromJwtToken(getJwtFromRequest(request));
             return userRepository.findByEmail(userName);
         } catch (JwtException e) {
-            throw new AccessDeniedException("Invalid token"); //TODO : mieux gérer les try/catch
+            throw new AccessDeniedException("Invalid token");
         } catch (Exception e) {
             throw new UsernameNotFoundException("Unknown user");
         }

@@ -24,6 +24,10 @@ export class AuthenticationService {
 
   constructor(private http: HttpClient) { }
 
+  getUserById(id: String): Observable<User> {
+    return this.http.get<User>(`${AUTH_API}/${id}`);
+  }
+
   login(username: string, password: string): Observable<User> {
     return this.http.post<User>(AUTH_API + '/login', { username, password }, httpOptions).pipe(
       tap((user: User) => {
@@ -61,6 +65,14 @@ export class AuthenticationService {
   verifyAccount(token: String): Observable<any>{
     const url = `${AUTH_API}/verify/${token}`;
     return this.http.post(url, httpOptions);
+  }
+
+  sendResetPasswordEmail(email: String): Observable<any>{
+    return this.http.post(AUTH_API + '/resetpassword', {email}, httpOptions);
+  }
+
+  resetPassword(token: String, password: String): Observable<any>{
+    return this.http.post(AUTH_API + `/resetpassword/${token}`, {password}, httpOptions);
   }
 
   updatePassword(id: String, password: String): Observable<User> {

@@ -10,6 +10,7 @@ import { AdCreateComponent } from '../core/ad-create-component/ad-create.compone
 import { AdComponent } from '../core/ad-component/ad.component';
 import { ContactComponent } from '../core/contact-component/contact.component';
 import { AccountVerifyComponent } from '../authentication/account-verify/account-verify.component';
+import { ForgottenPasswordComponent } from '../authentication/forgotten-password/forgotten-password.component';
 
 const routes: Routes = [
   { path: 'home', component: AdsListComponent },
@@ -18,10 +19,11 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: SignupComponent},
   { path: 'profile/:id', component: ProfileComponent},
-  { path: 'my-ads', component: AdsListComponent},
   { path: 'create-ad', component: AdCreateComponent},  
   { path: 'contact/:id', component: ContactComponent},
   { path: 'verify/:token', component: AccountVerifyComponent},
+  { path: 'resetpassword', component: ForgottenPasswordComponent},
+  { path: 'resetpassword/:token', component: ForgottenPasswordComponent},
   { path: '', redirectTo: '/home', pathMatch: 'full' }
 ]; //TODO : add auFthgard so that non identified users can only access ads and search
 
