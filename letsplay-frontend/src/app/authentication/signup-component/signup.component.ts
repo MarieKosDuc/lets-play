@@ -58,7 +58,7 @@ export class SignupComponent {
           this.registerOk = true;
         },
         (error) => {
-          this.registerOk = true;
+          this.registerOk = false;
           if (error.status == 409) {
             this.messageService.add ({ severity: 'error', summary: 'Erreur', detail: 'Cet email ou ce nom d\'utilisateur est déjà utilisé !' });
           } else {

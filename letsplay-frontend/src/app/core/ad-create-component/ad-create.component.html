@@ -3,7 +3,7 @@
 
   <div id="form-container">
     <form [formGroup]="adForm" (ngSubmit)="onSubmit()">
-        <label for="title">Titre :</label><br />
+        <label for="title">Titre :</label>
         <input
           type="text"
           id="title"
@@ -12,116 +12,78 @@
           formControlName="title"
           required
         /><br />
+
+      <div class="select-options">Je suis : 
+
+        <p-dropdown 
+          ariaLabel="Choisis si tu es un groupe ou un musicien solo"
+          formControlName="selectedMusicianTypeFrom"
+          [options]="fromMusicianTypes" 
+          optionLabel="name" 
+          placeholder="Ton instrument"
+          (onChange)="setDefaultImage($event)" />
+      </div>
     
-        <!-- TODO : quand clic sur musician, enlever l'image du groupe -->
-        <div>
-          <label for="band">Je recherche : </label>
-          <input
-            type="radio"
-            id="band"
-            value="band"
-            name="search"
-            formControlName="search"
-            (change)="setSeeking('band')"
-          />
-          Un groupe
-          <input
-            type="radio"
-            id="musician"
-            value="musician"
-            name="search"
-            formControlName="search"
-          />
-          Un musicien
-          <select
-            id="musicianType"
-            #musicianType
-            class="field"
-            name="musicianType"
-            formControlName="musicianType"
-            *ngIf="adForm.get('search')?.value === 'musician'"
-            (change)="setSeeking(musicianType.value)"
-          >
-            <option value="guitar">Guitariste</option>
-            <option value="synths">Claviériste</option>
-            <option value="vocalist">Vocaliste</option>
-            <option value="bass">Bassiste</option>
-            <option value="drums">Batteur</option>
-            <option value="misc">Autre</option>
-          </select>
-        </div>
-    
-        <div>
+        <div id="image-container" *ngIf="imageSrc !== ''">
           <img
             id="selected-image"
-            *ngIf="imageSrc !== ''"
+          
             src="{{ imageSrc }}"
-            alt="Image par défaut"
-            class="w-72 h-72"
+            alt="Image de l'annonce par défaut"
           />
-        </div>
-        <div class="flex justify-center mt-2">
+    
           <button
             class="button"
             type="button"
             id="upload-image"
             (click)="openWidget()"
           >
-            Choisir une image
+            Choisir une autre image
           </button>
         </div>
+
+        <div class="select-options" *ngIf='isBandSearching'>Je recherche : 
+          <p-dropdown 
+            ariaLabel="Choisis le type de musicien recherché"
+            formControlName="selectedSearchingMusicianType"
+            [options]="searchingMusicianTypes" 
+            optionLabel="name"/>
+        </div>
     
-        <ng-multiselect-dropdown
-          [placeholder]="'Sélectionne les styles de ton choix'"
-          [settings]="dropdownSettings"
-          [data]="dropdownList"
-          formControlName="selectedItems"
-          (onSelect)="onItemSelect($event)"
-          (onDeSelect)="onItemDeSelect($event)"
-          (onSelectAll)="onSelectAll($event)"
-          (onDeSelectAll)="onDeSelectAll($event)"
-        >
-        </ng-multiselect-dropdown>
+        <div id="style-selection" class="select-options">Styles recherchés :
+
+          <p-multiSelect 
+          ariaLabel="Choisis les styles de musique recherchés"
+          formControlName="selectedMusicStyles" 
+          [options]="musicStyles" 
+          optionLabel="name" 
+          placeholder="Sélectionne les styles de ton choix"/>
+        </div>
+
+        <div id="location" class="select-options">
+          Dans la région suivante : 
+          <p-dropdown 
+            ariaLabel="Sélectionne une région pour ton annonce"
+            formControlName="selectedLocation"
+            [options]="locations" 
+            optionLabel="name" 
+            placeholder="Choisis une région"/>
+        </div>
     
-        <label for="location">Région :</label>
-        <select
-          id="location"
-          class="field"
-          name="location"
-          formControlName="location"
-        >
-          <option value="Auvergne-Rhône-Alpes">Auvergne-Rhône-Alpes</option>
-          <option value="Bourgogne-Franche-Comté">Bourgogne-Franche-Comté</option>
-          <option value="Bretagne">Bretagne</option>
-          <option value="Centre-Val-de-Loire">Centre-Val-de-Loire</option>
-          <option value="Corse">Corse</option>
-          <option value="Grand Est">Grand Est</option>
-          <option value="Hauts-de-France">Hauts-de-France</option>
-          <option value="Ile-de-France">Ile-de-France</option>
-          <option value="Normandie">Normandie</option>
-          <option value="Nouvelle-Aquitaine">Nouvelle-Aquitaine</option>
-          <option value="Occitanie">Occitanie</option>
-          <option value="Pays-de-la-Loire">Pays-de-la-Loire</option>
-          <option value="Provence-Alpes-Côte d'Azur">
-            Provence-Alpes-Côte d'Azur
-          </option>
-        </select>
-    
-        <label for="description">Ton annonce :</label><br />
+        <label for="description">Ton annonce :</label>
         <textarea
           id="description"
           name="description"
           class="field"
           formControlName="description"
           required
-        ></textarea
-        ><br />
-    
-        <div class="flex justify-center mt-2">
-          <button type="submit" [disabled]="adForm.invalid" class="button">
+        ></textarea>
+
+          <button type="submit" [disabled]="adForm.invalid" class="button" *ngIf="!loading && !submitted">
             Poster mon annonce
           </button>
-        </div>
+
+          <p-progressSpinner *ngIf="loading" class="spinner" mode="indeterminate"></p-progressSpinner>
       </form>
   </div>
 </div>

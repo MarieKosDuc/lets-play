@@ -88,7 +88,9 @@ public class AdController {
 
         Date currentDate = new Date(System.currentTimeMillis());
 
-        final MusicianType adMusicianType = musicianTypeService.findByName(creatingAd.musicianType());
+        final MusicianType from = musicianTypeService.findByName(creatingAd.from());
+        final MusicianType searching = musicianTypeService.findByName(creatingAd.searching());
+
         final Set<Style> adStyles = new HashSet<>();
         for (String styleName : creatingAd.styles()) {
             adStyles.add(styleService.findByName(styleName));
@@ -97,15 +99,15 @@ public class AdController {
         final Location adLocation = locationService.findByName(creatingAd.location());
 
         Ad ad = new Ad();
-        ad.setCreatedAt(Date.from(currentDate.toInstant()));
+        ad.setCreatedAt(currentDate.toInstant());
         ad.setPostedBy(postingUser);
         ad.setTitle(creatingAd.title());
-        ad.setSeekingMusicianType(adMusicianType);
+        ad.setFrom(from);
+        ad.setSearching(searching);
         ad.setStyles(adStyles);
         ad.setLocation(adLocation);
         ad.setDescription(creatingAd.description());
         ad.setImage(creatingAd.image());
-
 
         try {
             Optional<Ad> existingAd = adService.getAdByTitle(creatingAd.title());
@@ -144,15 +146,17 @@ public class AdController {
         Optional<Ad> ad = adService.getAdById(id);
 
         if (ad.isPresent()) {
-            final MusicianType adMusicianType = musicianTypeService.findByName(updatingAd.musicianType());
+            final MusicianType from = musicianTypeService.findByName(updatingAd.from());
+            final MusicianType searching = musicianTypeService.findByName(updatingAd.searching());
             final Set<Style> adStyles = new HashSet<>();
             for (String styleName : updatingAd.styles()) {
                 adStyles.add(styleService.findByName(styleName));
             }
             final Location adLocation = locationService.findByName(updatingAd.location());
 
-            ad.get().setTitle(updatingAd.title()); //TODO : créer un ad builder
-            ad.get().setSeekingMusicianType(adMusicianType);
+            ad.get().setTitle(updatingAd.title());
+            ad.get().setFrom(from);
+            ad.get().setSearching(searching);
             ad.get().setStyles(adStyles);
             ad.get().setLocation(adLocation);
             ad.get().setDescription(updatingAd.description());

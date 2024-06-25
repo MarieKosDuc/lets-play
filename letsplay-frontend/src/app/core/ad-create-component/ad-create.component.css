@@ -5,12 +5,29 @@
   align-items: center;
   margin-top: 2rem;
   width: 100%;
+
+   & .select-options {
+    margin-top: 10px;
+  }
 }
 
-#selected-image {
-  max-width: 18rem; /* w-72 */
-  max-height: 18rem; /* h-72 */
+#image-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+  width: 100%;
+
+  & #selected-image {
+    max-width: 18rem;
+    max-height: 18rem;
+    margin-bottom: 1rem;
+  }
 }
+
+
+
 
 #description {
   height: 15rem;

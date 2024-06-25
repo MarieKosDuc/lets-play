@@ -4,10 +4,11 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 
-import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ToastModule } from 'primeng/toast';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { DropdownModule } from 'primeng/dropdown';
 
 import { AdComponent } from './ad-component/ad.component';
 import { AdsListComponent } from './ads-list-component/ads-list.component';
@@ -30,10 +31,11 @@ import { ContactComponent } from './contact-component/contact.component';
     RouterModule,
     FormsModule,
     ReactiveFormsModule,
-    NgMultiSelectDropDownModule.forRoot(),
     ProgressSpinnerModule,
     MultiSelectModule,
-    ToastModule
+    ToastModule,
+    SelectButtonModule,
+    DropdownModule
   ],
   exports: [
     AdComponent,

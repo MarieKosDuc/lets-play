@@ -19,7 +19,7 @@ public class MusicianType {
     @Column(length = 50, nullable = false,  name="name")
     private String name;
 
-    @OneToMany(mappedBy = "seekingMusicianType", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "searching", fetch = FetchType.LAZY)
     private Set<Ad> ads;
 
     public MusicianType(int id, String name, Set<Ad> ads) {

@@ -275,7 +275,7 @@ public class AuthController {
                 return userService.updateUser(id, user);
             } catch (final Exception e) {
                 LOGGER.error("Error updating user: {}", e.getMessage());
-                throw new RuntimeException("Error updating user: " + e.getMessage()); // A modifier ?
+                throw new RuntimeException("Error updating user: " + e.getMessage());
             }
         } else {
             throw new UnauthorizedException("You are not authorized to modify this user");

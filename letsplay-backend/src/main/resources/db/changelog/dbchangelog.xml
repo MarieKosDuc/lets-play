@@ -98,6 +98,9 @@
             <column  name="name"  type="varchar(50)">
                 <constraints  nullable="false"/>
             </column>
+            <column  name="full-name"  type="varchar(50)">
+                <constraints  nullable="false"/>
+            </column>
         </createTable>
         <addAutoIncrement columnDataType="int"
                           columnName="id"
@@ -114,7 +117,7 @@
             <column  name="id"  type="int">
                 <constraints  primaryKey="true"  nullable="false"/>
             </column>
-            <column  name="created_at"  type="date">
+            <column  name="created_at"  type="timestamp">
                 <constraints  nullable="false"/>
             </column>
             <column  name="posted_by"  type="UUID">
@@ -123,7 +126,10 @@
             <column  name="title"  type="varchar(50)">
                 <constraints  nullable="false"/>
             </column>
-            <column  name="seeking_musician_type"  type="integer">
+            <column  name="from_musician"  type="integer">
+                <constraints  nullable="false"/>
+            </column>
+            <column  name="searching_musician"  type="integer">
                 <constraints  nullable="false"/>
             </column>
             <column  name="image"  type="varchar(100)">
@@ -174,10 +180,18 @@
         <addForeignKeyConstraint
                 baseTableSchemaName="music"
                 baseTableName="ad"
-                baseColumnNames="seeking_musician_type"
+                baseColumnNames="from_musician"
                 referencedTableName="musician_type"
                 referencedColumnNames="id"
-                constraintName="fk_seeking_musician_type"
+                constraintName="fk_from_musician_type"
+        />
+        <addForeignKeyConstraint
+                baseTableSchemaName="music"
+                baseTableName="ad"
+                baseColumnNames="searching_musician"
+                referencedTableName="musician_type"
+                referencedColumnNames="id"
+                constraintName="fk_searching_musician"
         />
         <addForeignKeyConstraint
                 baseTableSchemaName="music"
@@ -226,43 +240,56 @@
 
     <changeSet id="8" author="Marie-KD"> <!-- Insertion of regions -->
         <insert tableName="location" schemaName="music">
-            <column name="name" value="Auvergne-Rhône-Alpes" />
+            <column name="name" value="ara" />
+            <column name="full-name" value="Auvergne-Rhône-Alpes" />
         </insert>
         <insert tableName="location" schemaName="music">
-            <column name="name" value="Bourgogne-Franche-Comté" />
+            <column name="name" value="bfc" />
+            <column name="full-name" value="Bourgogne-Franche-Comté" />
         </insert>
         <insert tableName="location" schemaName="music">
-            <column name="name" value="Bretagne" />
+            <column name="name" value="bre" />
+            <column name="full-name" value="Bretagne" />
         </insert>
         <insert tableName="location" schemaName="music">
-            <column name="name" value="Centre-Val-de-Loire" />
+            <column name="name" value="cvl" />
+            <column name="full-name" value="Centre-Val-de-Loire" />
         </insert>
         <insert tableName="location" schemaName="music">
-            <column name="name" value="Corse" />
+            <column name="name" value="cor" />
+            <column name="full-name" value="Corse" />
         </insert>
         <insert tableName="location" schemaName="music">
-            <column name="name" value="Grand Est" />
+            <column name="name" value="gde" />
+            <column name="full-name" value="Grand Est" />
         </insert>
         <insert tableName="location" schemaName="music">
-            <column name="name" value="Hauts-de-France" />
+            <column name="name" value="hdf" />
+            <column name="full-name" value="Hauts-de-France" />
         </insert>
         <insert tableName="location" schemaName="music">
-            <column name="name" value="Ile-de-France" />
+            <column name="name" value="idf" />
+            <column name="full-name" value="Ile-de-France" />
         </insert>
         <insert tableName="location" schemaName="music">
-            <column name="name" value="Normandie" />
+            <column name="name" value="norm" />
+            <column name="full-name" value="Normandie" />
         </insert>
         <insert tableName="location" schemaName="music">
-            <column name="name" value="Nouvelle-Aquitaine" />
+            <column name="name" value="naq" />
+            <column name="full-name" value="Nouvelle-Aquitaine" />
         </insert>
         <insert tableName="location" schemaName="music">
-            <column name="name" value="Occitanie" />
+            <column name="name" value="occ" />
+            <column name="full-name" value="Occitanie" />
         </insert>
         <insert tableName="location" schemaName="music">
-            <column name="name" value="Pays-de-la-Loire" />
+            <column name="name" value="pdl" />
+            <column name="full-name" value="Pays-de-la-Loire" />
         </insert>
         <insert tableName="location" schemaName="music">
-            <column name="name" value="Provence-Alpes-Côte d'Azur" />
+            <column name="name" value="paca" />
+            <column name="full-name" value="Provence-Alpes-Côte d'Azur" />
         </insert>
     </changeSet>
 

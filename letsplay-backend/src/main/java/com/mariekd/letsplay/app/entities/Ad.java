@@ -1,10 +1,9 @@
 package com.mariekd.letsplay.app.entities;
 
-import com.mariekd.letsplay.app.dto.mappers.MusicianTypeMapper;
-import com.mariekd.letsplay.authentication.entities.Role;
 import com.mariekd.letsplay.authentication.entities.User;
 import jakarta.persistence.*;
 
+import java.time.Instant;
 import java.util.*;
 
 import lombok.*;
@@ -19,7 +18,7 @@ public class Ad {
     private int id;
 
     @Column(nullable = false, name="created_at")
-    private Date createdAt; //TODO : remplacer par instant ?
+    private Instant createdAt;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "posted_by", nullable = false, referencedColumnName = "user_id")
@@ -29,8 +28,12 @@ public class Ad {
     private String title;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="seeking_musician_type", nullable = false, referencedColumnName = "id")
-    private MusicianType seekingMusicianType;
+    @JoinColumn(name="from_musician", nullable = false, referencedColumnName = "id")
+    private MusicianType from;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="searching_musician", nullable = false, referencedColumnName = "id")
+    private MusicianType searching;
 
     @Column(nullable = false, name="image")
     private String image;
@@ -48,18 +51,15 @@ public class Ad {
     @Column(nullable = false, name="description")
     private String description;
 
-    public Ad(int id, Date createdAt, User postedBy, String title, MusicianType seekingMusicianType, String image, Style styles, Location location, String description) {
+    public Ad (int id, Instant createdAt, User postedBy, String title, MusicianType searching, String image,
+               Set<Style> styles, Location location, String description) {
         this.id = id;
         this.createdAt = createdAt;
         this.postedBy = postedBy;
         this.title = title;
-        this.seekingMusicianType = seekingMusicianType;
+        this.searching = searching;
         this.image = image;
-        this.styles = new HashSet<>();
-        if (styles != null) {
-            this.styles.add(styles);
-            styles.getAds().add(this);
-        }
+        this.styles = styles;
         this.location = location;
         this.description = description;
     }
@@ -76,11 +76,11 @@ public class Ad {
         this.id = id;
     }
 
-    public Date getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -100,12 +100,20 @@ public class Ad {
         this.title = title;
     }
 
-    public MusicianType getSeekingMusicianType() {
-        return seekingMusicianType;
+    public MusicianType getFrom() {
+        return from;
     }
 
-    public void setSeekingMusicianType(MusicianType seekingMusicianType) {
-        this.seekingMusicianType = seekingMusicianType;
+    public void setFrom(MusicianType from) {
+        this.from = from;
+    }
+
+    public MusicianType getSearching() {
+        return searching;
+    }
+
+    public void setSearching(MusicianType searching) {
+        this.searching = searching;
     }
 
     public String getImage() {
@@ -147,7 +155,8 @@ public class Ad {
                 ", createdAt=" + createdAt +
                 ", postedBy=" + postedBy +
                 ", title='" + title + '\'' +
-                ", seekingMusicianType=" + seekingMusicianType +
+                ", from=" + from +
+                ", searching for=" + searching +
                 ", image='" + image + '\'' +
                 ", style=" + styles +
                 ", location=" + location +
@@ -161,12 +170,12 @@ public class Ad {
         if (o == null || getClass() != o.getClass()) return false;
         Ad ad = (Ad) o;
         return id == ad.id && createdAt.equals(ad.createdAt) && postedBy.equals(ad.postedBy) && title.equals(ad.title)
-                && seekingMusicianType.equals(ad.seekingMusicianType) && image.equals(ad.image) && styles.equals(ad.styles)
+                && from.equals(ad.from) && searching.equals(ad.searching) && image.equals(ad.image) && styles.equals(ad.styles)
                 && location.equals(ad.location) && description.equals(ad.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, createdAt, postedBy, title, seekingMusicianType, image, styles, location, description);
+        return Objects.hash(id, createdAt, postedBy, title, from, searching, image, styles, location, description);
     }
 }

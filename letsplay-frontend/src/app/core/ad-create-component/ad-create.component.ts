@@ -1,17 +1,25 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, ValidationErrors } from '@angular/forms';
 import { Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { AuthStorageService } from 'src/app/shared/services/storage.service';
 import { User } from 'src/app/authentication/models/user.model';
 import { AdCreation } from '../models/adCreation.model';
+
 import { musicStylesEnum } from '../enums/musicStylesEnum';
+import { MusicianTypesEnum } from '../enums/musicianTypesEnum';
+import { LocationsEnum } from '../enums/locationsEnum';
 
 import { CloudinaryService } from 'src/app/layout/cloudinary/cloudinary.service';
 import { AdService } from '../ad.service';
 
 import { MessageService } from 'primeng/api';
+
+interface DropdownItems {
+  name: string;
+  code: string;
+}
 
 @Component({
   selector: 'app-ad-create',
@@ -25,14 +33,44 @@ export class AdCreateComponent {
 
   protected adData!: AdCreation;
 
-  protected seeking!: string;
+  protected loading: boolean = false;
+  protected submitted: boolean = false;
 
+  // musician type dropdowns settings
+  protected fromMusicianTypes: DropdownItems[] = [
+    ...Object.keys(MusicianTypesEnum).map((key) => ({
+      name: 'Un ' + MusicianTypesEnum[key as keyof typeof MusicianTypesEnum],
+      code: key,
+    })),
+  ];
+
+  // searched musician type dropdowns settings
+  protected searchingMusicianTypes: DropdownItems[] = [
+    ...Object.keys(MusicianTypesEnum)
+      .filter((key) => key !== 'band')
+      .map((key) => ({
+        name: 'Un ' + MusicianTypesEnum[key as keyof typeof MusicianTypesEnum],
+        code: key,
+      })),
+  ];
+  protected isBandSearching: boolean = false;
+
+  // image settings
   protected myWidget: any;
   protected uploadPreset: String = this.cloudinaryService.getUploadPreset();
   protected myCloudName: String = this.cloudinaryService.getCloudName();
 
   protected imageSrc: string = '';
   protected baseUrl: String = this.cloudinaryService.getBaseImageURL();
+
+  // music styles dropdown settings
+  protected musicStyles: DropdownItems[] = [
+    ...Object.keys(musicStylesEnum).map((key) => ({
+      name: musicStylesEnum[key as keyof typeof musicStylesEnum],
+      code: key,
+    })),
+  ];
+
 
   protected dropdownList = [
     ...Object.keys(musicStylesEnum).map((key) => ({
@@ -43,38 +81,35 @@ export class AdCreateComponent {
   protected selectedItems: string[] = [];
   protected dropdownSettings = {};
 
+  // location dropdown settings
+  protected locations: DropdownItems[] = [
+    ...Object.keys(LocationsEnum).map((key) => ({
+      name: LocationsEnum[key as keyof typeof LocationsEnum],
+      code: key,
+    })),
+  ];
+
   constructor(
     private authStorageService: AuthStorageService,
     private cloudinaryService: CloudinaryService,
     private adService: AdService,
     private messageService: MessageService,
-    private formbuilder: FormBuilder,
-    private router: Router
-  ) {
-    this.adForm = this.formbuilder.group({
-      title: ['', Validators.required],
-      search: ['', Validators.required],
-      musicianType: [''],
-      location: ['', Validators.required],
-      description: ['', Validators.required],
-      selectedItems: ['', Validators.required],
-    });
-  }
+    private router: Router,
+  ) {}
 
   ngOnInit() {
-    this.selectedItems = [];
-    this.dropdownSettings = {
-      singleSelection: false,
-      idField: 'item_id',
-      textField: 'item_text',
-      selectAllText: 'Select All',
-      unSelectAllText: 'UnSelect All',
-      itemsShowLimit: 3,
-      allowSearchFilter: true,
-    };
-
     this.authStorageService.user$.subscribe((user) => {
       this.user = user;
+    });
+
+    // Form Group creation
+    this.adForm = new FormGroup({
+      title: new FormControl('', [Validators.required]),
+      selectedMusicianTypeFrom: new FormControl<DropdownItems | null>(null),
+      selectedSearchingMusicianType: new FormControl<DropdownItems | null>(null),
+      selectedMusicStyles: new FormControl([], Validators.required),
+      selectedLocation: new FormControl('', [Validators.required]),
+      description: new FormControl('', [Validators.required]),
     });
 
     // @ts-ignore: Unreachable code error
@@ -100,72 +135,82 @@ export class AdCreateComponent {
     );
   }
 
+  // custom validator for the musician type dropdown
+  customValidator(group: FormGroup): ValidationErrors | null {
+  const selectedMusicianTypeFrom = group.get('selectedMusicianTypeFrom')?.value;
+  const selectedSearchingMusicianType = group.get('selectedSearchingMusicianType')?.value;
+
+  if (selectedMusicianTypeFrom !== 'band' || (selectedMusicianTypeFrom === 'band' && selectedSearchingMusicianType)) {
+    return null; // valid form
+  } else {
+    return { invalidCombination: true }; // invalid form
+  }
+}
+
   openWidget() {
     this.myWidget.open();
   }
 
-  setSeeking(value: string) {
-    this.seeking = value;
-    this.setDefaultImage(value);
+  // default image for musician type
+  setDefaultImage(event: any) {
+    if (this.adForm.get('selectedMusicianTypeFrom')?.value) {
+      this.imageSrc =
+        this.baseUrl +
+        this.adForm.get('selectedMusicianTypeFrom')?.value.code +
+        '.jpg';
+    }
+    this.setMusicianSearchedTypeDropdown();
   }
 
-  setDefaultImage(value: string) {
-    this.imageSrc = this.baseUrl + value + '.jpg';
+  // make the dropdown appear if the musician type is band
+  setMusicianSearchedTypeDropdown() {
+    if (this.adForm.get('selectedMusicianTypeFrom')?.value.code === 'band') {
+      this.isBandSearching = true;
+    } else {
+      this.isBandSearching = false;
+    }
   }
 
-  onItemSelect(item: any) {
-    this.selectedItems.push(item.item_text);
-  }
-
-  onItemDeSelect(item: any) {
-    const index = this.selectedItems.indexOf(item.item_text);
-    this.selectedItems.splice(index, 1);
-  }
-
-  onSelectAll(items: any) {
-    this.selectedItems = items.map((item: any) => item.item_text);
-  }
-
-  onDeSelectAll(items: any) {
-    this.selectedItems = [];
-  }
-
+  // creation of the temporary ad object
   createTempAd() {
-    const connectedUserId = this.user?.id ?? '';
-    const selectedRegion = this.adForm.get('location')?.value ?? '';
-    const title = this.adForm.get('title')?.value ?? '';
-    const description = this.adForm.get('description')?.value ?? '';
-    const metalGenres = Object.keys(musicStylesEnum).filter((key) =>
-      this.selectedItems.includes(
-        musicStylesEnum[key as keyof typeof musicStylesEnum]
-      )
-    );
-
+    const searching = this.adForm.get('selectedMusicianTypeFrom')?.value.code === 'band' 
+    ? this.adForm.get('selectedSearchingMusicianType')?.value?.code ?? ''
+    : 'band';
+    const selectedMusicStyles = this.adForm.get('selectedMusicStyles')?.value ?? [];
+    
     this.adData = {
       createdAt: new Date(),
-      title: title,
-      userId: connectedUserId,
-      musicianType: this.seeking,
+      title: this.adForm.get('title')?.value ?? '',
+      userId: this.user?.id ?? '',
+      from: this.adForm.get('selectedMusicianTypeFrom')?.value.code ?? '', 
+      searching: searching,
       image: this.imageSrc,
-      styles: metalGenres,
-      location: selectedRegion,
-      description: description,
+      styles: selectedMusicStyles.map((style: DropdownItems) => style.code),
+      location: this.adForm.get('selectedLocation')?.value.code ?? '',
+      description: this.adForm.get('description')?.value ?? '',
     };
   }
 
+  // submit the ad creation form
   onSubmit() {
     this.createTempAd();
+    this.loading = true;
 
     this.adService.createAd(this.adData).subscribe(
       (response) => {
+        this.loading = false;
+        this.submitted = true;
         this.messageService.add({
           severity: 'success',
           summary: 'Annonce créée',
           detail: 'Annonce créée avec succès',
         });
-        this.router.navigate(['/my-ads']);
+        setTimeout(() => {
+          this.router.navigate(['/home']);
+        }, 2000);
       },
       (error) => {
+        this.submitted = false;
         if (error.error.message === 'Ad with this title already exists') {
           this.messageService.add({
             severity: 'error',
