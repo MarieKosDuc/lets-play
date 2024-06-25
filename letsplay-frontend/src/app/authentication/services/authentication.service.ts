@@ -5,6 +5,7 @@ import { environment } from 'src/environments/environment';
 import { BehaviorSubject, Observable, catchError, tap, throwError } from 'rxjs';
 
 import { User } from 'src/app/authentication/models/user.model'
+import { profileToUpdate } from '../../shared/models/profileToUpdate.model';
 
 
 const httpOptions = {
@@ -22,6 +23,10 @@ export class AuthenticationService {
   private currentUser: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
 
   constructor(private http: HttpClient) { }
+
+  getUserById(id: String): Observable<User> {
+    return this.http.get<User>(`${AUTH_API}/${id}`);
+  }
 
   login(username: string, password: string): Observable<User> {
     return this.http.post<User>(AUTH_API + '/login', { username, password }, httpOptions).pipe(
@@ -62,8 +67,20 @@ export class AuthenticationService {
     return this.http.post(url, httpOptions);
   }
 
-  updateUser(password: String, id: String): Observable<User> {
-    return this.http.put<User>(AUTH_API + '/update' + `/${id}`, { password }, httpOptions).pipe(
+  sendResetPasswordEmail(email: String): Observable<any>{
+    return this.http.post(AUTH_API + '/resetpassword', {email}, httpOptions);
+  }
+
+  resetPassword(token: String, password: String): Observable<any>{
+    return this.http.post(AUTH_API + `/resetpassword/${token}`, {password}, httpOptions);
+  }
+
+  updatePassword(id: String, password: String): Observable<User> {
+    return this.http.put<User>(AUTH_API + '/password' + `/${id}`, password, httpOptions)
+  }
+
+  updateUser(id: String, request: profileToUpdate): Observable<User> {
+    return this.http.put<User>(AUTH_API + `/${id}`, request, httpOptions).pipe(
       tap((user: User) => {
         this.currentUser.next(user);
       })

@@ -12,7 +12,6 @@ import com.mariekd.letsplay.app.services.implementation.LocationServiceImpl;
 import com.mariekd.letsplay.app.services.implementation.MusicianTypeServiceImpl;
 import com.mariekd.letsplay.app.services.implementation.StyleServiceImpl;
 import com.mariekd.letsplay.authentication.entities.User;
-import com.mariekd.letsplay.authentication.jwt.UnauthorizedException;
 import com.mariekd.letsplay.authentication.services.implementations.UserServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;

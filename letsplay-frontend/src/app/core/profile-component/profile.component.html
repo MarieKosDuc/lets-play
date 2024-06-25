@@ -1,0 +1,54 @@
+<div id="user-card" class="card">
+  <div class="profile-card">
+    <div id="side-profile">
+      <h2>{{ profileUser?.username }}</h2>
+      <img id="profile-pic" src="{{ userPicture }}" alt="Photo de profil" />
+      <button id="upload_widget" (click)="openWidget()" class="button">
+        Changer ma photo de profil
+      </button>
+
+      <div class="profile-infos">
+        <div style="margin-top: 1rem;">Modifier mon mot de passe :</div>
+        <p style="font-size: small;">(minimum 8 caractères, un chiffre, un caractère
+          spécial):</p>
+        <form #signupForm="ngForm" (ngSubmit)="onSubmit(signupForm)">
+        <input
+          type="password"
+          id="newPassword"
+          [(ngModel)]="newPassword"
+          name="newPassword"
+          class="field"
+          placeholder="Nouveau mot de passe"
+        />
+        <input
+          type="password"
+          id="confirmNewPassword"
+          [(ngModel)]="confirmNewPassword"
+          name="confirmNewPassword"
+          class="field"
+          placeholder="Confirmer le nouveau mot de passe"
+        />
+        <button type="submit" [disabled]="signupForm.form.invalid" class="button">
+          Enregistrer
+        </button>
+      </form>
+      </div>
+    </div>
+
+    <div id="ads-list">
+      <ng-container *ngIf="!noAdsForUser">
+        <app-ad-recap *ngFor="let ad of ads" [ad]="ad"> </app-ad-recap>
+      </ng-container>
+
+      <div *ngIf="noAdsForUser && isConnectedUser">
+        <h2>On dirait que tu n'as publié aucune annonce...</h2>
+        <a routerLink="/create-ad" class="button">Publie ta première annonce</a>
+      </div>
+
+      <div *ngIf="noAdsForUser && !isConnectedUser">
+        <h2>Cet utilisateur n'a publié aucune annonce...</h2>
+        <a routerLink="/home" class="button">Retour à l'accueil</a>
+      </div>
+    </div>
+  </div>
+</div>

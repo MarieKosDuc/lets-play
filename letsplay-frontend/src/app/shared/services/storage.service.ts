@@ -19,7 +19,7 @@ export class AuthStorageService {
     this.user$ = this.userSubject.asObservable();
 
     window.addEventListener('storage', (event) => {
-      if (event.storageArea === sessionStorage) {
+      if (event.storageArea === localStorage) {
         this.storageEventSubject.next(true);
         this.userSubject.next(this.getUser()); // Met à jour l'état du user
       }
@@ -27,19 +27,19 @@ export class AuthStorageService {
   }
 
   clean(): void {
-    window.sessionStorage.clear();
+    window.localStorage.clear();
     this.userSubject.next(null);
   }
 
   public saveUser(user: any): void {
     console.log('saveUser', user);
-    window.sessionStorage.removeItem(USER_KEY);
-    window.sessionStorage.setItem(USER_KEY, JSON.stringify(user));
+    window.localStorage.removeItem(USER_KEY);
+    window.localStorage.setItem(USER_KEY, JSON.stringify(user));
     this.userSubject.next(user);
   }
 
   public getUser(): any {
-    const user = window.sessionStorage.getItem(USER_KEY);
+    const user = window.localStorage.getItem(USER_KEY);
     if (user) {
       return JSON.parse(user);
     }
@@ -47,7 +47,7 @@ export class AuthStorageService {
   }
 
   public isLoggedIn(): boolean {
-    const user = window.sessionStorage.getItem(USER_KEY);
+    const user = window.localStorage.getItem(USER_KEY);
     if (user) {
       return true;
     }

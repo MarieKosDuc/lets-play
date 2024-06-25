@@ -1,4 +1,4 @@
-package com.mariekd.letsplay.authentication.jwt;
+package com.mariekd.letsplay.authentication.exceptions;
 
 import io.jsonwebtoken.ExpiredJwtException;
 

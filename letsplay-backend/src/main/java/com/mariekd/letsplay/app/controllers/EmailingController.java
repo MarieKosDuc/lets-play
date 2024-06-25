@@ -1,7 +1,7 @@
 package com.mariekd.letsplay.app.controllers;
 
-import com.mariekd.letsplay.app.dto.ContactEmailDTO;
 import com.mariekd.letsplay.app.entities.Ad;
+import com.mariekd.letsplay.app.request.ContactEmailRequest;
 import com.mariekd.letsplay.app.services.EmailService;
 import com.mariekd.letsplay.app.services.implementation.AdServiceImpl;
 import com.mariekd.letsplay.authentication.entities.User;
@@ -33,12 +33,12 @@ public class EmailingController {
 
     @PreAuthorize("hasRole('USER')")
     @PostMapping
-    public ResponseEntity<Object> sendContactEmail(@RequestBody ContactEmailDTO contactEmailDTO) {
+    public ResponseEntity<Object> sendContactEmail(@RequestBody ContactEmailRequest contactEmailRequest) {
         try {
-            Ad contactAd = adService.getAdById(Integer.parseInt(contactEmailDTO.getAdId())).get();
+            Ad contactAd = adService.getAdById(Integer.parseInt(contactEmailRequest.adId())).get();
 
             User sendingTo = contactAd.getPostedBy();
-            User sendingFrom = userService.getUserById(UUID.fromString(contactEmailDTO.getFromUser()));
+            User sendingFrom = userService.getUserById(UUID.fromString(contactEmailRequest.fromUser()));
 
             String to = sendingTo.getEmail();
             String subject = "Nouveau message pour ton annonce " + contactAd.getTitle();
@@ -46,7 +46,7 @@ public class EmailingController {
             String userSenderName = sendingFrom.getName();
             String userSenderEmail = sendingFrom.getEmail();
 
-            emailService.sendContactEmail(to, subject, greetingText, userSenderName, userSenderEmail, contactEmailDTO.getMessageContent());
+            emailService.sendContactEmail(to, subject, greetingText, userSenderName, userSenderEmail, contactEmailRequest.messageContent());
 
             Map<String, String> okResponse = new HashMap<>();
             okResponse.put("message","Email sent successfully");
