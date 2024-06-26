@@ -184,6 +184,7 @@
                 referencedTableName="musician_type"
                 referencedColumnNames="id"
                 constraintName="fk_from_musician_type"
+                deleteCascade="true"
         />
         <addForeignKeyConstraint
                 baseTableSchemaName="music"
@@ -192,6 +193,7 @@
                 referencedTableName="musician_type"
                 referencedColumnNames="id"
                 constraintName="fk_searching_musician"
+                deleteCascade="true"
         />
         <addForeignKeyConstraint
                 baseTableSchemaName="music"
@@ -200,6 +202,7 @@
                 referencedTableName="location"
                 referencedColumnNames="id"
                 constraintName="fk_region_id"
+                deleteCascade="true"
         />
     </changeSet>
 
@@ -389,6 +392,7 @@
                 referencedTableName="app_user"
                 referencedColumnNames="user_id"
                 constraintName="fk_user_id"
+                deleteCascade="true"
         />
     </changeSet>
 
@@ -443,6 +447,7 @@
             referencedTableName="app_user"
             referencedColumnNames="user_id"
             constraintName="fk_user_id"
+            deleteCascade="true"
     />
     </changeSet>
 
@@ -474,8 +479,8 @@
                 referencedTableName="app_user"
                 referencedColumnNames="user_id"
                 constraintName="fk_user_id"
+                deleteCascade="true"
         />
     </changeSet>
-
 
 </databaseChangeLog>

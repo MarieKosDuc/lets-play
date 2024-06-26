@@ -9,6 +9,7 @@ import * as fr from '@angular/common/locales/fr';
 
 import { CloudinaryModule } from '@cloudinary/ng';
 import { ToastModule } from 'primeng/toast';
+import { ScrollTopModule } from 'primeng/scrolltop';
 import { MessageService } from 'primeng/api';
 
 import { LayoutModule } from './layout/layout.module';
@@ -37,6 +38,7 @@ import { EmailingService } from './shared/services/emailing.service';
     LayoutModule,
     CoreModule,
     AuthenticationModule,
+    ScrollTopModule
   ],
   providers: [
     { provide: LOCALE_ID, useValue: 'fr-FR'}, 
