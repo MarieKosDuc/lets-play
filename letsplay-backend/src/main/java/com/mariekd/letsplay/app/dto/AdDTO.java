@@ -10,7 +10,8 @@ public class AdDTO {
 
     private int id;
     private Instant createdAt;
-    private String postedBy;
+    private String postedByName;
+    private String postedById;
     private String title;
     private String from;
     private String searching;
@@ -19,11 +20,10 @@ public class AdDTO {
     private String location;
     private String description;
 
-    public AdDTO(int id, Instant createdAt, String postedBy, String title, String from,
-                 String searching, String image, String[] styles, String location, String description) {
+    public AdDTO(int id, Instant createdAt, String postedBy, String title, String from, String searching, String image, String[] styles, String location, String description) {
         this.id = id;
         this.createdAt = createdAt;
-        this.postedBy = postedBy;
+        this.postedByName = postedBy;
         this.title = title;
         this.from = from;
         this.searching = searching;
@@ -52,13 +52,15 @@ public class AdDTO {
         this.createdAt = createdAt;
     }
 
-    public String getPostedBy() {
-        return postedBy;
+    public String getPostedByName() {
+        return postedByName;
     }
 
-    public void setPostedBy(String postedBy) {
-        this.postedBy = postedBy;
-    }
+    public void setPostedByName(String postedByName) { this.postedByName = postedByName; }
+
+    public String getPostedById() { return postedById; }
+
+    public void setPostedById(String postedById) { this.postedById = postedById; }
 
     public String getTitle() {
         return title;

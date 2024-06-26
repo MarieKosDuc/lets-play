@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, ValidationErrors } from '@angular/forms';
 import { Validators } from '@angular/forms';
 
-import { MenuItem, MessageService } from 'primeng/api';
+import { MessageService } from 'primeng/api';
 
 import { MusicStylesEnum } from '../enums/musicStylesEnum';
 import { MusicianTypesEnum } from '../enums/musicianTypesEnum';

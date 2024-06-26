@@ -32,14 +32,8 @@ export class AdsListComponent implements OnInit {
 
     if (this.router.url === '/home') {
       this.getAllAds();
-      console.log('Fetching all ads');
     } else if (this.router.url === '/my-ads') {
       this.isRecap = true;
-      console.log(
-        'Fetching user ads for user:',
-        this.user?.username,
-        this.user?.id
-      );
       this.getUserAds();
     } else {
       this.ads = this.adService.ads;

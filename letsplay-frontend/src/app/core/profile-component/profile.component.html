@@ -2,12 +2,12 @@
   <div class="profile-card">
     <div id="side-profile">
       <h2>{{ profileUser?.username }}</h2>
-      <img id="profile-pic" src="{{ userPicture }}" alt="Photo de profil" />
-      <button id="upload_widget" (click)="openWidget()" class="button">
+      <img id="profile-pic" src="{{ profileUser?.profilePicture }}" alt="Photo de profil" />
+      <button id="upload_widget" (click)="openWidget()" class="button" *ngIf="isConnectedUser">
         Changer ma photo de profil
       </button>
 
-      <div class="profile-infos">
+      <div class="profile-infos" *ngIf="isConnectedUser">
         <div style="margin-top: 1rem;">Modifier mon mot de passe :</div>
         <p style="font-size: small;">(minimum 8 caractères, un chiffre, un caractère
           spécial):</p>

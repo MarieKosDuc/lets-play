@@ -94,6 +94,11 @@ body {
     margin-top: 1rem;
     max-width: 15rem;
   }
+
+  & p-progressSpinner {
+    width: 10%;
+    margin: auto;
+  }
 }
 
 @media (min-width: 375px) {

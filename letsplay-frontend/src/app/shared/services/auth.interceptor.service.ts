@@ -9,6 +9,7 @@ import { catchError, switchMap } from 'rxjs/operators';
 
 import { EventBusService } from './event-bus.service';
 import { EventData } from '../models/event.class';
+import { User } from 'src/app/authentication/models/user.model';
 
 @Injectable()
 export class HttpRequestInterceptor implements HttpInterceptor {
@@ -58,7 +59,7 @@ export class HttpRequestInterceptor implements HttpInterceptor {
           }),
           catchError((error) => {
             this.isRefreshing = false;
-            console.log("Erreur reçue du logout : " + error.message)
+            console.log("Erreur reçue de l'authservice : " + error.message)
 
             if (error instanceof HttpErrorResponse && error.status === 403) {
               this.eventBusService.emit(new EventData('logout', null));
@@ -73,6 +74,7 @@ export class HttpRequestInterceptor implements HttpInterceptor {
 
     return next.handle(request);
   }
+
 }
 
 export const httpInterceptorProviders = [

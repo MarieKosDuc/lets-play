@@ -32,7 +32,6 @@ export class AuthStorageService {
   }
 
   public saveUser(user: any): void {
-    console.log('saveUser', user);
     window.localStorage.removeItem(USER_KEY);
     window.localStorage.setItem(USER_KEY, JSON.stringify(user));
     this.userSubject.next(user);

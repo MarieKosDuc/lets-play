@@ -3,14 +3,19 @@
     <div class="infos-container">
         <div id="location-posted-at">
             <div id="location">
-                <p>{{ ad.location }}</p>
+                {{ ad.location }}
             </div>
             <div id="posted-at">
-                <p>Mis en ligne le {{ ad.createdAt | date: 'd MMMM yyyy' }}</p>
+                Mis en ligne le {{ ad.createdAt | date: 'd MMMM yyyy' }}
             </div>
         </div>
-        <div id="styles">
-            <p>{{ ad.styles }}</p>
+        <div id="styles-posted-by">
+            <div id="styles">
+                {{ ad.styles }}
+            </div>
+            <div id="posted-by">
+                <div style="cursor: pointer;" (click)="onProfileClick($event)"> Par {{ad.postedByName }} </div>
+            </div>
         </div>
     </div>
     <div id="picture">

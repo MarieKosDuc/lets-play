@@ -4,7 +4,6 @@ import com.mariekd.letsplay.authentication.entities.*;
 import com.mariekd.letsplay.authentication.exceptions.UnauthorizedException;
 import com.mariekd.letsplay.authentication.payload.request.*;
 import com.mariekd.letsplay.authentication.payload.response.UserInfoResponse;
-import com.mariekd.letsplay.authentication.services.ResetPasswordTokenService;
 import com.mariekd.letsplay.authentication.services.implementations.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;

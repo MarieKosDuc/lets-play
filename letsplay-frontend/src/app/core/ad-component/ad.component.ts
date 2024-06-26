@@ -8,6 +8,8 @@ import { AdService } from '../ad.service';
 import { AuthStorageService } from '../../shared/services/storage.service';
 
 import { User } from 'src/app/authentication/models/user.model';
+import { MusicStylesEnum } from '../enums/musicStylesEnum';
+import { LocationsEnum } from '../enums/locationsEnum';
 
 @Component({
   selector: 'app-ad',
@@ -48,11 +50,12 @@ export class AdComponent implements OnInit {
       const adId = this.route.snapshot.params['id'];
       this.adService.getAdById(adId).subscribe((ad: Ad) => {
         this.ad = ad;
+        this.transformAd(this.ad);
       });
     }
   }
 
-  truncateText(text: string): string {
+  protected truncateText(text: string): string {
     const words = text.split(' ');
     if (words.length <= 30) {
       return text;
@@ -62,24 +65,31 @@ export class AdComponent implements OnInit {
   }
 
 
-  goToAd() {
+  protected goToAd(): void {
     this.router.navigateByUrl(`ad/${this.ad.id}`);
   }
 
-  isAuthorUser() {
-    if(this.connectedUser) {
-      return this.connectedUser.username === this.ad.postedBy;
-    }
-    else {
-      return false;
+  protected isAuthorUser(): boolean {
+    return this.connectedUser.id === this.ad.postedById;
+  }
+
+  protected onProfileClick(event: Event): void {
+    if(Object.keys(this.connectedUser).length !== 0) {
+      this.router.navigateByUrl(`profile/${this.ad.postedById}`);
+    } else {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erreur',
+        detail: 'Tu dois être connecté pour voir le profil de cet utilisateur',
+      });
     }
   }
 
-  updateAd() {
+  protected updateAd(): void {
     this.router.navigateByUrl(`ad/${this.ad.id}/update`);
   }
 
-  contact() {
+  protected contact() {
     if (Object.keys(this.connectedUser).length === 0) {
       this.messageService.add({
         severity: 'error',
@@ -89,5 +99,18 @@ export class AdComponent implements OnInit {
     } else {
       this.router.navigate(['/contact', this.ad?.id]);
     }
+  }
+
+  private transformStyles(styles: string[]): string[] {
+    return styles.map(style => MusicStylesEnum[style as keyof typeof MusicStylesEnum] || style);
+  }
+
+  private transformLocation(location: string): string {
+    return LocationsEnum[location as keyof typeof LocationsEnum] || location;
+  }
+
+  private transformAd(ad: Ad): void {
+      ad.styles = this.transformStyles(ad.styles);
+      ad.location = this.transformLocation(ad.location);
   }
 }

@@ -6,19 +6,22 @@
   margin: 0 auto;
 }
 
-#location-posted-at {
+#location-posted-at{
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0% !important;
-  padding-bottom: 0% !important;
 }
 
-#styles {
-  text-align: center; 
-  margin-bottom: 1rem; 
-}
+#styles-posted-by{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 1rem;
 
+  & #styles{
+    max-width: 60%;
+  }
+}
 
 #picture {
   width: 95%;

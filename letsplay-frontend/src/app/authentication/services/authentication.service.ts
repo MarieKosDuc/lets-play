@@ -25,7 +25,7 @@ export class AuthenticationService {
   constructor(private http: HttpClient) { }
 
   getUserById(id: String): Observable<User> {
-    return this.http.get<User>(`${AUTH_API}/${id}`);
+    return this.http.get<User>(`${AUTH_API}/${id}`, httpOptions);
   }
 
   login(username: string, password: string): Observable<User> {

@@ -31,7 +31,7 @@ export class AdRecapComponent implements OnInit {
   }
 
   isUserAuthor(): boolean {
-    return this.user?.username === this.ad.postedBy;
+    return this.user?.id === this.ad.postedById;
   }
 
   showConfirm() {
