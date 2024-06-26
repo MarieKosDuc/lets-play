@@ -62,7 +62,7 @@ export class AdRecapComponent implements OnInit {
         key: 'confirm',
         sticky: true,
         severity: 'info',
-        summary: 'Es-tu sûr de vouloir supprimer cette annonce ?',
+        summary: 'Es-tu sûr.e de vouloir supprimer cette annonce ?',
       });
       this.visibleToast = true;
     }

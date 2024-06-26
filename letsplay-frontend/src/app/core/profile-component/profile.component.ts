@@ -26,6 +26,7 @@ export class ProfileComponent {
   protected profileUser?: User;
   protected isConnectedUser: boolean = false;
   protected noAdsForUser: boolean = false;
+  protected visibleSuppressToast: boolean = false;
 
   protected newPassword: string = '';
   protected confirmNewPassword: string = '';
@@ -182,6 +183,48 @@ export class ProfileComponent {
         }
       );
     }
+  }
+
+  protected showConfirmSuppressAccount() {
+    console.log('showConfirmSuppressAccount');
+    console.log('this.visibleSuppressToast:', this.visibleSuppressToast)
+    if (!this.visibleSuppressToast) {
+      this.messageService.add({
+        key: 'confirm-account-deletion',
+        sticky: true,
+        severity: 'info',
+        summary: 'Es-tu sûr.e de vouloir supprimer ton compte ? Cette suppression est irréversible.',
+      });
+      console.log(this.messageService.messageObserver)
+      this.visibleSuppressToast = true;
+    }
+  }
+
+  protected onConfirm() {
+    this.deleteUser();
+    this.messageService.clear('confirm-account-deletion');
+    this.visibleSuppressToast = false;
+  }
+
+  protected onReject() {
+    this.messageService.clear('confirm-account-deletion');
+    this.visibleSuppressToast = false;
+  }
+
+  protected deleteUser() {
+    console.log('delete user');
+    this.authService.deleteUser(this.currentUser?.id || '').subscribe(
+      data => {
+        this.authStorageService.clean();
+        this.messageService.add({ severity: 'success', summary: 'Succès', detail: 'Compte supprimé' });
+        this.router.navigate(['/']);
+      },
+      error => {
+        console.error('Error deleting user:', error);
+        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Erreur lors de la suppression du compte' });
+      }
+    );
+
   }
 
   private checkIfConnectedUserIsProfileUser() {

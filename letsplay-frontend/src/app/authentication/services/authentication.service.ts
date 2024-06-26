@@ -93,6 +93,15 @@ export class AuthenticationService {
     );
   }
 
+  deleteUser(id: String): Observable<any> {
+    return this.http.delete(AUTH_API + `/${id}`, httpOptions).pipe(
+      tap(() => {
+        this.loggedIn.next(false);
+        this.currentUser.next(null);
+      })
+    );
+  }
+
   isLoggedIn(): Observable<boolean> {
     return this.loggedIn.asObservable();
   }
