@@ -13,6 +13,7 @@ import com.mariekd.letsplay.app.services.implementation.MusicianTypeServiceImpl;
 import com.mariekd.letsplay.app.services.implementation.StyleServiceImpl;
 import com.mariekd.letsplay.authentication.entities.User;
 import com.mariekd.letsplay.authentication.services.implementations.UserServiceImpl;
+import jakarta.persistence.JoinTable;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -53,8 +54,9 @@ public class AdController {
 
     @CrossOrigin(maxAge = 3600)
     @GetMapping("/search")
-    public List<AdDTO> getSearchedAds(@RequestParam String musicianType, @RequestParam List<String> styles, @RequestParam String location) {
-        List<Ad> ads = adService.getSearchedAds(musicianType, styles, location);
+    public List<AdDTO> getSearchedAds(@RequestParam String from, @RequestParam String searching, @RequestParam List<String> styles,
+                                      @RequestParam String location) {
+        List<Ad> ads = adService.getSearchedAds(from, searching, styles, location);
         ads.sort(Comparator.comparing(Ad::getCreatedAt).reversed());
         return ads.stream().map(AdMapper::toAdDTO).toList();
     }
@@ -67,7 +69,7 @@ public class AdController {
     }
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    @GetMapping("/get/user/{userId}")
+    @GetMapping("/user/{userId}")
     public ResponseEntity<List<AdDTO>> getAdsByUser(@PathVariable("userId") String userId) {
         UUID userUUID = UUID.fromString(userId);
 
@@ -88,7 +90,9 @@ public class AdController {
 
         Date currentDate = new Date(System.currentTimeMillis());
 
-        final MusicianType adMusicianType = musicianTypeService.findByName(creatingAd.musicianType());
+        final MusicianType from = musicianTypeService.findByName(creatingAd.from());
+        final MusicianType searching = musicianTypeService.findByName(creatingAd.searching());
+
         final Set<Style> adStyles = new HashSet<>();
         for (String styleName : creatingAd.styles()) {
             adStyles.add(styleService.findByName(styleName));
@@ -97,15 +101,16 @@ public class AdController {
         final Location adLocation = locationService.findByName(creatingAd.location());
 
         Ad ad = new Ad();
-        ad.setCreatedAt(Date.from(currentDate.toInstant()));
+        ad.setCreatedAt(currentDate.toInstant());
         ad.setPostedBy(postingUser);
         ad.setTitle(creatingAd.title());
-        ad.setSeekingMusicianType(adMusicianType);
+        ad.setFrom(from);
+        ad.setSearching(searching);
         ad.setStyles(adStyles);
         ad.setLocation(adLocation);
         ad.setDescription(creatingAd.description());
         ad.setImage(creatingAd.image());
-
+        ad.setLikedByUsers(new HashSet<>());
 
         try {
             Optional<Ad> existingAd = adService.getAdByTitle(creatingAd.title());
@@ -144,15 +149,17 @@ public class AdController {
         Optional<Ad> ad = adService.getAdById(id);
 
         if (ad.isPresent()) {
-            final MusicianType adMusicianType = musicianTypeService.findByName(updatingAd.musicianType());
+            final MusicianType from = musicianTypeService.findByName(updatingAd.from());
+            final MusicianType searching = musicianTypeService.findByName(updatingAd.searching());
             final Set<Style> adStyles = new HashSet<>();
             for (String styleName : updatingAd.styles()) {
                 adStyles.add(styleService.findByName(styleName));
             }
             final Location adLocation = locationService.findByName(updatingAd.location());
 
-            ad.get().setTitle(updatingAd.title()); //TODO : créer un ad builder
-            ad.get().setSeekingMusicianType(adMusicianType);
+            ad.get().setTitle(updatingAd.title());
+            ad.get().setFrom(from);
+            ad.get().setSearching(searching);
             ad.get().setStyles(adStyles);
             ad.get().setLocation(adLocation);
             ad.get().setDescription(updatingAd.description());
@@ -171,7 +178,7 @@ public class AdController {
     }
 
     @PreAuthorize("hasRole('USER')")
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("{id}")
     public ResponseEntity<Object> deleteAdByUser(@PathVariable("id") int id, HttpServletRequest request) {
 
         User postingUser = userService.getUserFromRequest(request);
@@ -191,9 +198,53 @@ public class AdController {
             return setErrorResponse("Error deleting ad", HttpStatus.BAD_REQUEST);
         }
     }
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/favorites/{id}")
+    public ResponseEntity<List<AdDTO>> getFavorites(@PathVariable("id") UUID id) {
+        try {
+            User user = userService.getUserById(id);
+            Set<Ad> likedAds = user.getLikedAds();
+
+            if(likedAds.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            List<Ad> likedAdsList = new ArrayList<>(likedAds);
+
+            likedAdsList.sort(Comparator.comparing(Ad::getCreatedAt).reversed());
+
+            return ResponseEntity.ok(likedAdsList.stream().map(AdMapper::toAdDTO).toList());
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping("/favorites/{userId}/{adId}")
+    public ResponseEntity<Object> toggleFavoriteAd(@PathVariable("userId") UUID userId, @PathVariable("adId") int adId) {
+        try {
+            User user = userService.getUserById(userId);
+            Optional<Ad> adOptional = adService.getAdById(adId);
+
+            if (adOptional.isPresent()) {
+                Ad ad = adOptional.get();
+                if (user.getLikedAds().contains(ad)) {
+                    user.removeLikedAd(ad);
+                } else {
+                    user.addLikedAd(ad);
+                }
+                userService.updateUser(user.getId(), user);
+                return ResponseEntity.ok().build();
+            } else {
+                return setErrorResponse("Ad not found", HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            return setErrorResponse("Error toggling ad favorite status", HttpStatus.BAD_REQUEST);
+        }
+    }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/delete/admin/{id}")
+    @DeleteMapping("/admin/{id}")
     public ResponseEntity<Object> deleteAdByAdmin(@PathVariable("id") int id) {
 
         try {
@@ -209,7 +260,7 @@ public class AdController {
         if (ad.isPresent()) {
             return ad.get().getPostedBy().getName().equals(currentUserName);
         } else {
-            throw new Exception("Ad not found"); //TODO : créer exception spécifique
+            throw new Exception("Ad not found"); //TODO : créer exception spécifique ?
         }
     }
 

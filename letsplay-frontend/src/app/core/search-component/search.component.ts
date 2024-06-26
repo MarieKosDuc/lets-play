@@ -1,20 +1,17 @@
 import { Component } from '@angular/core';
-import {
-  AbstractControl,
-  FormBuilder,
-  FormGroup,
-  ValidationErrors,
-  Validators,
-  ValidatorFn
-} from '@angular/forms';
+import { FormControl, FormGroup, ValidationErrors } from '@angular/forms';
+import { Validators } from '@angular/forms';
 
-import { MenuItem, MessageService } from 'primeng/api';
+import { MessageService } from 'primeng/api';
+
+import { MusicStylesEnum } from '../enums/musicStylesEnum';
+import { MusicianTypesEnum } from '../enums/musicianTypesEnum';
+import { LocationsEnum } from '../enums/locationsEnum';
 
 import { Ad } from '../models/ad.model';
 import { AdService } from '../ad.service';
-import { musicStylesEnum } from '../enums/musicStylesEnum';
 
-interface MetalStyle {
+interface DropdownItems {
   name: string;
   code: string;
 }
@@ -25,55 +22,71 @@ interface MetalStyle {
   styleUrls: ['./search.component.css']
 })
 export class SearchComponent {
-  seeking!: string;
-  searchForm!: FormGroup;
+  protected loading: boolean = false;
+  protected submitted: boolean = false;
+  protected adForm!: FormGroup;
 
-  metalStyles!: MetalStyle[];
-  selectedMetalStyles!: MetalStyle[];
+  protected ads!: Ad[];
 
-  ads!: Ad[];
+  // musician type dropdowns settings
+  protected fromMusicianTypes: DropdownItems[] = [
+    ...Object.keys(MusicianTypesEnum).map((key) => ({
+      name: key !== 'band' 
+        ? 'Un ' + MusicianTypesEnum[key as keyof typeof MusicianTypesEnum] + ' qui recherche un groupe'
+        : 'Un ' + MusicianTypesEnum[key as keyof typeof MusicianTypesEnum] + ' qui recherche un musicien',
+      code: key,
+    })),
+  ];
 
-  constructor(private formbuilder: FormBuilder, private adService: AdService, private messageService: MessageService) {
-    this.searchForm = this.formbuilder.group({
-      search: ['', Validators.required],
-      musicianType: [''],
-      location: ['', Validators.required],
-      selectedMetalStyles: ['', Validators.required],
-    }, { validators: this.validateMusicianType() });
-    console.log(this.searchForm.controls)
-  }
+  // searched musician type dropdowns settings
+  protected searchingMusicianTypes: DropdownItems[] = [
+    ...Object.keys(MusicianTypesEnum)
+      .filter((key) => key !== 'band')
+      .map((key) => ({
+        name: 'Un ' + MusicianTypesEnum[key as keyof typeof MusicianTypesEnum],
+        code: key,
+      })),
+  ];
+  protected isBandSearching: boolean = false;
+
+
+  // music styles dropdown settings
+  protected musicStyles: DropdownItems[] = [
+    ...Object.keys(MusicStylesEnum).map((key) => ({
+      name: MusicStylesEnum[key as keyof typeof MusicStylesEnum],
+      code: key,
+    })),
+  ];
+
+  // location dropdown settings
+  protected locations: DropdownItems[] = [
+    ...Object.keys(LocationsEnum).map((key) => ({
+      name: LocationsEnum[key as keyof typeof LocationsEnum],
+      code: key,
+    })),
+  ];
+
+
+  constructor( private adService: AdService, private messageService: MessageService) { }
 
   ngOnInit() {
-    this.metalStyles = this.getStylesFromEnum();
+    // Form Group creation
+    this.adForm = new FormGroup({
+      selectedMusicianTypeFrom: new FormControl<DropdownItems | null>(null),
+      selectedSearchingMusicianType: new FormControl<DropdownItems | null>(null),
+      selectedMusicStyles: new FormControl([], Validators.required),
+      selectedLocation: new FormControl('', [Validators.required]),
+    });
   }
 
-  validateMusicianType(): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      const search = control.get('search')?.value;
-      const musicianType = control.get('musicianType')?.value;
-  
-      const isMusician = search === 'musician';
-  
-      if (isMusician && !musicianType) {
-        return { noMusicianTypeSelected: true };
-      }
-  
-      return null;
-    };
-  }
-  
-  
-
-  getStylesFromEnum(): MetalStyle[] {
-    return Object.keys(musicStylesEnum).map((key) => ({
-      name: musicStylesEnum[key as keyof typeof musicStylesEnum],
-      code: key,
-    }));
+  setBandSearching(event: any) {
+    if (this.adForm.get('selectedMusicianTypeFrom')?.value.code === 'band') {
+      this.isBandSearching = true;
+    } else {
+      this.isBandSearching = false;
+    }
   }
 
-  setSeeking(value: string) {
-    this.seeking = value;
-  }
 
   showToastResults(ads: Ad[]) {
     if (ads.length === 0) {
@@ -92,14 +105,18 @@ export class SearchComponent {
   }
 
   onSubmit() {
-    const metalGenres = this.selectedMetalStyles.map((style) => style.code);
+    const searching = this.adForm.get('selectedMusicianTypeFrom')?.value.code === 'band' 
+    ? this.adForm.get('selectedSearchingMusicianType')?.value?.code ?? ''
+    : 'band';
+    const selectedMusicStyles = this.adForm.get('selectedMusicStyles')?.value ?? [];
 
     this.adService.searchAds
       .call(
         this.adService,
-        this.searchForm.value.musicianType,
-        metalGenres,
-        this.searchForm.value.location
+        searching,
+        this.adForm.get('selectedMusicianTypeFrom')?.value.code ?? '',
+        selectedMusicStyles.map((style: DropdownItems) => style.code),
+        this.adForm.get('selectedLocation')?.value.code ?? ''
       )
       .subscribe((ads: Ad[]) => {
         this.ads = ads;

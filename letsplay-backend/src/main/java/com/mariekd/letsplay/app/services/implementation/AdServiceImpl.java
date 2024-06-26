@@ -3,7 +3,6 @@ package com.mariekd.letsplay.app.services.implementation;
 import com.mariekd.letsplay.app.entities.Ad;
 import com.mariekd.letsplay.app.repositories.AdRepository;
 import com.mariekd.letsplay.app.services.AdService;
-import com.mariekd.letsplay.authentication.entities.User;
 import com.mariekd.letsplay.authentication.repositories.UserRepository;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -66,7 +65,8 @@ public class AdServiceImpl implements AdService {
         return adRepository.findByUserId(userId);
     }
 
-    public List<Ad> getSearchedAds(String musicianType, List<String> styles, String location) {
-        return adRepository.findSearchedAds(musicianType, styles, location);
+    @Override
+    public List<Ad> getSearchedAds(String fromMusicianType, String searchedMusicianType, List<String> styles, String location) {
+        return adRepository.findSearchedAds(fromMusicianType, searchedMusicianType, styles, location);
     }
 }

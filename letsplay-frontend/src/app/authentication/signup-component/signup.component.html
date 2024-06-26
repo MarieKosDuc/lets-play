@@ -58,6 +58,12 @@
     </div>
   </div>
 
+  <p-progressSpinner
+    *ngIf="loading"
+    class="spinner"
+    mode="indeterminate"
+  ></p-progressSpinner>
+
   <div *ngIf="registerOk" class="register-component-form">
     <h2>Ton compte a bien été créé !</h2>
     <p>Vérifie ta boîte mail pour l'activer.</p>

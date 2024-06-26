@@ -53,15 +53,15 @@ export class AdService {
     }
 
     getUserAds(id: string): Observable<Ad[]> {
-      return this.http.get<Ad[]>(ADS_API + `/get/user/${id}`, httpOptions).pipe(
+      return this.http.get<Ad[]>(ADS_API + `/user/${id}`, httpOptions).pipe(
         tap((ads: Ad[]) => {
           this.ads = ads;
         })
       );
     }
 
-    searchAds(musicianType: string, styles: string[], location: string): Observable<Ad[]> {
-      const url = ADS_API + `/search?musicianType=${musicianType}&styles=${styles}&location=${location}`;
+    searchAds(fromMusician: string, searchingMusician: string, styles: string[], location: string): Observable<Ad[]> {
+      const url = ADS_API + `/search?from=${fromMusician}&searching=${searchingMusician}&styles=${styles}&location=${location}`;
       return this.http.get<Ad[]>(url, httpOptions).pipe(
         tap((ads: Ad[]) => {
           this.ads = ads;
@@ -73,8 +73,20 @@ export class AdService {
       return this.http.post<AdCreation>(ADS_API + `/create`, ad, httpOptions);
     }
 
+    updateAd(ad: AdCreation, id: number) {
+      return this.http.put<AdCreation>(ADS_API + `/${id}`, ad, httpOptions);
+    }
+
     deleteAd(id: number) {
-      return this.http.delete(ADS_API + `/delete/${id}`, httpOptions);
+      return this.http.delete(ADS_API + `/${id}`, httpOptions);
+    }
+
+    adOrRemoveFavorite(userId: string, adId: number) {
+      return this.http.post(ADS_API + `/favorites/${userId}/${adId}`, httpOptions);
+    }
+
+    getUserFavorites(userId: string): Observable<Ad[]> {
+      return this.http.get<Ad[]>(ADS_API + `/favorites/${userId}`, httpOptions);
     }
 
 }

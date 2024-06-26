@@ -12,6 +12,7 @@ import { MessageService } from 'primeng/api';
 export class SignupComponent {
 
   protected registerOk: boolean = false;
+  protected loading: boolean = false;
 
   protected passwordRegex =
     /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/;
@@ -27,6 +28,7 @@ export class SignupComponent {
 
   onSubmit(form: NgForm) {
     const password = form.value.password;
+    this.loading = true;
 
     if (!this.passwordRegex.test(password)) {
       console.error('Invalid password');
@@ -54,11 +56,12 @@ export class SignupComponent {
       )
       .subscribe(
         (response) => {
-          console.log(response);
+          this.loading = false;
           this.registerOk = true;
         },
         (error) => {
-          this.registerOk = true;
+          this.loading = false;
+          this.registerOk = false;
           if (error.status == 409) {
             this.messageService.add ({ severity: 'error', summary: 'Erreur', detail: 'Cet email ou ce nom d\'utilisateur est déjà utilisé !' });
           } else {

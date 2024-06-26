@@ -18,6 +18,7 @@ export class AdRecapComponent implements OnInit {
   @Input() ad!: Ad;
   protected user?: User;
   protected visibleToast: boolean = false;
+  protected starIcon: string = 'pi pi-star-fill';
 
   constructor(
     private router: Router,
@@ -30,11 +31,32 @@ export class AdRecapComponent implements OnInit {
     this.user = this.authStorageService.getUser();
   }
 
-  isUserAuthor(): boolean {
-    return this.user?.username === this.ad.postedBy;
+  protected isUserAuthor(): boolean {
+    return this.user?.id === this.ad.postedById;
   }
 
-  showConfirm() {
+  protected onFavoriteClick(event: Event): void {
+    if (this.user) {
+    this.adService.adOrRemoveFavorite(this.user.id, this.ad.id).subscribe(() => {
+      this.starIcon = this.starIcon === 'pi pi-star-fill' ? 'pi pi-star' : 'pi pi-star-fill';
+
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Favoris',
+        detail: this.starIcon === 'pi pi-star-fill' ? 'Annonce ajoutée aux favoris' : 'Annonce retirée des favoris',
+      });
+      window.location.reload();
+    }, (error) => {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erreur',
+        detail: 'Une erreur est survenue',
+      });
+    });
+  }
+  }
+
+  protected showConfirm() {
     if (!this.visibleToast) {
       this.messageService.add({
         key: 'confirm',
@@ -46,23 +68,23 @@ export class AdRecapComponent implements OnInit {
     }
   }
 
-  onConfirm() {
+  protected onConfirm() {
     console.log('add deletion, clicked on "Oui" for : ', this.ad.id);
     this.deleteAd();
     this.messageService.clear('confirm');
     this.visibleToast = false;
   }
 
-  onReject() {
+  protected onReject() {
     this.messageService.clear('confirm');
     this.visibleToast = false;
   }
 
-  goToAd() {
+  protected goToAd() {
     this.router.navigateByUrl(`ad/${this.ad.id}`);
   }
 
-  deleteAd() {
+  protected deleteAd() {
     this.adService.deleteAd(this.ad.id).subscribe(() => {
       console.log("service ok");
       this.messageService.add({
@@ -73,5 +95,9 @@ export class AdRecapComponent implements OnInit {
 
       this.router.navigate(['/home']);
     });
+  }
+
+  protected updateAd(): void {
+    this.router.navigateByUrl(`update-ad/${this.ad.id}`);
   }
 }

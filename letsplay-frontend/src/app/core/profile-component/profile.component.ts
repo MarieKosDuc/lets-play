@@ -1,26 +1,29 @@
 import { Component, Input } from '@angular/core';
-import { AuthStorageService } from 'src/app/shared/services/storage.service';
-import { AuthenticationService } from '../../authentication/services/authentication.service';
-import { User } from '../../authentication/models/user.model';
+import { NgForm } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { CloudinaryService } from 'src/app/layout/cloudinary/cloudinary.service';
-import { Ad } from '../models/ad.model';
-import { AdService } from '../ad.service';
-import { ActivatedRoute } from '@angular/router';
 import { MessageService } from 'primeng/api';
+
+import { AuthStorageService } from 'src/app/shared/services/storage.service';
+import { AuthenticationService } from '../../authentication/services/authentication.service';
+import { AdService } from '../ad.service';
+
+import { User } from '../../authentication/models/user.model';
+import { Ad } from '../models/ad.model';
 import { profileToUpdate } from '../../shared/models/profileToUpdate.model';
-import { NgForm } from '@angular/forms';
+import { Subscription, tap } from 'rxjs';
 
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.css'],
+  styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent {
   @Input() ads: Ad[] = [];
 
-  protected currentUser!: User | null; // Attention à la différenciation entre utilisateur connecté et profil d'un autre utilisateur
-  protected profileUser!: User | null;
+  protected currentUser?: User;
+  protected profileUser?: User;
   protected isConnectedUser: boolean = false;
   protected noAdsForUser: boolean = false;
 
@@ -31,9 +34,12 @@ export class ProfileComponent {
   protected passwordRegex =
     /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/;
 
-  myWidget: any;
-  uploadPreset: String = this.cloudinaryService.getUploadPreset();
-  myCloudName: String = this.cloudinaryService.getCloudName();
+  protected myWidget: any;
+  protected uploadPreset: String = this.cloudinaryService.getUploadPreset();
+  protected myCloudName: String = this.cloudinaryService.getCloudName();
+
+  private loggedInSubscription: Subscription | undefined;
+  private currentUserSubscription: Subscription | undefined;
 
   constructor(
     private cloudinaryService: CloudinaryService,
@@ -41,33 +47,28 @@ export class ProfileComponent {
     private authService: AuthenticationService,
     private adService: AdService,
     private activatedRoute: ActivatedRoute,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private router: Router
   ) {}
 
-  ngOnInit() {
-  
-    this.authStorageService.user$.subscribe((user) => {
-      this.currentUser = user;
+  ngOnInit():void {
 
-      this.userPicture = user?.profilePicture || '';
+    this.loggedInSubscription = this.authService.isLoggedIn().subscribe((loggedIn: boolean) => {
+      if (!loggedIn) {
+        // Handle logic when user is not logged in (e.g., redirect or clear profile data)
+      }
     });
 
-    if (this.currentUser?.id === this.activatedRoute.snapshot.params['id']) {
-      this.isConnectedUser = true;
-      this.profileUser = this.currentUser;
-    } else {
-      this.authService.getUserById(this.activatedRoute.snapshot.params['id']).subscribe(
-        (user: User) => {
-          this.profileUser = user;
-        },
-        (error) => {
-          console.error('Error fetching user:', error);
-          this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Erreur lors de la récupération de l\'utilisateur' });
-        }
-      );
-    }
+    this.currentUserSubscription = this.authService.getCurrentUser().subscribe((user) => {
+      if (!user) {
+        // Handle logic when current user is null (e.g., clear profile data)
+      }
+    });
 
-    this.getUserAds(this.profileUser?.id || '');
+    this.authStorageService.user$.subscribe((user) => {
+      this.currentUser = user;
+      this.checkIfConnectedUserIsProfileUser() 
+    });
 
     const cld = this.cloudinaryService.getCloudinary();
 
@@ -97,11 +98,20 @@ export class ProfileComponent {
     );
   }
 
-  openWidget() {
+  ngOnDestroy() {
+   if (this.loggedInSubscription) {
+      this.loggedInSubscription.unsubscribe();
+    }
+    if (this.currentUserSubscription) {
+      this.currentUserSubscription.unsubscribe();
+    }
+  }
+
+  protected openWidget() {
     this.myWidget.open();
   }
 
-  getUserAds(id: string) {
+  protected getUserAds(id: string) {
     this.adService.getUserAds(id).subscribe(
       (ads: Ad[]) => {
         this.ads = ads;
@@ -115,7 +125,7 @@ export class ProfileComponent {
     );
   }
 
-  onSubmit(form: NgForm){
+  protected onSubmit(form: NgForm){
     const password = form.value.newPassword;
 
     if (!this.passwordRegex.test(password)) {
@@ -138,7 +148,7 @@ export class ProfileComponent {
     this.updatePassword(password);
   }
 
-  updateProfilePicture(pictureUrl: string) {
+  protected updateProfilePicture(pictureUrl: string) {
     if(this.currentUser) {
 
       const request: profileToUpdate = {
@@ -160,7 +170,7 @@ export class ProfileComponent {
     }
   }
 
-  updatePassword(password: string) {
+  protected updatePassword(password: string) {
     if (this.currentUser) {
       this.authService.updatePassword(this.currentUser.id, password).subscribe(
         data => {
@@ -171,6 +181,28 @@ export class ProfileComponent {
           this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Erreur lors de la mise à jour du mot de passe' });
         }
       );
+    }
+  }
+
+  private checkIfConnectedUserIsProfileUser() {
+    if (this.currentUser?.id === this.activatedRoute.snapshot.params['id']) {
+      this.isConnectedUser = true;
+      this.profileUser = this.currentUser;
+      this.getUserAds(this.profileUser?.id || '');
+    } else {
+      this.loadProfileUser(this.activatedRoute.snapshot.params['id']);
+    }
+  }
+
+  private async loadProfileUser(userId: string) {
+    try {
+      const userFetched = await this.authService.getUserById(userId).toPromise();
+      console.log('User fetched:', userFetched);
+      this.profileUser = userFetched;
+      this.getUserAds(this.profileUser?.id || '');
+    } catch (error) {
+      console.error('Error fetching user:', error);
+      // this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Erreur lors de la récupération de l\'utilisateur' });
     }
   }
 }

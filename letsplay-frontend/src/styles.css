@@ -3,6 +3,8 @@
 @import "variables.css";
 @import "primeng/resources/themes/lara-light-blue/theme.css"; 
 @import "primeng/resources/primeng.css";
+@import "primeicons/primeicons.css";
+
 
 html,
 body,
@@ -71,17 +73,6 @@ body {
     margin-bottom: 0rem;
   }
 
-  & .infos-container {
-    z-index: 1;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    width: 95%;
-    padding-bottom: 0.25rem;
-    margin-top: 0rem;
-    margin-bottom: 0rem;
-  }
-
   & .field {
     z-index: 1;
     width: 100%;
@@ -104,6 +95,11 @@ body {
     justify-content: flex-end;
     margin-top: 1rem;
     max-width: 15rem;
+  }
+
+  & p-progressSpinner {
+    width: 10%;
+    margin: auto;
   }
 }
 

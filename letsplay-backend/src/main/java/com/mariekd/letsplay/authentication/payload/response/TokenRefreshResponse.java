@@ -5,6 +5,8 @@ public class TokenRefreshResponse {
     private String refreshToken;
     private String tokenType = "Bearer";
 
+    private String tokenExpiration;
+
     public TokenRefreshResponse(String refreshToken) {
         this.refreshToken = refreshToken;
     }

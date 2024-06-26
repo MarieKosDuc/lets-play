@@ -18,8 +18,12 @@
             </div>
 
             <div id="update-add-button" *ngIf="isUserAuthor()">
-                <button class="button">Modifier</button>
+                <button class="button" (click)="updateAd()">Modifier</button>
             </div>
+        </div>
+
+        <div><i class="{{starIcon}}" style="font-size: 2rem; cursor: pointer" (click)="onFavoriteClick($event)" *ngIf="!isUserAuthor()"
+            alt="Mettre l'annonce en favori ou l'en retirer"></i>
         </div>
     </div>
 

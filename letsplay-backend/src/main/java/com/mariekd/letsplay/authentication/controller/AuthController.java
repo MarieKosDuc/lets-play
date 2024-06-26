@@ -1,10 +1,10 @@
 package com.mariekd.letsplay.authentication.controller;
 
+import com.mariekd.letsplay.authentication.dto.UserDTO;
 import com.mariekd.letsplay.authentication.entities.*;
 import com.mariekd.letsplay.authentication.exceptions.UnauthorizedException;
 import com.mariekd.letsplay.authentication.payload.request.*;
 import com.mariekd.letsplay.authentication.payload.response.UserInfoResponse;
-import com.mariekd.letsplay.authentication.services.ResetPasswordTokenService;
 import com.mariekd.letsplay.authentication.services.implementations.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -169,7 +169,7 @@ public class AuthController {
                 Role userRole = roleService.findByName("USER");
 
                 User user = new User(UUID.randomUUID() , userInfos.username(), userInfos.email(), userInfos.password(), userInfos.profilePicture(),
-                        false, userRole, null);
+                        false, userRole, null, null);
 
                 userService.createUser(user);
                 LOGGER.info("User created: {}", user.getName());
@@ -275,7 +275,7 @@ public class AuthController {
                 return userService.updateUser(id, user);
             } catch (final Exception e) {
                 LOGGER.error("Error updating user: {}", e.getMessage());
-                throw new RuntimeException("Error updating user: " + e.getMessage()); // A modifier ?
+                throw new RuntimeException("Error updating user: " + e.getMessage());
             }
         } else {
             throw new UnauthorizedException("You are not authorized to modify this user");
@@ -293,11 +293,16 @@ public class AuthController {
         }
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')") // Problème ici : mon user n'est pas admin !
     @GetMapping("/all")
-    public List<User> getAllUsers() {
+    public List<UserDTO> getAllUsers() {
         LOGGER.info("Getting all users: {} ", userService.getAllUsers());
-        return userService.getAllUsers();
+        List<User> usersList = userService.getAllUsers();
+        List<UserDTO> usersDTOList = new ArrayList<>();
+        for (User user : usersList) {
+            usersDTOList.add(new UserDTO(user.getId(), user.getName(), user.getEmail(), user.getProfilePicture()));
+        }
+        return usersDTOList;
     }
 
     @PreAuthorize("hasRole('ADMIN')")

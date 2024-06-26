@@ -1,0 +1,9 @@
+<div class="card">
+    <h2>Tes annonces sauvegardées :</h2>
+
+    <div id="ads-list">
+        <ng-container>
+          <app-ad-recap *ngFor="let ad of ads" [ad]="ad"> </app-ad-recap>
+        </ng-container>
+    </div>
+</div>

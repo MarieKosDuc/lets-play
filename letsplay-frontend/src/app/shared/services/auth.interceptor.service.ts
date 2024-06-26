@@ -9,6 +9,7 @@ import { catchError, switchMap } from 'rxjs/operators';
 
 import { EventBusService } from './event-bus.service';
 import { EventData } from '../models/event.class';
+import { User } from 'src/app/authentication/models/user.model';
 
 @Injectable()
 export class HttpRequestInterceptor implements HttpInterceptor {
@@ -34,8 +35,13 @@ export class HttpRequestInterceptor implements HttpInterceptor {
           error.status === 401
         ) {
           return this.handle401Error(req, next);
-        }
-
+        } 
+        // if (
+        //   error instanceof HttpErrorResponse &&
+        //   error.status === 403
+        // ) {
+        //   return this.handle403ErrorAndLogoutIfNecessary(req, next);
+        // }
         return throwError(() => error);
       })
     );
@@ -58,7 +64,7 @@ export class HttpRequestInterceptor implements HttpInterceptor {
           }),
           catchError((error) => {
             this.isRefreshing = false;
-            console.log("Erreur reçue du logout : " + error.message)
+            console.log("Erreur reçue de l'authservice : " + error.message)
 
             if (error instanceof HttpErrorResponse && error.status === 403) {
               this.eventBusService.emit(new EventData('logout', null));
@@ -73,6 +79,18 @@ export class HttpRequestInterceptor implements HttpInterceptor {
 
     return next.handle(request);
   }
+
+  private handle403Error(request: HttpRequest<any>, next: HttpHandler) { // TO DO : redirection vers page 403 avec possibilité de reconnexion
+    console.log('Handling 403 error')
+    if (this.authStorageService.isLoggedIn()) {
+      this.eventBusService.emit(new EventData('logout', null));
+      console.log('Logout event emitted')
+    }
+
+    return next.handle(request);
+  }
+
+  // TODO : redirection vers page 404
 }
 
 export const httpInterceptorProviders = [

@@ -1,5 +1,4 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Location } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { MessageService } from 'primeng/api';
@@ -8,8 +7,9 @@ import { Ad } from '../models/ad.model';
 import { AdService } from '../ad.service';
 import { AuthStorageService } from '../../shared/services/storage.service';
 
-import { musicStylesEnum } from '../enums/musicStylesEnum';
 import { User } from 'src/app/authentication/models/user.model';
+import { MusicStylesEnum } from '../enums/musicStylesEnum';
+import { LocationsEnum } from '../enums/locationsEnum';
 
 @Component({
   selector: 'app-ad',
@@ -19,17 +19,21 @@ import { User } from 'src/app/authentication/models/user.model';
 export class AdComponent implements OnInit {
   @Input()
   public ad!: Ad;
+
   @Input()
   protected truncated = true;
-  protected connectedUser!: User;
+
+  protected connectedUser!: User
+  protected isUserConnected: boolean = false;
   protected isSingleAd!: boolean;
-  protected musicStylesEnum = musicStylesEnum;
+  protected isFavorite!: boolean;
+
+  protected starIcon: string = 'pi pi-star';
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private adService: AdService,
-    private _location: Location,
     private authStorageService: AuthStorageService,
     private messageService: MessageService
   ) {}
@@ -37,6 +41,9 @@ export class AdComponent implements OnInit {
   ngOnInit(): void {
     this.authStorageService.user$.subscribe((user) => {
       this.connectedUser = user;
+      if(Object.keys(this.connectedUser).length !== 0) {
+        this.isUserConnected = true;
+      }
     });
 
     const currentRoute = this.route.snapshot.routeConfig?.path;
@@ -50,15 +57,30 @@ export class AdComponent implements OnInit {
       const adId = this.route.snapshot.params['id'];
       this.adService.getAdById(adId).subscribe((ad: Ad) => {
         this.ad = ad;
+        this.transformAd(this.ad);
       });
     }
-
-    this.ad.styles = this.ad.styles.map(
-      (style: string) => (musicStylesEnum as any)[style]
-    );
   }
 
-  truncateText(text: string): string {
+  protected onFavoriteClick(event: Event): void {
+    this.adService.adOrRemoveFavorite(this.connectedUser.id, this.ad.id).subscribe(() => {
+      this.starIcon = this.starIcon === 'pi pi-star' ? 'pi pi-star-fill' : 'pi pi-star';
+
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Favoris',
+        detail: this.starIcon === 'pi pi-star-fill' ? 'Annonce ajoutée aux favoris' : 'Annonce retirée des favoris',
+      });
+    }, (error) => {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erreur',
+        detail: 'Une erreur est survenue',
+      });
+    });
+  }
+
+  protected truncateText(text: string): string {
     const words = text.split(' ');
     if (words.length <= 30) {
       return text;
@@ -67,28 +89,32 @@ export class AdComponent implements OnInit {
     return truncatedText.join(' ') + '...';
   }
 
-  goToAd() {
+
+  protected goToAd(): void {
     this.router.navigateByUrl(`ad/${this.ad.id}`);
   }
 
-  isAuthorUser() {
-    if(this.connectedUser) {
-      return this.connectedUser.username === this.ad.postedBy;
+  protected isAuthorUser(): boolean {
+    return this.connectedUser.id === this.ad.postedById;
+  }
+
+  protected onProfileClick(event: Event): void {
+    if(Object.keys(this.connectedUser).length !== 0) {
+      this.router.navigateByUrl(`profile/${this.ad.postedById}`);
+    } else {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erreur',
+        detail: 'Tu dois être connecté pour voir le profil de cet utilisateur',
+      });
     }
-    else {
-      return false;
-    }
   }
 
-  updateAd() {
-    this.router.navigateByUrl(`ad/${this.ad.id}/update`);
+  protected updateAd(): void {
+    this.router.navigateByUrl(`update-ad/${this.ad.id}`);
   }
 
-  back() {
-    this._location.back();
-  }
-
-  contact() {
+  protected contact() {
     if (Object.keys(this.connectedUser).length === 0) {
       this.messageService.add({
         severity: 'error',
@@ -98,5 +124,18 @@ export class AdComponent implements OnInit {
     } else {
       this.router.navigate(['/contact', this.ad?.id]);
     }
+  }
+
+  private transformStyles(styles: string[]): string[] {
+    return styles.map(style => MusicStylesEnum[style as keyof typeof MusicStylesEnum] || style);
+  }
+
+  private transformLocation(location: string): string {
+    return LocationsEnum[location as keyof typeof LocationsEnum] || location;
+  }
+
+  private transformAd(ad: Ad): void {
+      ad.styles = this.transformStyles(ad.styles);
+      ad.location = this.transformLocation(ad.location);
   }
 }

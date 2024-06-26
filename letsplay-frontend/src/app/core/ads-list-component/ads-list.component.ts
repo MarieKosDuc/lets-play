@@ -5,6 +5,8 @@ import { Ad } from '../models/ad.model';
 import { AdService } from '../ad.service';
 import { AuthStorageService } from 'src/app/shared/services/storage.service';
 import { User } from '../../authentication/models/user.model';
+import { MusicStylesEnum } from '../enums/musicStylesEnum';
+import { LocationsEnum } from '../enums/locationsEnum';
 
 @Component({
   selector: 'app-ads-list',
@@ -26,18 +28,12 @@ export class AdsListComponent implements OnInit {
   protected noAdsForUser: boolean = false;
 
   ngOnInit(): void {
-    this.user = this.authStorageService.getUser();
+    this.user = this.authStorageService.getUser(); // A revoir pour afficher les ads d'un autre utilisateur
 
     if (this.router.url === '/home') {
       this.getAllAds();
-      console.log('Fetching all ads');
     } else if (this.router.url === '/my-ads') {
       this.isRecap = true;
-      console.log(
-        'Fetching user ads for user:',
-        this.user?.username,
-        this.user?.id
-      );
       this.getUserAds();
     } else {
       this.ads = this.adService.ads;
@@ -48,6 +44,7 @@ export class AdsListComponent implements OnInit {
     this.adService.getAllAds().subscribe(
       (ads: Ad[]) => {
         this.ads = ads;
+        this.transformAds(ads);
         this.isLoading = false;
       },
       (error) => {
@@ -60,6 +57,7 @@ export class AdsListComponent implements OnInit {
     this.adService.getUserAds(this.user?.id ?? '').subscribe(
       (ads: Ad[]) => {
         this.ads = ads;
+        this.transformAds(ads);
         console.log('User ads:', ads);
         this.isLoading = false;
       },
@@ -70,5 +68,20 @@ export class AdsListComponent implements OnInit {
         }
       }
     );
+  }
+
+  transformStyles(styles: string[]): string[] {
+    return styles.map(style => MusicStylesEnum[style as keyof typeof MusicStylesEnum] || style);
+  }
+
+  transformLocation(location: string): string {
+    return LocationsEnum[location as keyof typeof LocationsEnum] || location;
+  }
+
+  transformAds(ads: Ad[]) {
+    for (const ad of ads) {
+      ad.styles = this.transformStyles(ad.styles);
+      ad.location = this.transformLocation(ad.location);
+    }
   }
 }

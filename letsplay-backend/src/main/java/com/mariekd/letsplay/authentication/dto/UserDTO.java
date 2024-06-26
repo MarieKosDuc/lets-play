@@ -18,6 +18,13 @@ public class UserDTO {
     public UserDTO() {
     }
 
+    public UserDTO(UUID id, String name, String email, String profilePicture) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.profilePicture = profilePicture;
+    }
+
     public UUID getId() {
         return id;
     }

@@ -25,7 +25,7 @@ export class AuthenticationService {
   constructor(private http: HttpClient) { }
 
   getUserById(id: String): Observable<User> {
-    return this.http.get<User>(`${AUTH_API}/${id}`);
+    return this.http.get<User>(`${AUTH_API}/${id}`, httpOptions);
   }
 
   login(username: string, password: string): Observable<User> {
@@ -41,7 +41,7 @@ export class AuthenticationService {
     const body = { 'token': token };
     console.log('Refreshing token with body:', body);
     return this.http.post(AUTH_API + `/refreshtoken`, body, httpOptions).pipe(
-      tap((response) => console.log('Refresh token response:', response)), // Débogage : afficher la réponse du serveur
+      tap((response) => console.log('Refresh token response:', response)),
       catchError((error) => {
         console.error('Error refreshing token:', error);
         return throwError(() => error);
@@ -54,6 +54,12 @@ export class AuthenticationService {
       tap(() => {
         this.loggedIn.next(false);
         this.currentUser.next(null);
+      }),
+      catchError((error) => {
+        console.error('Error logging out:', error);
+        localStorage.clear();
+        window.location.reload();
+        return throwError(() => error);
       })
     );
   }

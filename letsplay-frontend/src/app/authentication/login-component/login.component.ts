@@ -46,7 +46,7 @@ export class LoginComponent {
         this.messageService.add({
           severity: 'success',
           summary: 'Connexion réussie',
-          detail: `Te voila connecté, ${response.username}. Bonne recherche !`,
+          detail: `Te voila connecté.e, ${response.username}. Bonne recherche !`,
         });
 
         setTimeout(() => {
