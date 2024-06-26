@@ -35,8 +35,13 @@ export class HttpRequestInterceptor implements HttpInterceptor {
           error.status === 401
         ) {
           return this.handle401Error(req, next);
-        }
-
+        } 
+        // if (
+        //   error instanceof HttpErrorResponse &&
+        //   error.status === 403
+        // ) {
+        //   return this.handle403ErrorAndLogoutIfNecessary(req, next);
+        // }
         return throwError(() => error);
       })
     );
@@ -75,6 +80,17 @@ export class HttpRequestInterceptor implements HttpInterceptor {
     return next.handle(request);
   }
 
+  private handle403Error(request: HttpRequest<any>, next: HttpHandler) { // TO DO : redirection vers page 403 avec possibilité de reconnexion
+    console.log('Handling 403 error')
+    if (this.authStorageService.isLoggedIn()) {
+      this.eventBusService.emit(new EventData('logout', null));
+      console.log('Logout event emitted')
+    }
+
+    return next.handle(request);
+  }
+
+  // TODO : redirection vers page 404
 }
 
 export const httpInterceptorProviders = [

@@ -38,8 +38,14 @@ public class User {
     @OneToMany(mappedBy = "postedBy", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Ad> ads;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "users_liked_ads",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "ad_id"))
+    private Set<Ad> likedAds;
+
     public User(UUID id, String name, String email, String password, String profilePicture,
-                Boolean valid, Role role, Set<Ad> ads) {
+                Boolean valid, Role role, Set<Ad> ads, Set<Ad> likedAds) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -52,6 +58,7 @@ public class User {
             this.roles.add(role);
             role.getUsers().add(this);
         }
+        this.likedAds = likedAds != null ? likedAds : new HashSet<>();
     }
 
     public User() {
@@ -116,6 +123,22 @@ public class User {
     public void setAds(Set<Ad> ads) {
         this.ads = ads;
     }
+
+    public Set<Ad> getLikedAds() { return likedAds; }
+
+    public void setLikedAds(Set<Ad> likedAds) { this.likedAds = likedAds; }
+
+    // Methods to add or remove liked ads
+    public void addLikedAd(Ad ad) {
+        this.likedAds.add(ad);
+        ad.getLikedByUsers().add(this);
+    }
+
+    public void removeLikedAd(Ad ad) {
+        this.likedAds.remove(ad);
+        ad.getLikedByUsers().remove(this);
+    }
+
 
     @Override
     public String toString() {

@@ -9,8 +9,8 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { LoginComponent } from './login-component/login.component';
 import { SignupComponent } from './signup-component/signup.component';
 import { ProfileComponent } from '../core/profile-component/profile.component';
-import { AccountVerifyComponent } from './account-verify/account-verify.component';
-import { ForgottenPasswordComponent } from './forgotten-password/forgotten-password.component';
+import { AccountVerifyComponent } from './account-verify-component/account-verify.component';
+import { ForgottenPasswordComponent } from './forgotten-password-component/forgotten-password.component';
 import { AdModule } from "../core/ad.module";
 
 @NgModule({

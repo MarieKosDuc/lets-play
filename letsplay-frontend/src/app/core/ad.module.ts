@@ -14,8 +14,11 @@ import { AdComponent } from './ad-component/ad.component';
 import { AdsListComponent } from './ads-list-component/ads-list.component';
 import { SearchComponent } from './search-component/search.component';
 import { AdCreateComponent } from './ad-create-component/ad-create.component';
-import { AdRecapComponent } from './ad-recap/ad-recap.component';
+import { AdUpdateComponent } from './ad-update-component/ad-update.component';
+import { AdRecapComponent } from './ad-recap-component/ad-recap.component';
 import { ContactComponent } from './contact-component/contact.component';
+import { LikedAdsComponent } from './liked-ads-component/liked-ads.component';
+import { Adjust } from '@cloudinary/url-gen/actions';
 
 @NgModule({
   declarations: [
@@ -23,8 +26,10 @@ import { ContactComponent } from './contact-component/contact.component';
     AdsListComponent,
     SearchComponent,
     AdCreateComponent,
+    AdUpdateComponent,
     AdRecapComponent,
-    ContactComponent
+    ContactComponent,
+    LikedAdsComponent
   ],
   imports: [
     CommonModule,
@@ -42,7 +47,9 @@ import { ContactComponent } from './contact-component/contact.component';
     AdsListComponent,
     SearchComponent,
     AdCreateComponent,
-    AdRecapComponent
+    AdUpdateComponent,
+    AdRecapComponent,
+    LikedAdsComponent
   ]
 })
 export class AdModule { }

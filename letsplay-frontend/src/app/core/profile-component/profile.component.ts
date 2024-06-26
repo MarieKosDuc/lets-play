@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { CloudinaryService } from 'src/app/layout/cloudinary/cloudinary.service';
 import { MessageService } from 'primeng/api';
@@ -12,6 +12,7 @@ import { AdService } from '../ad.service';
 import { User } from '../../authentication/models/user.model';
 import { Ad } from '../models/ad.model';
 import { profileToUpdate } from '../../shared/models/profileToUpdate.model';
+import { Subscription, tap } from 'rxjs';
 
 @Component({
   selector: 'app-profile',
@@ -37,28 +38,37 @@ export class ProfileComponent {
   protected uploadPreset: String = this.cloudinaryService.getUploadPreset();
   protected myCloudName: String = this.cloudinaryService.getCloudName();
 
+  private loggedInSubscription: Subscription | undefined;
+  private currentUserSubscription: Subscription | undefined;
+
   constructor(
     private cloudinaryService: CloudinaryService,
     private authStorageService: AuthStorageService,
     private authService: AuthenticationService,
     private adService: AdService,
     private activatedRoute: ActivatedRoute,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private router: Router
   ) {}
 
-  ngOnInit() {
-  
+  ngOnInit():void {
+
+    this.loggedInSubscription = this.authService.isLoggedIn().subscribe((loggedIn: boolean) => {
+      if (!loggedIn) {
+        // Handle logic when user is not logged in (e.g., redirect or clear profile data)
+      }
+    });
+
+    this.currentUserSubscription = this.authService.getCurrentUser().subscribe((user) => {
+      if (!user) {
+        // Handle logic when current user is null (e.g., clear profile data)
+      }
+    });
+
     this.authStorageService.user$.subscribe((user) => {
       this.currentUser = user;
       this.checkIfConnectedUserIsProfileUser() 
     });
-
-    // if (this.currentUser?.id === this.activatedRoute.snapshot.params['id']) {
-    //   this.isConnectedUser = true;
-    //   this.profileUser = this.currentUser;
-    // } else {
-    //   this.loadProfileUser(this.activatedRoute.snapshot.params['id']);
-    // }
 
     const cld = this.cloudinaryService.getCloudinary();
 
@@ -86,6 +96,15 @@ export class ProfileComponent {
         }
       }
     );
+  }
+
+  ngOnDestroy() {
+   if (this.loggedInSubscription) {
+      this.loggedInSubscription.unsubscribe();
+    }
+    if (this.currentUserSubscription) {
+      this.currentUserSubscription.unsubscribe();
+    }
   }
 
   protected openWidget() {
@@ -183,7 +202,7 @@ export class ProfileComponent {
       this.getUserAds(this.profileUser?.id || '');
     } catch (error) {
       console.error('Error fetching user:', error);
-      this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Erreur lors de la récupération de l\'utilisateur' });
+      // this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Erreur lors de la récupération de l\'utilisateur' });
     }
   }
 }

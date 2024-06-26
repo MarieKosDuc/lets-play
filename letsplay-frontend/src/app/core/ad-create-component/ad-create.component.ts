@@ -39,9 +39,14 @@ export class AdCreateComponent {
   // musician type dropdowns settings
   protected fromMusicianTypes: DropdownItems[] = [
     ...Object.keys(MusicianTypesEnum).map((key) => ({
-      name: key !== 'band' 
-        ? 'Un ' + MusicianTypesEnum[key as keyof typeof MusicianTypesEnum] + ' qui recherche un groupe'
-        : 'Un ' + MusicianTypesEnum[key as keyof typeof MusicianTypesEnum] + ' qui recherche un musicien',
+      name:
+        key !== 'band'
+          ? 'Un ' +
+            MusicianTypesEnum[key as keyof typeof MusicianTypesEnum] +
+            ' qui recherche un groupe'
+          : 'Un ' +
+            MusicianTypesEnum[key as keyof typeof MusicianTypesEnum] +
+            ' qui recherche un musicien',
       code: key,
     })),
   ];
@@ -86,7 +91,7 @@ export class AdCreateComponent {
     private cloudinaryService: CloudinaryService,
     private adService: AdService,
     private messageService: MessageService,
-    private router: Router,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -98,7 +103,9 @@ export class AdCreateComponent {
     this.adForm = new FormGroup({
       title: new FormControl('', [Validators.required]),
       selectedMusicianTypeFrom: new FormControl<DropdownItems | null>(null),
-      selectedSearchingMusicianType: new FormControl<DropdownItems | null>(null),
+      selectedSearchingMusicianType: new FormControl<DropdownItems | null>(
+        null
+      ),
       selectedMusicStyles: new FormControl([], Validators.required),
       selectedLocation: new FormControl('', [Validators.required]),
       description: new FormControl('', [Validators.required]),
@@ -128,23 +135,30 @@ export class AdCreateComponent {
   }
 
   // custom validator for the musician type dropdown
-  customValidator(group: FormGroup): ValidationErrors | null {
-  const selectedMusicianTypeFrom = group.get('selectedMusicianTypeFrom')?.value;
-  const selectedSearchingMusicianType = group.get('selectedSearchingMusicianType')?.value;
+  protected customValidator(group: FormGroup): ValidationErrors | null {
+    const selectedMusicianTypeFrom = group.get(
+      'selectedMusicianTypeFrom'
+    )?.value;
+    const selectedSearchingMusicianType = group.get(
+      'selectedSearchingMusicianType'
+    )?.value;
 
-  if (selectedMusicianTypeFrom !== 'band' || (selectedMusicianTypeFrom === 'band' && selectedSearchingMusicianType)) {
-    return null; // valid form
-  } else {
-    return { invalidCombination: true }; // invalid form
+    if (
+      selectedMusicianTypeFrom !== 'band' ||
+      (selectedMusicianTypeFrom === 'band' && selectedSearchingMusicianType)
+    ) {
+      return null; // valid form
+    } else {
+      return { invalidCombination: true }; // invalid form
+    }
   }
-}
 
-  openWidget() {
+  protected openWidget() {
     this.myWidget.open();
   }
 
   // default image for musician type
-  setDefaultImage(event: any) {
+  protected setDefaultImage(event: any) {
     if (this.adForm.get('selectedMusicianTypeFrom')?.value) {
       this.imageSrc =
         this.baseUrl +
@@ -155,7 +169,7 @@ export class AdCreateComponent {
   }
 
   // make the dropdown appear if the musician type is band
-  setMusicianSearchedTypeDropdown() {
+  protected setMusicianSearchedTypeDropdown() {
     if (this.adForm.get('selectedMusicianTypeFrom')?.value.code === 'band') {
       this.isBandSearching = true;
     } else {
@@ -164,17 +178,19 @@ export class AdCreateComponent {
   }
 
   // creation of the temporary ad object
-  createTempAd() {
-    const searching = this.adForm.get('selectedMusicianTypeFrom')?.value.code === 'band' 
-    ? this.adForm.get('selectedSearchingMusicianType')?.value?.code ?? ''
-    : 'band';
-    const selectedMusicStyles = this.adForm.get('selectedMusicStyles')?.value ?? [];
-    
+  protected createTempAd() {
+    const searching =
+      this.adForm.get('selectedMusicianTypeFrom')?.value.code === 'band'
+        ? this.adForm.get('selectedSearchingMusicianType')?.value?.code ?? ''
+        : 'band';
+    const selectedMusicStyles =
+      this.adForm.get('selectedMusicStyles')?.value ?? [];
+
     this.adData = {
       createdAt: new Date(),
       title: this.adForm.get('title')?.value ?? '',
       userId: this.user?.id ?? '',
-      from: this.adForm.get('selectedMusicianTypeFrom')?.value.code ?? '', 
+      from: this.adForm.get('selectedMusicianTypeFrom')?.value.code ?? '',
       searching: searching,
       image: this.imageSrc,
       styles: selectedMusicStyles.map((style: DropdownItems) => style.code),
@@ -184,7 +200,7 @@ export class AdCreateComponent {
   }
 
   // submit the ad creation form
-  onSubmit() {
+  protected onSubmit() {
     this.createTempAd();
     this.loading = true;
 

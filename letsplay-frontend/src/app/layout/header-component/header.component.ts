@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
+import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 
 import { Subscription } from 'rxjs';
 
@@ -32,7 +32,8 @@ export class HeaderComponent implements OnInit {
     private authService: AuthenticationService,
     private authStorageService: AuthStorageService,
     private eventBusService: EventBusService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private activatedRoute: ActivatedRoute
   ) {
     this.userSubscription = this.authStorageService.user$.subscribe((user) => {
       this.userInfos = user;
@@ -152,7 +153,7 @@ export class HeaderComponent implements OnInit {
     ];
   }
 
-  logOut() {
+  public logOut() {
     this.authService.logout().subscribe(
       (response) => {
         this.userLoggedIn = false;
@@ -169,6 +170,7 @@ export class HeaderComponent implements OnInit {
       },
       (error) => {
         console.log(error);
+        this.router.navigate(['/home']);
       }
     );
   }

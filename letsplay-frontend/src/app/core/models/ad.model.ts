@@ -4,7 +4,8 @@ export class Ad {
   postedByName!: string;
   postedById!: string;
   title!: string;
-  seekingMusicianType!: string;
+  from!: string;
+  searching!: string;
   image: string | undefined;
   styles!: string[];
   location!: string;
@@ -16,7 +17,8 @@ export class Ad {
     postedByName: string,
     postedById: string,
     title: string,
-    seekingMusicianType: string,
+    from: string,
+    searching: string,
     image: string | undefined,
     styles: string[],
     location: string,
@@ -27,7 +29,8 @@ export class Ad {
     this.postedByName = postedByName;
     this.postedById = postedById;
     this.title = title;
-    this.seekingMusicianType = seekingMusicianType;
+    this.from = from;
+    this.searching = searching;
     this.image = image;
     this.styles = styles;
     this.location = location;

@@ -23,8 +23,12 @@ export class AdComponent implements OnInit {
   @Input()
   protected truncated = true;
 
-  protected connectedUser!: User;
+  protected connectedUser!: User
+  protected isUserConnected: boolean = false;
   protected isSingleAd!: boolean;
+  protected isFavorite!: boolean;
+
+  protected starIcon: string = 'pi pi-star';
 
   constructor(
     private router: Router,
@@ -37,6 +41,9 @@ export class AdComponent implements OnInit {
   ngOnInit(): void {
     this.authStorageService.user$.subscribe((user) => {
       this.connectedUser = user;
+      if(Object.keys(this.connectedUser).length !== 0) {
+        this.isUserConnected = true;
+      }
     });
 
     const currentRoute = this.route.snapshot.routeConfig?.path;
@@ -53,6 +60,24 @@ export class AdComponent implements OnInit {
         this.transformAd(this.ad);
       });
     }
+  }
+
+  protected onFavoriteClick(event: Event): void {
+    this.adService.adOrRemoveFavorite(this.connectedUser.id, this.ad.id).subscribe(() => {
+      this.starIcon = this.starIcon === 'pi pi-star' ? 'pi pi-star-fill' : 'pi pi-star';
+
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Favoris',
+        detail: this.starIcon === 'pi pi-star-fill' ? 'Annonce ajoutée aux favoris' : 'Annonce retirée des favoris',
+      });
+    }, (error) => {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erreur',
+        detail: 'Une erreur est survenue',
+      });
+    });
   }
 
   protected truncateText(text: string): string {
@@ -86,7 +111,7 @@ export class AdComponent implements OnInit {
   }
 
   protected updateAd(): void {
-    this.router.navigateByUrl(`ad/${this.ad.id}/update`);
+    this.router.navigateByUrl(`update-ad/${this.ad.id}`);
   }
 
   protected contact() {

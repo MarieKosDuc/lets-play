@@ -51,8 +51,14 @@ public class Ad {
     @Column(nullable = false, name="description")
     private String description;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "users_liked_ads",
+            joinColumns = @JoinColumn(name = "ad_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<User> likedByUsers = new HashSet<>();
+
     public Ad (int id, Instant createdAt, User postedBy, String title, MusicianType searching, String image,
-               Set<Style> styles, Location location, String description) {
+               Set<Style> styles, Location location, String description, Set<User> likedByUsers) {
         this.id = id;
         this.createdAt = createdAt;
         this.postedBy = postedBy;
@@ -62,6 +68,7 @@ public class Ad {
         this.styles = styles;
         this.location = location;
         this.description = description;
+        this.likedByUsers = likedByUsers != null ? likedByUsers : new HashSet<>();
     }
 
     public Ad() {
@@ -148,6 +155,21 @@ public class Ad {
         this.description = description;
     }
 
+    public Set<User> getLikedByUsers() {
+        return likedByUsers;
+    }
+
+    // Methods to add or remove users who liked this ad
+    public void addLikedByUser(User user) {
+        this.likedByUsers.add(user);
+        user.getLikedAds().add(this);
+    }
+
+    public void removeLikedByUser(User user) {
+        this.likedByUsers.remove(user);
+        user.getLikedAds().remove(this);
+    }
+
     @Override
     public String toString() {
         return "Ad{" +
@@ -169,13 +191,11 @@ public class Ad {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Ad ad = (Ad) o;
-        return id == ad.id && createdAt.equals(ad.createdAt) && postedBy.equals(ad.postedBy) && title.equals(ad.title)
-                && from.equals(ad.from) && searching.equals(ad.searching) && image.equals(ad.image) && styles.equals(ad.styles)
-                && location.equals(ad.location) && description.equals(ad.description);
+        return id == ad.id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, createdAt, postedBy, title, from, searching, image, styles, location, description);
+        return Objects.hash(id);
     }
 }

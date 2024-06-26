@@ -1,5 +1,8 @@
 <div id="ad-card" class="card">
     <h2 id="ad title">{{ ad.title | uppercase}} </h2>
+    <i class="{{starIcon}}" style="font-size: 2rem; cursor: pointer" (click)="onFavoriteClick($event)" *ngIf="!isAuthorUser() && isUserConnected"
+    alt="Mettre l'annonce en favori ou l'en retirer"></i>
+
     <div class="infos-container">
         <div id="location-posted-at">
             <div id="location">
