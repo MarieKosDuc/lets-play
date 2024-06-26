@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthenticationService } from '../services/authentication.service';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
@@ -10,6 +10,7 @@ import { MessageService } from 'primeng/api';
   styleUrls: ['./signup.component.css'],
 })
 export class SignupComponent {
+  protected signupForm!: FormGroup;
 
   protected registerOk: boolean = false;
   protected loading: boolean = false;
@@ -23,11 +24,22 @@ export class SignupComponent {
   constructor(
     private authService: AuthenticationService,
     private router: Router,
-    private messageService: MessageService
-  ) {}
+    private messageService: MessageService,
+    private fb: FormBuilder
+  ) {
+    this.signupForm = this.fb.group({
+      userName: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [
+        Validators.required,
+      ]],
+      confirmPassword: ['', Validators.required],
+      terms: [false, Validators.requiredTrue]
+    });
+  }
 
-  onSubmit(form: NgForm) {
-    const password = form.value.password;
+  protected onSubmit() {
+    const password = this.signupForm.value.password;
     this.loading = true;
 
     if (!this.passwordRegex.test(password)) {
@@ -41,7 +53,7 @@ export class SignupComponent {
       return;
     }
 
-    if (password !== form.value.confirmPassword) {
+    if (password !== this.signupForm.value.confirmPassword) {
       console.error('Invalid password');
       this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Les mots de passe ne correspondent pas' });
       return;
@@ -49,10 +61,10 @@ export class SignupComponent {
 
     this.authService
       .register(
-        form.value.email,
-        form.value.userName,
+        this.signupForm.value.email,
+        this.signupForm.value.userName,
         this.defaultProfilePicture,
-        form.value.password
+        this.signupForm.value.password
       )
       .subscribe(
         (response) => {
@@ -69,11 +81,10 @@ export class SignupComponent {
           }
         }
       );
-  }
+    }
 
-  backToHome() {
-    this.router.navigate(['/home']);
-  }
-
+    protected backToHome() {
+      this.router.navigate(['/home']);
+    }
 
 }

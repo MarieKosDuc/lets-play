@@ -13,6 +13,8 @@ import { LikedAdsComponent } from '../core/liked-ads-component/liked-ads.compone
 import { ContactComponent } from '../core/contact-component/contact.component';
 import { AccountVerifyComponent } from '../authentication/account-verify-component/account-verify.component';
 import { ForgottenPasswordComponent } from '../authentication/forgotten-password-component/forgotten-password.component';
+import { AboutComponent } from '../layout/about-component/about.component';
+import { CguComponent } from '../layout/cgu-component/cgu.component';
 
 const routes: Routes = [
   { path: 'home', component: AdsListComponent },
@@ -27,6 +29,8 @@ const routes: Routes = [
   { path: 'verify/:token', component: AccountVerifyComponent },
   { path: 'resetpassword', component: ForgottenPasswordComponent },
   { path: 'resetpassword/:token', component: ForgottenPasswordComponent },
+  { path: 'about', component: AboutComponent },
+  { path: 'cgu', component: CguComponent },
   { path: 'fav-ads', component: LikedAdsComponent },
   { path: '', redirectTo: '/home', pathMatch: 'full' }
 ]; //TODO : add auFthgard so that non identified users can only access ads and search

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { AppRoutingModule } from 'src/app/router/app-routing.module';
 
 import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
@@ -28,6 +29,7 @@ import { CoreModule } from "../core/core.module";
     imports: [
         CommonModule,
         FormsModule,
+        ReactiveFormsModule,
         AppRoutingModule,
         ProgressSpinnerModule,
         CoreModule

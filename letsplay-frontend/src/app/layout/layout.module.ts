@@ -7,17 +7,19 @@ import { CloudinaryModule } from '@cloudinary/ng';
 import { ToastModule } from 'primeng/toast';
 import { ScrollTopModule } from 'primeng/scrolltop';
 import { MenuModule } from 'primeng/menu';
-import { Button, ButtonModule } from 'primeng/button';
+import { ButtonModule } from 'primeng/button';
 
 import { HeaderComponent } from './header-component/header.component';
 import { FooterComponent } from './footer-component/footer.component';
-import { ScrollToTopComponent } from './scroll-to-top-component/scroll-to-top.component';
+import { AboutComponent } from './about-component/about.component';
+import { CguComponent } from './cgu-component/cgu.component';
 
 @NgModule({
   declarations: [
     HeaderComponent,
     FooterComponent,
-    ScrollToTopComponent
+    AboutComponent,
+    CguComponent
   ],
   imports: [
     CommonModule,
@@ -31,7 +33,8 @@ import { ScrollToTopComponent } from './scroll-to-top-component/scroll-to-top.co
   exports: [
     HeaderComponent,
     FooterComponent,
-    ScrollToTopComponent
+    AboutComponent,
+    CguComponent
   ]
 })
 export class LayoutModule { }
