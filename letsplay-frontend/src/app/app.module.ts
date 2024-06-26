@@ -12,7 +12,7 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 
 import { LayoutModule } from './layout/layout.module';
-import { AdModule } from './core/ad.module';
+import { CoreModule } from './core/core.module';
 import { AuthenticationModule } from './authentication/authentication.module';
 import { AppRoutingModule } from './router/app-routing.module';
 
@@ -35,7 +35,7 @@ import { EmailingService } from './shared/services/emailing.service';
     ReactiveFormsModule,
     CloudinaryModule,
     LayoutModule,
-    AdModule,
+    CoreModule,
     AuthenticationModule,
   ],
   providers: [

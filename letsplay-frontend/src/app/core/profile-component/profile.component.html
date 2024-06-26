@@ -32,6 +32,7 @@
           Enregistrer
         </button>
       </form>
+      <button class="button" (click)="showConfirmSuppressAccount()">Supprimer mon compte</button>
       </div>
     </div>
 
@@ -51,4 +52,17 @@
       </div>
     </div>
   </div>
+
+  <p-toast 
+    position="center" 
+    key="confirm-account-deletion"
+    [baseZIndex]="5000">
+        <ng-template let-message pTemplate="message">
+                <div>
+                    {{ message.summary }}
+                </div>
+                <button class="button" (click)="onConfirm()"> Oui </button>
+                <button class="button" (click)="onReject()"> Non </button>
+        </ng-template>
+</p-toast>
 </div>

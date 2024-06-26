@@ -18,7 +18,7 @@ import { AdUpdateComponent } from './ad-update-component/ad-update.component';
 import { AdRecapComponent } from './ad-recap-component/ad-recap.component';
 import { ContactComponent } from './contact-component/contact.component';
 import { LikedAdsComponent } from './liked-ads-component/liked-ads.component';
-import { Adjust } from '@cloudinary/url-gen/actions';
+import { ProfileComponent } from './profile-component/profile.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +29,8 @@ import { Adjust } from '@cloudinary/url-gen/actions';
     AdUpdateComponent,
     AdRecapComponent,
     ContactComponent,
-    LikedAdsComponent
+    LikedAdsComponent,
+    ProfileComponent
   ],
   imports: [
     CommonModule,
@@ -49,7 +50,8 @@ import { Adjust } from '@cloudinary/url-gen/actions';
     AdCreateComponent,
     AdUpdateComponent,
     AdRecapComponent,
-    LikedAdsComponent
+    LikedAdsComponent,
+    ProfileComponent
   ]
 })
-export class AdModule { }
+export class CoreModule { }
