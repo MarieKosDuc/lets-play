@@ -53,8 +53,9 @@ public class AdController {
 
     @CrossOrigin(maxAge = 3600)
     @GetMapping("/search")
-    public List<AdDTO> getSearchedAds(@RequestParam String musicianType, @RequestParam List<String> styles, @RequestParam String location) {
-        List<Ad> ads = adService.getSearchedAds(musicianType, styles, location);
+    public List<AdDTO> getSearchedAds(@RequestParam String from, @RequestParam String searching, @RequestParam List<String> styles,
+                                      @RequestParam String location) {
+        List<Ad> ads = adService.getSearchedAds(from, searching, styles, location);
         ads.sort(Comparator.comparing(Ad::getCreatedAt).reversed());
         return ads.stream().map(AdMapper::toAdDTO).toList();
     }

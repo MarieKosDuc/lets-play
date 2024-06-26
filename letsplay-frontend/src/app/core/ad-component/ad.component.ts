@@ -1,5 +1,4 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Location } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { MessageService } from 'primeng/api';
@@ -8,7 +7,6 @@ import { Ad } from '../models/ad.model';
 import { AdService } from '../ad.service';
 import { AuthStorageService } from '../../shared/services/storage.service';
 
-import { musicStylesEnum } from '../enums/musicStylesEnum';
 import { User } from 'src/app/authentication/models/user.model';
 
 @Component({
@@ -19,17 +17,17 @@ import { User } from 'src/app/authentication/models/user.model';
 export class AdComponent implements OnInit {
   @Input()
   public ad!: Ad;
+
   @Input()
   protected truncated = true;
+
   protected connectedUser!: User;
   protected isSingleAd!: boolean;
-  protected musicStylesEnum = musicStylesEnum;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private adService: AdService,
-    private _location: Location,
     private authStorageService: AuthStorageService,
     private messageService: MessageService
   ) {}
@@ -52,10 +50,6 @@ export class AdComponent implements OnInit {
         this.ad = ad;
       });
     }
-
-    this.ad.styles = this.ad.styles.map(
-      (style: string) => (musicStylesEnum as any)[style]
-    );
   }
 
   truncateText(text: string): string {
@@ -66,6 +60,7 @@ export class AdComponent implements OnInit {
     const truncatedText = words.slice(0, 30);
     return truncatedText.join(' ') + '...';
   }
+
 
   goToAd() {
     this.router.navigateByUrl(`ad/${this.ad.id}`);
@@ -82,10 +77,6 @@ export class AdComponent implements OnInit {
 
   updateAd() {
     this.router.navigateByUrl(`ad/${this.ad.id}/update`);
-  }
-
-  back() {
-    this._location.back();
   }
 
   contact() {

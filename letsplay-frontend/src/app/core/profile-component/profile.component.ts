@@ -19,7 +19,7 @@ import { NgForm } from '@angular/forms';
 export class ProfileComponent {
   @Input() ads: Ad[] = [];
 
-  protected currentUser!: User | null; // Attention à la différenciation entre utilisateur connecté et profil d'un autre utilisateur
+  protected currentUser!: User | null; 
   protected profileUser!: User | null;
   protected isConnectedUser: boolean = false;
   protected noAdsForUser: boolean = false;

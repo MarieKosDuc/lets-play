@@ -1,4 +1,4 @@
-export enum musicStylesEnum {
+export enum MusicStylesEnum {
     heavy = "Heavy Metal",
     thrash = "Thrash Metal",
     death = "Death Metal",

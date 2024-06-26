@@ -1,5 +1,5 @@
 export enum MusicianTypesEnum {
-    band = "groupe qui recherche un musicien",
+    band = "groupe",
     vocalist = "vocaliste",
     guitar = "guitariste",
     bass = "bassiste",

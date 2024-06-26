@@ -60,8 +60,8 @@ export class AdService {
       );
     }
 
-    searchAds(musicianType: string, styles: string[], location: string): Observable<Ad[]> {
-      const url = ADS_API + `/search?musicianType=${musicianType}&styles=${styles}&location=${location}`;
+    searchAds(fromMusician: string, searchingMusician: string, styles: string[], location: string): Observable<Ad[]> {
+      const url = ADS_API + `/search?from=${fromMusician}&searching=${searchingMusician}&styles=${styles}&location=${location}`;
       return this.http.get<Ad[]>(url, httpOptions).pipe(
         tap((ads: Ad[]) => {
           this.ads = ads;

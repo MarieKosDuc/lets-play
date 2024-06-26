@@ -25,4 +25,5 @@ public interface AdService {
 
     List<Ad> getAdsByUser(UUID userId);
 
+    List<Ad> getSearchedAds(String fromMusicianType, String searchedMusicianType, List<String> styles, String location);
 }

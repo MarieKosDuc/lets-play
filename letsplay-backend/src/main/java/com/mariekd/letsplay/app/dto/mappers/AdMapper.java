@@ -14,8 +14,8 @@ public class AdMapper {
         adDTO.setCreatedAt(ad.getCreatedAt());
         adDTO.setPostedBy(UserMapper.toUserLightDTO(ad.getPostedBy()).getName());
         adDTO.setTitle(ad.getTitle());
-        adDTO.setFrom(MusicianTypeMapper.toMusicianDTO(ad.getSearching()).getName());
-        adDTO.setSearching(MusicianTypeMapper.toMusicianDTO(ad.getFrom()).getName());
+        adDTO.setFrom(MusicianTypeMapper.toMusicianDTO(ad.getFrom()).getName());
+        adDTO.setSearching(MusicianTypeMapper.toMusicianDTO(ad.getSearching()).getName());
         adDTO.setImage(ad.getImage());
         adDTO.setStyles(styleNames);
         adDTO.setLocation(LocationMapper.toLocationDTO(ad.getLocation()).getName());

@@ -7,7 +7,7 @@ import { AuthStorageService } from 'src/app/shared/services/storage.service';
 import { User } from 'src/app/authentication/models/user.model';
 import { AdCreation } from '../models/adCreation.model';
 
-import { musicStylesEnum } from '../enums/musicStylesEnum';
+import { MusicStylesEnum } from '../enums/musicStylesEnum';
 import { MusicianTypesEnum } from '../enums/musicianTypesEnum';
 import { LocationsEnum } from '../enums/locationsEnum';
 
@@ -39,7 +39,9 @@ export class AdCreateComponent {
   // musician type dropdowns settings
   protected fromMusicianTypes: DropdownItems[] = [
     ...Object.keys(MusicianTypesEnum).map((key) => ({
-      name: 'Un ' + MusicianTypesEnum[key as keyof typeof MusicianTypesEnum],
+      name: key !== 'band' 
+        ? 'Un ' + MusicianTypesEnum[key as keyof typeof MusicianTypesEnum] + ' qui recherche un groupe'
+        : 'Un ' + MusicianTypesEnum[key as keyof typeof MusicianTypesEnum] + ' qui recherche un musicien',
       code: key,
     })),
   ];
@@ -65,21 +67,11 @@ export class AdCreateComponent {
 
   // music styles dropdown settings
   protected musicStyles: DropdownItems[] = [
-    ...Object.keys(musicStylesEnum).map((key) => ({
-      name: musicStylesEnum[key as keyof typeof musicStylesEnum],
+    ...Object.keys(MusicStylesEnum).map((key) => ({
+      name: MusicStylesEnum[key as keyof typeof MusicStylesEnum],
       code: key,
     })),
   ];
-
-
-  protected dropdownList = [
-    ...Object.keys(musicStylesEnum).map((key) => ({
-      item_id: key,
-      item_text: musicStylesEnum[key as keyof typeof musicStylesEnum],
-    })),
-  ];
-  protected selectedItems: string[] = [];
-  protected dropdownSettings = {};
 
   // location dropdown settings
   protected locations: DropdownItems[] = [

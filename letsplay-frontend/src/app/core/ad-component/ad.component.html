@@ -1,9 +1,17 @@
 <div id="ad-card" class="card">
     <h2 id="ad title">{{ ad.title | uppercase}} </h2>
-    <div id="style-posted at" class="infos-container">
-        <p>{{ ad.styles }}</p>
-        <p>{{ad.location}}</p>
-        <p>Mis en ligne le {{ ad.createdAt | date: 'd MMMM yyyy' }}</p>
+    <div class="infos-container">
+        <div id="location-posted-at">
+            <div id="location">
+                <p>{{ ad.location }}</p>
+            </div>
+            <div id="posted-at">
+                <p>Mis en ligne le {{ ad.createdAt | date: 'd MMMM yyyy' }}</p>
+            </div>
+        </div>
+        <div id="styles">
+            <p>{{ ad.styles }}</p>
+        </div>
     </div>
     <div id="picture">
         <img [src]="ad.image" alt="image de l'annonce">
