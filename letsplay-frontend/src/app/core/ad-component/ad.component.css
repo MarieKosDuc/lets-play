@@ -37,6 +37,18 @@
   }
 }
 
+@media (min-width: 375px) {
+  #picture {
+    height: 15rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  #picture {
+    height: 24rem;
+  }
+}
+
 #ad-text-container {
   display: flex;
   flex-direction: column;

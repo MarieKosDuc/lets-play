@@ -4,7 +4,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { MessageService } from 'primeng/api';
 
 import { Ad } from '../models/ad.model';
-import { AdService } from '../ad.service';
+import { AdService } from '../services/ad.service';
 import { AuthStorageService } from '../../shared/services/storage.service';
 
 import { User } from 'src/app/authentication/models/user.model';
@@ -60,6 +60,10 @@ export class AdComponent implements OnInit {
         this.transformAd(this.ad);
       });
     }
+  }
+
+  protected isAdmin(): boolean {
+    return this.connectedUser.roles?.includes('ROLE_ADMIN') ?? false;
   }
 
   protected onFavoriteClick(event: Event): void {

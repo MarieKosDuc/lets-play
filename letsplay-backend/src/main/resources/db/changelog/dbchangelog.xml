@@ -234,10 +234,10 @@
 
     <changeSet id="7" author="Marie-KD"> <!-- Insertion of roles -->
         <insert tableName="roles" schemaName="music">
-            <column name="name" value="USER" />
+            <column name="name" value="ROLE_USER" />
         </insert>
         <insert tableName="roles" schemaName="music">
-            <column name="name" value="ADMIN" />
+            <column name="name" value="ROLE_ADMIN" />
         </insert>
     </changeSet>
 

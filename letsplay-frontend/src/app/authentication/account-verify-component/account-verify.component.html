@@ -12,7 +12,7 @@
   </div>
 </div>
 
-<div class="card" *ngIf="!isValidationSuccess !loading">
+<div class="card" *ngIf="!isValidationSuccess && !loading">
   <h1>Erreur de validation...</h1>
   <div id="confirm-message">
     <p>Il semble que ce lien ait déjà été utilisé ou qu'il soit incorrect.</p>

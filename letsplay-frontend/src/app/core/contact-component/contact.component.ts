@@ -5,7 +5,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 
 import { Ad } from '../models/ad.model';
-import { AdService } from '../ad.service';
+import { AdService } from '../services/ad.service';
 import { EmailingService } from '../../shared/services/emailing.service';
 
 @Component({

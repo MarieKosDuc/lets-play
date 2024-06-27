@@ -1,7 +1,7 @@
 <div id="user-card" class="card">
   <div class="profile-card">
     <div id="side-profile">
-      <h1>{{ profileUser?.username }}</h1>
+      <h1>{{ profileUser?.name }}</h1>
       <img id="profile-pic" src="{{ profileUser?.profilePicture }}" alt="Photo de profil" />
       <button id="upload_widget" (click)="openWidget()" class="button" *ngIf="isConnectedUser">
         Changer ma photo de profil

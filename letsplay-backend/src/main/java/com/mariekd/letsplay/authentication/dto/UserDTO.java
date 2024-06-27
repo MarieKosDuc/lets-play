@@ -7,12 +7,14 @@ public class UserDTO {
     private String name;
     private String email;
     private String profilePicture;
+    private String password;
 
     public UserDTO(UUID id, String name, String email, String password, String profilePicture) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.profilePicture = profilePicture;
+        this.password = password;
     }
 
     public UserDTO() {
@@ -56,4 +58,8 @@ public class UserDTO {
     public void setProfilePicture(String profilePicture) {
         this.profilePicture = profilePicture;
     }
+
+    public void setPassword(String password) { this.password = password; }
+
+    public String getPassword() { return password; }
 }

@@ -32,6 +32,7 @@ import com.mariekd.letsplay.authentication.models.UserInfo;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.client.HttpServerErrorException;
 
 import java.util.*;
 
@@ -79,7 +80,7 @@ public class AuthController {
 
         try {
             final Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginRequest.username(), loginRequest.password())
+                    new UsernamePasswordAuthenticationToken(loginRequest.name(), loginRequest.password())
             );
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -148,27 +149,32 @@ public class AuthController {
 
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logoutUser(HttpServletRequest request) {
-        ResponseCookie cookie = jwtService.getCleanJwtCookie();
+    public ResponseEntity<Object> logoutUser(HttpServletRequest request) {
+        try {
+            ResponseCookie cookie = jwtService.getCleanJwtCookie();
 
-        User connectedUser = userService.getUserFromRequest(request);
-        refreshTokenService.deleteByUserId(connectedUser.getId());
+            User connectedUser = userService.getUserFromRequest(request);
+            refreshTokenService.deleteByUserId(connectedUser.getId());
 
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Logged out successfully");
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Logged out successfully");
 
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(response);
+            return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
+                    .body(response);
+        } catch (final Exception e) {
+            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error logging out user: " + e.getMessage());
+        }
+
     }
 
 
     @PostMapping("/register")
-    public ResponseEntity<?> createUser(@RequestBody SignupRequest userInfos) {
+    public ResponseEntity<Object> createUser(@RequestBody SignupRequest userInfos) {
         try {
-            if (!userService.existsByEmail(userInfos.email()) && !userService.existsByUserName(userInfos.username())) {
-                Role userRole = roleService.findByName("USER");
+            if (!userService.existsByEmail(userInfos.email()) && !userService.existsByUserName(userInfos.name())) {
+                Role userRole = roleService.findByName("ROLE_USER");
 
-                User user = new User(UUID.randomUUID() , userInfos.username(), userInfos.email(), userInfos.password(), userInfos.profilePicture(),
+                User user = new User(UUID.randomUUID() , userInfos.name(), userInfos.email(), userInfos.password(), userInfos.profilePicture(),
                         false, userRole, null, null);
 
                 userService.createUser(user);
@@ -188,7 +194,7 @@ public class AuthController {
             }
         } catch (final Exception e) {
             LOGGER.error("Error creating user: {}", e.getMessage());
-            return setResponseMessage("Error creating user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error creating user: " + e.getMessage());
         }
     }
 
@@ -210,22 +216,25 @@ public class AuthController {
             return setResponseMessage("User validated successfully: " + user.getName(), HttpStatus.OK);
         } catch (final Exception e) {
             LOGGER.error("Error validating user: {}", e.getMessage());
-            return setResponseMessage("Error validating user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error validating user: " + e.getMessage());
         }
     }
 
     @PostMapping("/resetpassword")
-    public void forgotPassword(@RequestBody PasswordResetRequest passwordResetRequest) {
+    public ResponseEntity<Object> forgotPassword(@RequestBody PasswordResetRequest passwordResetRequest) {
         User user = userService.getUserByEmail(passwordResetRequest.email());
         if (user != null) {
             ResetPasswordToken resetToken = resetPasswordTokenService.createResetPasswordToken(user);
             try {
                 sendForgotPasswordEmail(user.getEmail(), appUrl + "/resetpassword/" + resetToken.getToken());
                 LOGGER.info("Forgot password email sent to: {}", user.getEmail());
+                return setResponseMessage("Forgot password email sent to: " + user.getEmail(), HttpStatus.OK);
             } catch (MessagingException e) {
                 LOGGER.error("Error sending forgot password email: {}", e.getMessage());
+                throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error sending forgot password email: " + e.getMessage());
             }
         }
+        throw new UnauthorizedException("User not found");
     }
 
     @PostMapping("/resetpassword/{token}")
@@ -244,7 +253,7 @@ public class AuthController {
             return setResponseMessage("Password reset successfully for user: " + user.getName(), HttpStatus.OK);
         } catch (final Exception e) {
             LOGGER.error("Error resetting password: {}", e.getMessage());
-            return setResponseMessage("Error resetting password: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error resetting password: " + e.getMessage());
         }
     }
 
@@ -266,16 +275,17 @@ public class AuthController {
 
     @PreAuthorize("hasRole('USER')")
     @PutMapping("/{id}")
-    public User updateUser(@PathVariable UUID id, @RequestBody UserUpdateRequest updateRequest, HttpServletRequest request) {
+    public ResponseEntity<Object> updateUser(@PathVariable UUID id, @RequestBody UserUpdateRequest updateRequest, HttpServletRequest request) {
         if (isUserAuthorizedToModify(id, request)) {
             try {
                 User user = userService.getUserById(id);
                 user.setName(updateRequest.name());
                 user.setProfilePicture(updateRequest.profilePicture());
-                return userService.updateUser(id, user);
+                userService.updateUser(id, user);
+                return ResponseEntity.ok(new UserDTO(user.getId(), user.getName(), user.getEmail(), user.getProfilePicture()));
             } catch (final Exception e) {
                 LOGGER.error("Error updating user: {}", e.getMessage());
-                throw new RuntimeException("Error updating user: " + e.getMessage());
+                return setResponseMessage("Error updating user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } else {
             throw new UnauthorizedException("You are not authorized to modify this user");
@@ -284,33 +294,20 @@ public class AuthController {
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable UUID id, HttpServletRequest request){
+    public ResponseEntity<Object> deleteUser(@PathVariable UUID id, HttpServletRequest request) {
 
         if (isUserAuthorizedToModify(id, request)) {
-            userService.deleteUser(id);
+            try {
+                userService.deleteUser(id);
+                return ResponseEntity.ok().build();
+            } catch (final Exception e) {
+                LOGGER.error("Error deleting user: {}", e.getMessage());
+                return setResponseMessage("Error deleting user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         } else {
             throw new UnauthorizedException("You are not authorized to delete this user");
         }
     }
-
-    @PreAuthorize("hasRole('ADMIN')") // Problème ici : mon user n'est pas admin !
-    @GetMapping("/all")
-    public List<UserDTO> getAllUsers() {
-        LOGGER.info("Getting all users: {} ", userService.getAllUsers());
-        List<User> usersList = userService.getAllUsers();
-        List<UserDTO> usersDTOList = new ArrayList<>();
-        for (User user : usersList) {
-            usersDTOList.add(new UserDTO(user.getId(), user.getName(), user.getEmail(), user.getProfilePicture()));
-        }
-        return usersDTOList;
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/admin/{id}")
-    public void deleteUserByAdmin(@PathVariable UUID id){
-            userService.deleteUser(id);
-    }
-
 
     private boolean isUserAuthorizedToModify(UUID userId, HttpServletRequest request) {
         User connectedUser = userService.getUserFromRequest(request);

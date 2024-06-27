@@ -1,1 +1,11 @@
-<p>admin-users-list works!</p>
+<div class="card">
+    <h1>Liste de tous les utilisateurs du site :</h1>
+
+    <div *ngFor="let user of users" id="users-list">
+        <div class="card">
+            <img [src]="user.profilePicture" alt="Avatar de {{ user.name }}">
+            <h2>{{ user.name }}</h2>
+            <button class="button" (click)="deleteUser(user.id)">Supprimer l'utilisateur</button>
+        </div>
+    </div>
+</div>

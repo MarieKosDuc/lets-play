@@ -1,5 +1,6 @@
 <header>
-    <nav id="header-large">
+    <!-- Non connected user header - large screen -->
+    <nav id="header-large" class="header-large" *ngIf="!isAdmin">
         <a routerLink="home"><img src="assets/images/Logo.png" alt="Logo Let's Play" id="logo"></a>
         <a routerLink="home" routerLinkActive="underline" class="link">ACCUEIL</a>
         <a routerLink="search" routerLinkActive="underline" class="link">RECHERCHER</a>
@@ -17,7 +18,8 @@
         </ng-template>
     </nav>
 
-    <nav id="header-small">
+    <!-- Connected user header - small screen -->
+    <nav id="header-small" class="header-small" *ngIf="!isAdmin">
         <a routerLink="home"><img src="assets/images/Logo.png" alt="Logo Let's Play" id="logo"></a>
 
         <a *ngIf="userLoggedIn; else connectedUserMenu">
@@ -37,6 +39,26 @@
                 </svg> 
             </button>
         </ng-template>
+    </nav>
+
+    <!-- Connected admin header - large screen -->
+    <nav id="header-admin" class="header-large" *ngIf="isAdmin">
+        <a routerLink="home"><img src="assets/images/Logo.png" alt="Logo Let's Play" id="logo"></a>
+        <a routerLink="/admin/users" routerLinkActive="underline" class="link">MEMBRES</a>
+        <a routerLink="/admin/ads" routerLinkActive="underline" class="link">ANNONCES</a>
+        <a routerLink="/" (click)="logOut()" class="link">DECONNEXION</a>
+    </nav>
+
+    <!-- Connected admin header - small screen -->
+    <nav id="header-admin-small" class="header-small" *ngIf="isAdmin">
+        <a routerLink="home"><img src="assets/images/Logo.png" alt="Logo Let's Play" id="logo"></a>
+
+            <p-menu #menu2 [model]="itemsAdminSmall" [popup]="true" />
+            <button id="burger-menu" (click)="menu2.toggle($event)">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg> 
+            </button>
     </nav>
 
     <div id="description" *ngIf="showDescription" >

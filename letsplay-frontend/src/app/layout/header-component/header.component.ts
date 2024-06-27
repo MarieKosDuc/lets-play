@@ -19,9 +19,11 @@ export class HeaderComponent implements OnInit {
   protected showDescription!: boolean;
   protected userLoggedIn = false;
   protected userInfos!: User | null;
+  protected isAdmin: boolean = false;
   protected items: MenuItem[] | undefined;
   protected itemsSmall: MenuItem[] | undefined;
   protected itemsSmallConnected: MenuItem[] | undefined;
+  protected itemsAdminSmall: MenuItem[] | undefined;
 
   private userSubscription: Subscription;
 
@@ -38,6 +40,9 @@ export class HeaderComponent implements OnInit {
     this.userSubscription = this.authStorageService.user$.subscribe((user) => {
       this.userInfos = user;
       this.userLoggedIn = !!user;
+      if (user) {
+        this.isAdmin = user?.roles?.includes('ROLE_ADMIN') ?? false;
+      }
     });
   }
 
@@ -113,6 +118,31 @@ export class HeaderComponent implements OnInit {
       },
     ];
 
+    this.itemsAdminSmall = [
+      {
+        items: [
+          {
+            label: 'Membres',
+            command: () => {
+              this.router.navigate(['/admin/users']);
+            },
+          },
+          {
+            label: 'Annonces',
+            command: () => {
+              this.router.navigate(['/admin/ads']);
+            },
+          },
+          {
+            label: 'Déconnexion',
+            command: () => {
+              this.logOut();
+            },
+          },
+        ],
+      },
+    ]
+
     this.itemsSmallConnected = [
       {
         items: [
@@ -159,14 +189,12 @@ export class HeaderComponent implements OnInit {
         this.userLoggedIn = false;
         this.userInfos = null;
         this.authStorageService.clean();
+        this.router.navigate(['/home']);
         this.messageService.add({
           severity: 'info',
           summary: 'Déconnexion',
           detail: 'Tu es deconnecté.e',
         });
-        setTimeout(() => {
-          this.router.navigate(['/home']);
-        }, 1000);
       },
       (error) => {
         console.log(error);

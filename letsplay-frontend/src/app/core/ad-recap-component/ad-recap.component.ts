@@ -1,13 +1,13 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
-import { AdService } from '../ad.service';
+import { AdService } from '../services/ad.service';
 import { AuthStorageService } from 'src/app/shared/services/storage.service';
 import { Ad } from '../models/ad.model';
 import { User } from 'src/app/authentication/models/user.model';
 
 import { MessageService } from 'primeng/api';
-import { response } from 'express';
+import { AdminService } from '../services/admin.service';
 
 @Component({
   selector: 'app-ad-recap',
@@ -24,7 +24,8 @@ export class AdRecapComponent implements OnInit {
     private router: Router,
     private adService: AdService,
     private authStorageService: AuthStorageService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private adminService: AdminService
   ) {}
 
   ngOnInit(): void {
@@ -33,6 +34,10 @@ export class AdRecapComponent implements OnInit {
 
   protected isUserAuthor(): boolean {
     return this.user?.id === this.ad.postedById;
+  }
+
+  protected isAdmin(): boolean {
+    return this.user?.roles?.includes('ROLE_ADMIN') ?? false;
   }
 
   protected onFavoriteClick(event: Event): void {
@@ -85,6 +90,10 @@ export class AdRecapComponent implements OnInit {
   }
 
   protected deleteAd() {
+    if (this.isAdmin()) {
+      this.deleteAdByAdmin();
+    }
+
     this.adService.deleteAd(this.ad.id).subscribe(() => {
       console.log("service ok");
       this.messageService.add({
@@ -94,6 +103,18 @@ export class AdRecapComponent implements OnInit {
       });
 
       this.router.navigate(['/home']);
+    });
+  }
+
+  protected deleteAdByAdmin() {
+    this.adminService.deleteAd(this.ad.id).subscribe(() => {
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Annonce supprimée',
+        detail: 'L\'annonce a bien été supprimée',
+      });
+
+      this.router.navigate(['/admin/ads']);
     });
   }
 

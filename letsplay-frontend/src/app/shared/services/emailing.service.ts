@@ -27,7 +27,7 @@ export class EmailingService {
 
   sendEmail(ad: Ad, message: string) {
     console.log('Ad to send email:', ad)
-    console.log("User sending email:", this.fromUser?.id, this.fromUser?.username)
+    console.log("User sending email:", this.fromUser?.id, this.fromUser?.name)
     const emailData: contactEmail = {
       adId: ad.id,
       fromUser: this.fromUser!.id,

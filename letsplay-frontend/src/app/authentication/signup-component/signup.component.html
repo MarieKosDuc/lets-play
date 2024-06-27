@@ -3,12 +3,12 @@
 
   <div *ngIf="!registerOk" class="register-component-form">
     <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
-      <label for="userName">Nom d'utilisateur :</label>
+      <label for="name">Nom d'utilisateur :</label>
       <input
         type="text"
-        id="userName"
+        id="name"
         placeholder="Ton nom"
-        formControlName="userName"
+        formControlName="name"
         class="field"
       />
 

@@ -12,7 +12,7 @@ import { MusicianTypesEnum } from '../enums/musicianTypesEnum';
 import { LocationsEnum } from '../enums/locationsEnum';
 
 import { CloudinaryService } from 'src/app/layout/cloudinary/cloudinary.service';
-import { AdService } from '../ad.service';
+import { AdService } from '../services/ad.service';
 
 import { MessageService } from 'primeng/api';
 

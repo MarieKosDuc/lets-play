@@ -7,7 +7,7 @@ import { MessageService } from 'primeng/api';
 
 import { AuthStorageService } from 'src/app/shared/services/storage.service';
 import { AuthenticationService } from '../../authentication/services/authentication.service';
-import { AdService } from '../ad.service';
+import { AdService } from '../services/ad.service';
 
 import { User } from '../../authentication/models/user.model';
 import { Ad } from '../models/ad.model';
@@ -153,7 +153,7 @@ export class ProfileComponent {
     if(this.currentUser) {
 
       const request: profileToUpdate = {
-        name: this.currentUser.username,
+        name: this.currentUser.name,
         profilePicture: pictureUrl,
       };
 

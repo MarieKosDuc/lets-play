@@ -37,7 +37,7 @@ public class JwtService {
 
         return ResponseCookie.from(jwtCookieName, jwt)
                 .httpOnly(true)
-//                .sameSite("None")
+                .sameSite("Strict")
                 .secure(false)
                 .maxAge(600) // 10 minutes
                 .path("/")
