@@ -57,12 +57,13 @@ public class Ad {
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> likedByUsers = new HashSet<>();
 
-    public Ad (int id, Instant createdAt, User postedBy, String title, MusicianType searching, String image,
+    public Ad (int id, Instant createdAt, User postedBy, String title, MusicianType from, MusicianType searching, String image,
                Set<Style> styles, Location location, String description, Set<User> likedByUsers) {
         this.id = id;
         this.createdAt = createdAt;
         this.postedBy = postedBy;
         this.title = title;
+        this.from = from;
         this.searching = searching;
         this.image = image;
         this.styles = styles;

@@ -41,6 +41,11 @@ public class Style {
     public Style() {
     }
 
+    public Style(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     public int getId() {
         return id;
     }
