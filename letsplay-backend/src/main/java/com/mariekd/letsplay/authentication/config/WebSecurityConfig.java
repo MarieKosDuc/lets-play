@@ -80,6 +80,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/users/logout").permitAll()
                         .requestMatchers("/api/ads/get/**").permitAll()
                         .requestMatchers("/api/ads/search").permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .csrf(AbstractHttpConfigurer::disable);

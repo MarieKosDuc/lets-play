@@ -1,4 +1,4 @@
-#header-large {
+.header-large {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -15,7 +15,7 @@
   }
 }
 
-#header-small {
+.header-small {
   display: none;
   justify-content: space-between;
   align-items: center;
@@ -55,21 +55,21 @@
 
 
 @media (max-width: 670px) {
-  #header-large {
+  .header-large {
     display: none;
   }
 
-  #header-small {
+  .header-small {
     display: flex;
   }
 }
 
 @media (min-width: 671px) {
-  #header-large {
+  .header-large {
     display: flex;
   }
 
-  #header-small {
+  .header-small {
     display: none;
   }
 }

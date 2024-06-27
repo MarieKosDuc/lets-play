@@ -29,14 +29,14 @@ export class LoginComponent {
     }
   }
 
-  onSubmit(form: NgForm) {
+  protected onSubmit(form: NgForm) {
     this.loading = true;
     this.isLoggedIn = true;
 
-    const username = form.value.email;
+    const name = form.value.email;
     const password = form.value.password;
 
-    this.authService.login(username, password).subscribe(
+    this.authService.login(name, password).subscribe(
       (response) => {
         this.authStorageService.saveUser(response);
 
@@ -46,11 +46,15 @@ export class LoginComponent {
         this.messageService.add({
           severity: 'success',
           summary: 'Connexion réussie',
-          detail: `Te voila connecté.e, ${response.username}. Bonne recherche !`,
+          detail: `Te voila connecté.e, ${response.name}. Bonne recherche !`,
         });
 
         setTimeout(() => {
+          if (this.authStorageService.getUser().roles.includes('ROLE_ADMIN')) {
+            this.router.navigate(['/admin/users']);
+          } else {
           this.router.navigate(['/home']);
+          }
         }, 2000);
       },
       (error) => {

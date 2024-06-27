@@ -7,7 +7,7 @@ import { MessageService } from 'primeng/api';
 import { CloudinaryService } from 'src/app/layout/cloudinary/cloudinary.service';
 import { AuthStorageService } from 'src/app/shared/services/storage.service';
 
-import { AdService } from '../ad.service';
+import { AdService } from '../services/ad.service';
 import { User } from 'src/app/authentication/models/user.model';
 import { AdCreation } from '../models/adCreation.model';
 import { Ad } from '../models/ad.model';

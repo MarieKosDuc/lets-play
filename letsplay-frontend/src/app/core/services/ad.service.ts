@@ -4,9 +4,9 @@ import { environment } from 'src/environments/environment';
 
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 
-import { Ad } from './models/ad.model';
-import { AdCreation } from './models/adCreation.model';
-import { User } from 'src/app/authentication/models/user.model';
+import { Ad } from '../models/ad.model';
+import { AdCreation } from '../models/adCreation.model';
+import { User } from '../../authentication/models/user.model';
 
 import { AuthStorageService } from 'src/app/shared/services/storage.service';
 
@@ -46,6 +46,7 @@ export class AdService {
       return this.http.get<Ad[]>(ADS_API + `/get/all`, httpOptions).pipe(
         tap((ads: Ad[]) => {
           this.ads = ads;
+          console.log("Fetched by service:", ads)
         })
       );
     }

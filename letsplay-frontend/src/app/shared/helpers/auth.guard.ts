@@ -11,6 +11,7 @@ import { AuthStorageService } from '../services/storage.service';
     constructor(private router: Router, private authStorageService: AuthStorageService) {}
   
     canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+        console.log("Authgard activé")
         if (this.authStorageService.isLoggedIn()) {
             return true;
         }
@@ -18,7 +19,8 @@ import { AuthStorageService } from '../services/storage.service';
     }
 
     canActivateAdmin(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-        if (this.authStorageService.isLoggedIn() && this.authStorageService.getRole() === 'admin') {
+        console.log(this.authStorageService.getRole())
+        if (this.authStorageService.isLoggedIn() && this.authStorageService.getRole().includes('ROLE_ADMIN')) {
             return true;
         }
         return false;

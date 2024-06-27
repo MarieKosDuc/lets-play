@@ -9,7 +9,7 @@ import { MusicianTypesEnum } from '../enums/musicianTypesEnum';
 import { LocationsEnum } from '../enums/locationsEnum';
 
 import { Ad } from '../models/ad.model';
-import { AdService } from '../ad.service';
+import { AdService } from '../services/ad.service';
 
 interface DropdownItems {
   name: string;

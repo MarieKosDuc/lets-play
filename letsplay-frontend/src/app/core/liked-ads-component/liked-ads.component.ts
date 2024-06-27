@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 
 import { User } from 'src/app/authentication/models/user.model';
 import { Ad } from '../models/ad.model';
-import { AdService } from '../ad.service';
+import { AdService } from '../services/ad.service';
 import { AuthStorageService } from 'src/app/shared/services/storage.service';
 
 @Component({

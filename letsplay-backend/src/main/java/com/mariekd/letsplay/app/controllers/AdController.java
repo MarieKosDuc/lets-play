@@ -12,6 +12,7 @@ import com.mariekd.letsplay.app.services.implementation.LocationServiceImpl;
 import com.mariekd.letsplay.app.services.implementation.MusicianTypeServiceImpl;
 import com.mariekd.letsplay.app.services.implementation.StyleServiceImpl;
 import com.mariekd.letsplay.authentication.entities.User;
+import com.mariekd.letsplay.authentication.exceptions.UnauthorizedException;
 import com.mariekd.letsplay.authentication.services.implementations.UserServiceImpl;
 import jakarta.persistence.JoinTable;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,6 +21,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpServerErrorException;
 
 import java.util.*;
 
@@ -47,38 +49,56 @@ public class AdController {
 
     @GetMapping("/get/all")
     public List<AdDTO> getAllAds() {
-        List<Ad> ads = adService.getAllAds();
-        ads.sort(Comparator.comparing(Ad::getCreatedAt).reversed());
-        return ads.stream().map(AdMapper::toAdDTO).toList();
+        try {
+            List<Ad> ads = adService.getAllAds();
+            ads.sort(Comparator.comparing(Ad::getCreatedAt).reversed());
+            return ads.stream().map(AdMapper::toAdDTO).toList();
+        } catch (Exception e) {
+            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error getting all ads");
+        }
+
     }
 
     @CrossOrigin(maxAge = 3600)
     @GetMapping("/search")
     public List<AdDTO> getSearchedAds(@RequestParam String from, @RequestParam String searching, @RequestParam List<String> styles,
                                       @RequestParam String location) {
-        List<Ad> ads = adService.getSearchedAds(from, searching, styles, location);
-        ads.sort(Comparator.comparing(Ad::getCreatedAt).reversed());
-        return ads.stream().map(AdMapper::toAdDTO).toList();
+        try {
+            List<Ad> ads = adService.getSearchedAds(from, searching, styles, location);
+            ads.sort(Comparator.comparing(Ad::getCreatedAt).reversed());
+            return ads.stream().map(AdMapper::toAdDTO).toList();
+        } catch (final Exception e) {
+            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error getting searched ads");
+        }
+
     }
 
     @GetMapping("/get/{id}")
     public ResponseEntity<AdDTO> getAdById(@PathVariable("id") int id) {
-        Optional<Ad> ad = adService.getAdById(id);
-        return ad.map(value -> ResponseEntity.ok(AdMapper.toAdDTO(value)))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        try {
+            Optional<Ad> ad = adService.getAdById(id);
+            return ad.map(value -> ResponseEntity.ok(AdMapper.toAdDTO(value)))
+                    .orElseGet(() -> ResponseEntity.notFound().build());
+        } catch (final Exception e){
+            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error getting ad by id");
+        }
     }
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<AdDTO>> getAdsByUser(@PathVariable("userId") String userId) {
-        UUID userUUID = UUID.fromString(userId);
+        try {
+            UUID userUUID = UUID.fromString(userId);
 
-        List<Ad> ads = adService.getAdsByUser(userUUID);
-        if (ads.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        } else {
-            ads.sort(Comparator.comparing(Ad::getCreatedAt).reversed());
-            return ResponseEntity.ok(ads.stream().map(AdMapper::toAdDTO).toList());
+            List<Ad> ads = adService.getAdsByUser(userUUID);
+            if (ads.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            } else {
+                ads.sort(Comparator.comparing(Ad::getCreatedAt).reversed());
+                return ResponseEntity.ok(ads.stream().map(AdMapper::toAdDTO).toList());
+            }
+        } catch (final Exception e) {
+            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error getting ads by user");
         }
     }
 
@@ -179,23 +199,19 @@ public class AdController {
 
     @PreAuthorize("hasRole('USER')")
     @DeleteMapping("{id}")
-    public ResponseEntity<Object> deleteAdByUser(@PathVariable("id") int id, HttpServletRequest request) {
+    public ResponseEntity<Object> deleteAdByUser(@PathVariable("id") int id, HttpServletRequest request) throws Exception {
 
         User postingUser = userService.getUserFromRequest(request);
 
-        try {
-            if (!isUserAdAuthor(id, postingUser.getName())) {
-                return setErrorResponse("You can only delete your own ads", HttpStatus.BAD_REQUEST);
-            }
-        } catch (Exception e) {
-            return setErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
+        if (!isUserAdAuthor(id, postingUser.getName())) {
+            throw new UnauthorizedException("You can only delete your own ads");
         }
 
         try {
             adService.deleteById(id);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            return setErrorResponse("Error deleting ad", HttpStatus.BAD_REQUEST);
+            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error deleting ad");
         }
     }
     @PreAuthorize("hasRole('USER')")
@@ -215,7 +231,7 @@ public class AdController {
 
             return ResponseEntity.ok(likedAdsList.stream().map(AdMapper::toAdDTO).toList());
         } catch (Exception e) {
-            return ResponseEntity.notFound().build();
+            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error getting favorite ads");
         }
     }
 
@@ -239,7 +255,7 @@ public class AdController {
                 return setErrorResponse("Ad not found", HttpStatus.BAD_REQUEST);
             }
         } catch (Exception e) {
-            return setErrorResponse("Error toggling ad favorite status", HttpStatus.BAD_REQUEST);
+            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error toggling favorite ad");
         }
     }
 
@@ -250,8 +266,8 @@ public class AdController {
         try {
             adService.deleteById(id);
             return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return setErrorResponse("Error deleting ad", HttpStatus.BAD_REQUEST);
+        } catch (final Exception e) {
+            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error deleting ad by admin");
         }
     }
 
@@ -260,7 +276,7 @@ public class AdController {
         if (ad.isPresent()) {
             return ad.get().getPostedBy().getName().equals(currentUserName);
         } else {
-            throw new Exception("Ad not found"); //TODO : créer exception spécifique ?
+            throw new Exception("Ad not found");
         }
     }
 

@@ -1,7 +1,7 @@
 #ad-small-card {
     display: flex;
     flex-direction: row;
-    width: 100%;
+    width: auto;
     padding-left: 2rem;
     padding-right: 2rem;
 }

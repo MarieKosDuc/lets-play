@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { Ad } from '../models/ad.model';
-import { AdService } from '../ad.service';
+import { AdService } from '../services/ad.service';
 import { AuthStorageService } from 'src/app/shared/services/storage.service';
 import { User } from '../../authentication/models/user.model';
 import { MusicStylesEnum } from '../enums/musicStylesEnum';
@@ -28,7 +28,7 @@ export class AdsListComponent implements OnInit {
   protected noAdsForUser: boolean = false;
 
   ngOnInit(): void {
-    this.user = this.authStorageService.getUser(); // A revoir pour afficher les ads d'un autre utilisateur
+    this.user = this.authStorageService.getUser();
 
     if (this.router.url === '/home') {
       this.getAllAds();

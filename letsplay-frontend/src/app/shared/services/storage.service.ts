@@ -21,7 +21,7 @@ export class AuthStorageService {
     window.addEventListener('storage', (event) => {
       if (event.storageArea === localStorage) {
         this.storageEventSubject.next(true);
-        this.userSubject.next(this.getUser()); // Met à jour l'état du user
+        this.userSubject.next(this.getUser());
       }
     });
   }
@@ -42,12 +42,12 @@ export class AuthStorageService {
     if (user) {
       return JSON.parse(user);
     }
-    return {};
+    return {}; //TODO : remplacer par null ?
   }
 
   public getRole(): string {
     const user = this.getUser();
-    return user.role;
+    return user.roles;
   }
 
   public isLoggedIn(): boolean {

@@ -28,8 +28,8 @@ export class AuthenticationService {
     return this.http.get<User>(`${AUTH_API}/${id}`, httpOptions);
   }
 
-  login(username: string, password: string): Observable<User> {
-    return this.http.post<User>(AUTH_API + '/login', { username, password }, httpOptions).pipe(
+  login(name: string, password: string): Observable<User> {
+    return this.http.post<User>(AUTH_API + '/login', { name, password }, httpOptions).pipe(
       tap((user: User) => {
         this.loggedIn.next(true);
         this.currentUser.next(user);
@@ -64,8 +64,8 @@ export class AuthenticationService {
     );
   }
 
-  register(email: String, username: String, profilePicture: String, password: String){
-    return this.http.post<User>(AUTH_API + '/register', {email, username, profilePicture, password}, httpOptions);
+  register(email: String, name: String, profilePicture: String, password: String){
+    return this.http.post<User>(AUTH_API + '/register', {email, name, profilePicture, password}, httpOptions);
   }
 
   verifyAccount(token: String): Observable<any>{
