@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest, HTTP_INTERCEPTORS, HttpErrorResponse } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 import { AuthStorageService } from './storage.service';
 import { AuthenticationService } from '../../authentication/services/authentication.service';
@@ -19,7 +20,8 @@ export class HttpRequestInterceptor implements HttpInterceptor {
   constructor(
     private authStorageService: AuthStorageService,
     private authService: AuthenticationService,
-    private eventBusService: EventBusService
+    private eventBusService: EventBusService,
+    private router: Router
   ) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
@@ -36,12 +38,18 @@ export class HttpRequestInterceptor implements HttpInterceptor {
         ) {
           return this.handle401Error(req, next);
         } 
-        // if (
-        //   error instanceof HttpErrorResponse &&
-        //   error.status === 403
-        // ) {
-        //   return this.handle403ErrorAndLogoutIfNecessary(req, next);
-        // }
+        if (
+          error instanceof HttpErrorResponse &&
+          error.status === 403
+        ) {
+          return this.handle403Error(req, next);
+        }
+        if (
+          error instanceof HttpErrorResponse &&
+          error.status === 404 && !req.headers.has('X-Skip-404')
+        ) {
+          return this.handle404Error(req, next);
+        }
         return throwError(() => error);
       })
     );
@@ -54,12 +62,11 @@ export class HttpRequestInterceptor implements HttpInterceptor {
 
       if (this.authStorageService.isLoggedIn()) {
         this.refreshToken = this.authStorageService.getUser().refreshToken;
-        console.log('User logged in. Refreshing token for: ' + this.authStorageService.getUser());
+        console.log('Refreshing token for: ' + this.authStorageService.getUser());
 
         return this.authService.refreshToken(this.refreshToken || '').pipe(
           switchMap(() => {
             this.isRefreshing = false;
-            console.log("Authservice in action")
             return next.handle(request);
           }),
           catchError((error) => {
@@ -76,11 +83,10 @@ export class HttpRequestInterceptor implements HttpInterceptor {
         );
       }
     }
-
     return next.handle(request);
   }
 
-  private handle403Error(request: HttpRequest<any>, next: HttpHandler) { // TO DO : redirection vers page 403 avec possibilité de reconnexion
+  private handle403Error(request: HttpRequest<any>, next: HttpHandler) { // TO DO : redirection vers page 403 avec possibilité de reconnexion ?
     console.log('Handling 403 error')
     if (this.authStorageService.isLoggedIn()) {
       this.eventBusService.emit(new EventData('logout', null));
@@ -90,7 +96,11 @@ export class HttpRequestInterceptor implements HttpInterceptor {
     return next.handle(request);
   }
 
-  // TODO : redirection vers page 404
+  private handle404Error(request: HttpRequest<any>, next: HttpHandler) {
+    console.log('Handling 404 error');
+    this.router.navigate(['/not-found']);
+    return next.handle(request);
+  }
 }
 
 export const httpInterceptorProviders = [

@@ -20,6 +20,9 @@ import { ContactComponent } from './contact-component/contact.component';
 import { LikedAdsComponent } from './liked-ads-component/liked-ads.component';
 import { ProfileComponent } from './profile-component/profile.component';
 
+import { AdminAdsListComponent } from './admin-components/admin-ads-list/admin-ads-list.component';
+import { AdminUsersListComponent } from './admin-components/admin-users-list/admin-users-list.component';
+
 @NgModule({
   declarations: [
     AdComponent,
@@ -30,7 +33,9 @@ import { ProfileComponent } from './profile-component/profile.component';
     AdRecapComponent,
     ContactComponent,
     LikedAdsComponent,
-    ProfileComponent
+    ProfileComponent,
+    AdminAdsListComponent,
+    AdminUsersListComponent
   ],
   imports: [
     CommonModule,
@@ -51,7 +56,9 @@ import { ProfileComponent } from './profile-component/profile.component';
     AdUpdateComponent,
     AdRecapComponent,
     LikedAdsComponent,
-    ProfileComponent
+    ProfileComponent,
+    AdminAdsListComponent,
+    AdminUsersListComponent
   ]
 })
 export class CoreModule { }

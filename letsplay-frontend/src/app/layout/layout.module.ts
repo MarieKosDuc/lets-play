@@ -13,13 +13,15 @@ import { HeaderComponent } from './header-component/header.component';
 import { FooterComponent } from './footer-component/footer.component';
 import { AboutComponent } from './about-component/about.component';
 import { CguComponent } from './cgu-component/cgu.component';
+import { NotFoundComponent } from './not-found-component/not-found.component';
 
 @NgModule({
   declarations: [
     HeaderComponent,
     FooterComponent,
     AboutComponent,
-    CguComponent
+    CguComponent,
+    NotFoundComponent
   ],
   imports: [
     CommonModule,
@@ -34,7 +36,8 @@ import { CguComponent } from './cgu-component/cgu.component';
     HeaderComponent,
     FooterComponent,
     AboutComponent,
-    CguComponent
+    CguComponent,
+    NotFoundComponent
   ]
 })
 export class LayoutModule { }

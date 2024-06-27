@@ -45,6 +45,11 @@ export class AuthStorageService {
     return {};
   }
 
+  public getRole(): string {
+    const user = this.getUser();
+    return user.role;
+  }
+
   public isLoggedIn(): boolean {
     const user = window.localStorage.getItem(USER_KEY);
     if (user) {

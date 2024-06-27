@@ -15,6 +15,12 @@ const httpOptions = {
   withCredentials: true
 };
 
+const httpOptionsWithSkip404 = {
+  headers: httpOptions.headers.set('X-Skip-404', 'true')
+  .set('Content-Type', 'application/json'),
+  withCredentials: true
+};
+
 const ADS_API = `${environment.apiUrl}/ads`;
 
 @Injectable({
@@ -53,7 +59,7 @@ export class AdService {
     }
 
     getUserAds(id: string): Observable<Ad[]> {
-      return this.http.get<Ad[]>(ADS_API + `/user/${id}`, httpOptions).pipe(
+      return this.http.get<Ad[]>(ADS_API + `/user/${id}`, httpOptionsWithSkip404).pipe(
         tap((ads: Ad[]) => {
           this.ads = ads;
         })
@@ -86,7 +92,7 @@ export class AdService {
     }
 
     getUserFavorites(userId: string): Observable<Ad[]> {
-      return this.http.get<Ad[]>(ADS_API + `/favorites/${userId}`, httpOptions);
+      return this.http.get<Ad[]>(ADS_API + `/favorites/${userId}`, httpOptionsWithSkip404);
     }
 
 }
