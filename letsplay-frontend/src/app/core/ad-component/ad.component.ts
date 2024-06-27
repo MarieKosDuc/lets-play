@@ -47,7 +47,7 @@ export class AdComponent implements OnInit {
     });
 
     const currentRoute = this.route.snapshot.routeConfig?.path;
-    if (currentRoute === 'home') {
+    if (currentRoute === 'home' || currentRoute === 'search') {
       this.isSingleAd = false;
       this.ad.description = this.truncateText(this.ad.description);
     }

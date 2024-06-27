@@ -4,7 +4,7 @@
     <div id="form-container">
       <form [formGroup]="adForm" (ngSubmit)="onSubmit()">
           
-        <div class="select-options">Je suis : 
+        <div class="select-options"><p>Je suis : </p>
   
           <p-dropdown 
             ariaLabel="Choisis si tu es un groupe ou un musicien solo"
@@ -15,7 +15,7 @@
             (onChange)="setBandSearching($event)" />
         </div>
       
-          <div class="select-options" *ngIf='isBandSearching'>Je recherche : 
+          <div class="select-options" *ngIf='isBandSearching'><p>Je recherche : </p>
             <p-dropdown 
               ariaLabel="Choisis le type de musicien recherché"
               formControlName="selectedSearchingMusicianType"
@@ -23,7 +23,7 @@
               optionLabel="name"/>
           </div>
       
-          <div id="style-selection" class="select-options">Styles recherchés :
+          <div id="style-selection" class="select-options"><p>Styles recherchés :</p>
   
             <p-multiSelect 
             ariaLabel="Choisis les styles de musique recherchés"
@@ -34,7 +34,7 @@
           </div>
   
           <div id="location" class="select-options">
-            Dans la région suivante : 
+            <p>Dans la région suivante : </p>
             <p-dropdown 
               ariaLabel="Sélectionne une région pour ton annonce"
               formControlName="selectedLocation"
