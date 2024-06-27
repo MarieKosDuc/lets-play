@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
+import { AuthGuard, AdminAuthGuard } from '../shared/helpers/auth.guard';
+
 import { AdsListComponent } from '../core/ads-list-component/ads-list.component';
 import { SearchComponent } from '../core/search-component/search.component';
 import { LoginComponent } from '../authentication/login-component/login.component';
@@ -15,6 +17,9 @@ import { AccountVerifyComponent } from '../authentication/account-verify-compone
 import { ForgottenPasswordComponent } from '../authentication/forgotten-password-component/forgotten-password.component';
 import { AboutComponent } from '../layout/about-component/about.component';
 import { CguComponent } from '../layout/cgu-component/cgu.component';
+import { NotFoundComponent } from '../layout/not-found-component/not-found.component';
+import { AdminAdsListComponent } from '../core/admin-components/admin-ads-list/admin-ads-list.component';
+import { AdminUsersListComponent } from '../core/admin-components/admin-users-list/admin-users-list.component';
 
 const routes: Routes = [
   { path: 'home', component: AdsListComponent },
@@ -22,18 +27,21 @@ const routes: Routes = [
   { path: 'search', component: SearchComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: SignupComponent},
-  { path: 'profile/:id', component: ProfileComponent},
-  { path: 'create-ad', component: AdCreateComponent },  
-  { path: 'update-ad/:id', component: AdUpdateComponent },
-  { path: 'contact/:id', component: ContactComponent },
   { path: 'verify/:token', component: AccountVerifyComponent },
   { path: 'resetpassword', component: ForgottenPasswordComponent },
   { path: 'resetpassword/:token', component: ForgottenPasswordComponent },
+  { path: 'profile/:id', component: ProfileComponent, canActivate: [AuthGuard]},
+  { path: 'create-ad', component: AdCreateComponent, canActivate: [AuthGuard] },  
+  { path: 'update-ad/:id', component: AdUpdateComponent, canActivate: [AuthGuard] },
+  { path: 'fav-ads', component: LikedAdsComponent, canActivate: [AuthGuard] },
+  { path: 'contact/:id', component: ContactComponent, canActivate: [AuthGuard] },
+  { path: 'admin/ads', component: AdminAdsListComponent, canActivate: [AdminAuthGuard] },
+  { path: 'admin/users', component: AdminUsersListComponent, canActivate: [AdminAuthGuard] },
   { path: 'about', component: AboutComponent },
   { path: 'cgu', component: CguComponent },
-  { path: 'fav-ads', component: LikedAdsComponent },
+  { path: 'not-found', component: NotFoundComponent },
   { path: '', redirectTo: '/home', pathMatch: 'full' }
-]; //TODO : add auFthgard so that non identified users can only access ads and search
+];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

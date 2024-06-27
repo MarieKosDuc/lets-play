@@ -1,5 +1,5 @@
 <div class="card">
-  <h2 *ngIf="!registerOk">Crée ton compte !</h2>
+  <h1 *ngIf="!registerOk">Crée ton compte !</h1>
 
   <div *ngIf="!registerOk" class="register-component-form">
     <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
@@ -73,7 +73,7 @@
   ></p-progressSpinner>
 
   <div *ngIf="registerOk" class="register-component-form">
-    <h2>Ton compte a bien été créé !</h2>
+    <h1>Ton compte a bien été créé !</h1>
     <p>Vérifie ta boîte mail pour l'activer.</p>
     <p style="font-style: italic;">ATTENTION ! Ce lien n'est valable que 24h !</p>
     <button class="button" (click)="backToHome()">Retour à l'accueil</button>

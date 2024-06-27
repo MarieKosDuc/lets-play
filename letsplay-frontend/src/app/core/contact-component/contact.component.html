@@ -1,8 +1,8 @@
 <div class="card">
-  <h2>
+  <h1>
     Envoie un message concernant cette annonce :
     <a [routerLink]="['/ad', ad?.id]">{{ ad?.title }}</a>
-  </h2>
+  </h1>
 
   <div class="message-component-form" *ngIf="!messageSent">
     <form [formGroup]="contactForm" (ngSubmit)="onSubmit()">
