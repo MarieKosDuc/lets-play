@@ -12,8 +12,8 @@ public class AdMapper {
 
         adDTO.setId(ad.getId());
         adDTO.setCreatedAt(ad.getCreatedAt());
-        adDTO.setPostedByName(UserMapper.toUserLightDTO(ad.getPostedBy()).getName());
-        adDTO.setPostedById(UserMapper.toUserLightDTO(ad.getPostedBy()).getId().toString());
+        adDTO.setPostedByName(UserMapper.toUserDTO(ad.getPostedBy()).getName());
+        adDTO.setPostedById(UserMapper.toUserDTO(ad.getPostedBy()).getId().toString());
         adDTO.setTitle(ad.getTitle());
         adDTO.setFrom(MusicianTypeMapper.toMusicianDTO(ad.getFrom()).getName());
         adDTO.setSearching(MusicianTypeMapper.toMusicianDTO(ad.getSearching()).getName());

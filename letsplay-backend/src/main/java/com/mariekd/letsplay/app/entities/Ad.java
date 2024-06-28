@@ -6,11 +6,8 @@ import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.*;
 
-import lombok.*;
-
 @Entity
 @Table(name = "ad")
-@Data
 public class Ad {
     @Id
     @Column(updatable = false, nullable = false)
@@ -72,9 +69,7 @@ public class Ad {
         this.likedByUsers = likedByUsers != null ? likedByUsers : new HashSet<>();
     }
 
-    public Ad() {
-
-    }
+    public Ad() { }
 
     public int getId() {
         return id;
@@ -170,6 +165,8 @@ public class Ad {
         this.likedByUsers.remove(user);
         user.getLikedAds().remove(this);
     }
+
+
 
     @Override
     public String toString() {

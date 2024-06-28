@@ -3,10 +3,10 @@ package com.mariekd.letsplay.app.services.implementation;
 import com.mariekd.letsplay.app.entities.Ad;
 import com.mariekd.letsplay.app.repositories.AdRepository;
 import com.mariekd.letsplay.app.services.AdService;
-import com.mariekd.letsplay.authentication.repositories.UserRepository;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -16,17 +16,20 @@ public class AdServiceImpl implements AdService {
 
     private final AdRepository adRepository;
 
-    private final UserRepository userRepository;
-
-    public AdServiceImpl(AdRepository AdRepository, UserRepository userRepository) {
+    public AdServiceImpl(AdRepository AdRepository) {
         this.adRepository = AdRepository;
-        this.userRepository = userRepository;
     }
-
 
     @Override
     public List<Ad> getAllAds() {
         return adRepository.findAll();
+    }
+
+    @Override
+    public List<Ad> getAllAdsSortedByReversedDate() {
+        List<Ad> ads = adRepository.findAll();
+        ads.sort(Comparator.comparing(Ad::getCreatedAt).reversed());
+        return ads;
     }
 
     @Override
@@ -51,7 +54,7 @@ public class AdServiceImpl implements AdService {
             return adRepository.save(ad);
         }
         else {
-            throw new UsernameNotFoundException("Ad not found");
+            throw new EntityNotFoundException("Ad not found");
         }
     }
 
@@ -66,7 +69,16 @@ public class AdServiceImpl implements AdService {
     }
 
     @Override
+    public List<Ad> getAdsByUserSortedByReversedDate(UUID userId) {
+        List<Ad> ads = adRepository.findByUserId(userId);
+        ads.sort(Comparator.comparing(Ad::getCreatedAt).reversed());
+        return ads;
+    }
+
+    @Override
     public List<Ad> getSearchedAds(String fromMusicianType, String searchedMusicianType, List<String> styles, String location) {
-        return adRepository.findSearchedAds(fromMusicianType, searchedMusicianType, styles, location);
+        List<Ad> ads = adRepository.findSearchedAds(fromMusicianType, searchedMusicianType, styles, location);
+        ads.sort(Comparator.comparing(Ad::getCreatedAt).reversed());
+        return ads;
     }
 }

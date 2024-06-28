@@ -1,8 +1,6 @@
 package com.mariekd.letsplay.app.entities;
 
-import com.mariekd.letsplay.authentication.entities.User;
 import jakarta.persistence.*;
-import lombok.Data;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -10,7 +8,6 @@ import java.util.Set;
 
 @Entity
 @Table(name = "style")
-@Data
 public class Style {
     @Id
     @Column(updatable = false, nullable = false)

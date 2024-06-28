@@ -2,10 +2,9 @@ package com.mariekd.letsplay.authentication.controller;
 
 import com.mariekd.letsplay.authentication.dto.UserDTO;
 import com.mariekd.letsplay.authentication.entities.*;
-import com.mariekd.letsplay.authentication.exceptions.UnauthorizedException;
 import com.mariekd.letsplay.authentication.payload.request.*;
 import com.mariekd.letsplay.authentication.payload.response.UserInfoResponse;
-import com.mariekd.letsplay.authentication.services.implementations.*;
+import com.mariekd.letsplay.authentication.services.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -32,7 +31,6 @@ import com.mariekd.letsplay.authentication.models.UserInfo;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.client.HttpServerErrorException;
 
 import java.util.*;
 
@@ -44,19 +42,19 @@ public class AuthController {
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-    private final UserServiceImpl userService;
-    private final RoleServiceImpl roleService;
-    private final RefreshTokenServiceImpl refreshTokenService;
-    private final ValidAccountTokenServiceImpl validAccountTokenService;
-    private final ResetPasswordTokenServiceImpl resetPasswordTokenService;
+    private final UserService userService;
+    private final RoleService roleService;
+    private final RefreshTokenService refreshTokenService;
+    private final ValidAccountTokenService validAccountTokenService;
+    private final ResetPasswordTokenService resetPasswordTokenService;
     private final EmailService emailService;
 
     @Value("${letsplay.app.url}")
     private String appUrl;
 
-    public AuthController(AuthenticationManager authenticationManager, JwtService jwtService, UserServiceImpl userService,
-                          RoleServiceImpl roleService, RefreshTokenServiceImpl refreshTokenService,
-                          ValidAccountTokenServiceImpl validAccountTokenService, ResetPasswordTokenServiceImpl resetPasswordTokenService,
+    public AuthController(AuthenticationManager authenticationManager, JwtService jwtService,
+                          UserService userService, RoleService roleService, RefreshTokenService refreshTokenService,
+                          ValidAccountTokenService validAccountTokenService, ResetPasswordTokenService resetPasswordTokenService,
                           EmailService emailService) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
@@ -96,7 +94,7 @@ public class AuthController {
             User connecterUser = userService.getUserByEmail(userDetails.getUsername());
 
             if (!connecterUser.isValid()) {
-                throw new AccessDeniedException("User is not valid");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
             }
 
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getUsername());
@@ -109,12 +107,12 @@ public class AuthController {
                             connecterUser.getProfilePicture(), connecterUser.getEmail(), roles));
         } catch (AccessDeniedException e) {
             LOGGER.error("Error authenticating user: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 
     @PostMapping("/refreshtoken")
-    public ResponseEntity<?> refreshtoken(@Valid @RequestBody TokenRefreshRequest request, HttpServletRequest httpRequest) {
+    public ResponseEntity<TokenRefreshResponse> refreshtoken(@Valid @RequestBody TokenRefreshRequest request, HttpServletRequest httpRequest) {
         LOGGER.info("Refreshing token: {} ", request.getToken());
         String requestRefreshToken = request.getToken();
 
@@ -139,17 +137,17 @@ public class AuthController {
                         .body(new TokenRefreshResponse(requestRefreshToken));
 
             } else {
-                throw new AccessDeniedException("Invalid refresh token");
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
         } catch (AccessDeniedException e) {
             LOGGER.error("Invalid refresh token: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
     }
 
 
     @PostMapping("/logout")
-    public ResponseEntity<Object> logoutUser(HttpServletRequest request) {
+    public ResponseEntity<Void> logoutUser(HttpServletRequest request) {
         try {
             ResponseCookie cookie = jwtService.getCleanJwtCookie();
 
@@ -159,22 +157,22 @@ public class AuthController {
             Map<String, String> response = new HashMap<>();
             response.put("message", "Logged out successfully");
 
-            return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
-                    .body(response);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                    .build();
         } catch (final Exception e) {
-            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error logging out user: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-
     }
 
 
     @PostMapping("/register")
-    public ResponseEntity<Object> createUser(@RequestBody SignupRequest userInfos) {
+    public ResponseEntity<Void> createUser(@RequestBody SignupRequest userInfos) {
         try {
             if (!userService.existsByEmail(userInfos.email()) && !userService.existsByUserName(userInfos.name())) {
                 Role userRole = roleService.findByName("ROLE_USER");
 
-                User user = new User(UUID.randomUUID() , userInfos.name(), userInfos.email(), userInfos.password(), userInfos.profilePicture(),
+                User user = new User(UUID.randomUUID(), userInfos.name(), userInfos.email(), userInfos.password(), userInfos.profilePicture(),
                         false, userRole, null, null);
 
                 userService.createUser(user);
@@ -186,20 +184,19 @@ public class AuthController {
 
                 LOGGER.info("Validation email sent to: {}", user.getEmail(), " with token: {}", validationToken.getToken());
 
-                return setResponseMessage("User created successfully: " + user.getName(), HttpStatus.CREATED);
-
+                return ResponseEntity.status(HttpStatus.CREATED).build();
             } else {
                 LOGGER.error("User already exists");
-                return setResponseMessage("User with this name or email already exists", HttpStatus.CONFLICT);
+                return ResponseEntity.status(HttpStatus.CONFLICT).build();
             }
         } catch (final Exception e) {
             LOGGER.error("Error creating user: {}", e.getMessage());
-            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error creating user: " + e.getMessage());
+            return  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @PostMapping("/verify/{token}")
-    public ResponseEntity<Object> validateUser(@PathVariable("token") String token) {
+    public ResponseEntity<Void> validateUser(@PathVariable("token") String token) {
         try {
             ValidAccountToken checkedToken = validAccountTokenService.findByToken(token)
                     .orElseThrow(() -> new RuntimeException("Token not found"));
@@ -213,32 +210,33 @@ public class AuthController {
 
             LOGGER.info("User validated: {}", user.getName());
 
-            return setResponseMessage("User validated successfully: " + user.getName(), HttpStatus.OK);
+            return ResponseEntity.status(HttpStatus.OK).build();
+
         } catch (final Exception e) {
             LOGGER.error("Error validating user: {}", e.getMessage());
-            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error validating user: " + e.getMessage());
+            return  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @PostMapping("/resetpassword")
-    public ResponseEntity<Object> forgotPassword(@RequestBody PasswordResetRequest passwordResetRequest) {
+    public ResponseEntity<Void> forgotPassword(@RequestBody PasswordResetRequest passwordResetRequest) {
         User user = userService.getUserByEmail(passwordResetRequest.email());
         if (user != null) {
             ResetPasswordToken resetToken = resetPasswordTokenService.createResetPasswordToken(user);
             try {
                 sendForgotPasswordEmail(user.getEmail(), appUrl + "/resetpassword/" + resetToken.getToken());
                 LOGGER.info("Forgot password email sent to: {}", user.getEmail());
-                return setResponseMessage("Forgot password email sent to: " + user.getEmail(), HttpStatus.OK);
+                return ResponseEntity.status(HttpStatus.OK).build();
             } catch (MessagingException e) {
                 LOGGER.error("Error sending forgot password email: {}", e.getMessage());
-                throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error sending forgot password email: " + e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
         }
-        throw new UnauthorizedException("User not found");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
     @PostMapping("/resetpassword/{token}")
-    public ResponseEntity<Object> resetPassword(@PathVariable String token, @RequestBody NewPasswordRequest request) {
+    public ResponseEntity<Void> resetPassword(@PathVariable String token, @RequestBody NewPasswordRequest request) {
         try {
             ResetPasswordToken checkedToken = resetPasswordTokenService.findByToken(token)
                     .orElseThrow(() -> new RuntimeException("Token not found"));
@@ -250,32 +248,33 @@ public class AuthController {
 
             LOGGER.info("Password reset for user: {}", user.getName());
 
-            return setResponseMessage("Password reset successfully for user: " + user.getName(), HttpStatus.OK);
+            return ResponseEntity.status(HttpStatus.OK).build();
+
         } catch (final Exception e) {
             LOGGER.error("Error resetting password: {}", e.getMessage());
-            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error resetting password: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @PreAuthorize("hasRole('USER')")
     @PutMapping("/password/{id}")
-    public ResponseEntity<Object> updatePassword(@PathVariable UUID id, @RequestBody String password, HttpServletRequest request) {
+    public ResponseEntity<Void> updatePassword(@PathVariable UUID id, @RequestBody String password, HttpServletRequest request) {
         if (isUserAuthorizedToModify(id, request))
             try {
                 userService.updateUserPassword(id, password);
-                return setResponseMessage("Password modified successfully", HttpStatus.OK);
+                return ResponseEntity.ok().build();
             } catch (final Exception e) {
                 LOGGER.error("Error modifying password: {}", e.getMessage());
-                return setResponseMessage("Error changing password: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
         else {
-            throw new UnauthorizedException("You are not authorized to modify this user");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 
     @PreAuthorize("hasRole('USER')")
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateUser(@PathVariable UUID id, @RequestBody UserUpdateRequest updateRequest, HttpServletRequest request) {
+    public ResponseEntity<UserDTO> updateUser(@PathVariable UUID id, @RequestBody UserUpdateRequest updateRequest, HttpServletRequest request) {
         if (isUserAuthorizedToModify(id, request)) {
             try {
                 User user = userService.getUserById(id);
@@ -285,16 +284,16 @@ public class AuthController {
                 return ResponseEntity.ok(new UserDTO(user.getId(), user.getName(), user.getEmail(), user.getProfilePicture()));
             } catch (final Exception e) {
                 LOGGER.error("Error updating user: {}", e.getMessage());
-                return setResponseMessage("Error updating user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
         } else {
-            throw new UnauthorizedException("You are not authorized to modify this user");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteUser(@PathVariable UUID id, HttpServletRequest request) {
+    public ResponseEntity<Void> deleteUser(@PathVariable UUID id, HttpServletRequest request) {
 
         if (isUserAuthorizedToModify(id, request)) {
             try {
@@ -302,27 +301,16 @@ public class AuthController {
                 return ResponseEntity.ok().build();
             } catch (final Exception e) {
                 LOGGER.error("Error deleting user: {}", e.getMessage());
-                return setResponseMessage("Error deleting user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
         } else {
-            throw new UnauthorizedException("You are not authorized to delete this user");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 
     private boolean isUserAuthorizedToModify(UUID userId, HttpServletRequest request) {
         User connectedUser = userService.getUserFromRequest(request);
-
-        if (connectedUser.getId().equals(userId)) {
-            return true;
-        } else {
-            throw new UnauthorizedException("You are not authorized to modify this user");
-        }
-    }
-
-    private ResponseEntity<Object> setResponseMessage(String message, HttpStatus status) {
-        Map<String, String> responseMessage = new HashMap<>();
-        responseMessage.put("message", message);
-        return new ResponseEntity<>(responseMessage, status);
+        return connectedUser.getId().equals(userId);
     }
 
     private void sendValidationEmail(User user, ValidAccountToken validationToken) throws MessagingException {
@@ -338,6 +326,6 @@ public class AuthController {
     private void sendForgotPasswordEmail(String userEmail, String url) throws MessagingException {
         emailService.sendConfirmEmail(userEmail, "Réinitialisation de ton mot de passe Let's Play",
                 "Alors, on a oublié son mot de passe ?", "Pour réinitialiser ton mot de passe, clique sur le lien suivant :",
-                url,"Je définis un nouveau mot de passe");
+                url, "Je définis un nouveau mot de passe");
     }
 }

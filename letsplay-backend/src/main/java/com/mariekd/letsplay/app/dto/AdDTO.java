@@ -1,11 +1,7 @@
 package com.mariekd.letsplay.app.dto;
 
-import lombok.Data;
-
 import java.time.Instant;
-import java.util.Date;
 
-@Data
 public class AdDTO {
 
     private int id;

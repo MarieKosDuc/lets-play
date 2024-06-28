@@ -2,10 +2,11 @@ package com.mariekd.letsplay.app.services.implementation;
 
 import com.mariekd.letsplay.app.entities.Style;
 import com.mariekd.letsplay.app.repositories.StyleRepository;
+import com.mariekd.letsplay.app.services.StyleService;
 import org.springframework.stereotype.Service;
 
 @Service
-public class StyleServiceImpl {
+public class StyleServiceImpl implements StyleService {
 
     final StyleRepository styleRepository;
 

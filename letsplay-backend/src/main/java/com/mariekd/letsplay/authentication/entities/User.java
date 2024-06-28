@@ -126,6 +126,8 @@ public class User {
 
     public Set<Ad> getLikedAds() { return likedAds; }
 
+    public List<Ad> getLikedAdsList() { return new ArrayList<>(likedAds); }
+
     public void setLikedAds(Set<Ad> likedAds) { this.likedAds = likedAds; }
 
     // Methods to add or remove liked ads
