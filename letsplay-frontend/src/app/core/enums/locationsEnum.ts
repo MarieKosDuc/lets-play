@@ -1,0 +1,15 @@
+export enum LocationsEnum {
+    ara = "Auverne-Rhône-Alpes",
+    bfc = "Bourgogne-Franche-Comté",
+    bre = "Bretagne",
+    cvl = "Centre-Val de Loire",
+    cor = "Corse",
+    gde = "Grand Est",
+    hdf = "Hauts-de-France",
+    idf = "Île-de-France",
+    norm = "Normandie",
+    naq = "Nouvelle-Aquitaine",
+    occ = "Occitanie",
+    pdl = "Pays de la Loire",
+    paca = "Provence-Alpes-Côte d'Azur",
+}

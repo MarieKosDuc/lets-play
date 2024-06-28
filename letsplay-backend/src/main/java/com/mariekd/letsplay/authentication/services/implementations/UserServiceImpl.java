@@ -76,6 +76,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
+    public User updateUserPassword(UUID id, String newPassword) {
+        if (userRepository.existsById(id)) {
+            User user = userRepository.findById(id).get();
+            user.setPassword(passwordEncoder.encode(newPassword));
+            user.setId(id);
+            return userRepository.save(user);
+        }
+        else {
+            throw new UsernameNotFoundException("User not found");
+        }
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void deleteUser(UUID id) {
         userRepository.deleteById(id);
     }
@@ -102,7 +116,7 @@ public class UserServiceImpl implements UserService {
             String userName = jwtService.getUserNameFromJwtToken(getJwtFromRequest(request));
             return userRepository.findByEmail(userName);
         } catch (JwtException e) {
-            throw new AccessDeniedException("Invalid token"); //TODO : mieux gérer les try/catch
+            throw new AccessDeniedException("Invalid token");
         } catch (Exception e) {
             throw new UsernameNotFoundException("Unknown user");
         }

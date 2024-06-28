@@ -26,6 +26,9 @@ public class User {
     @Column(length = 255, nullable = true, name="profile_picture")
     private String profilePicture;
 
+    @Column(name = "valid")
+    private boolean valid;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -35,18 +38,27 @@ public class User {
     @OneToMany(mappedBy = "postedBy", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Ad> ads;
 
-    public User(UUID id, String name, String email, String password, Role role, String profilePicture, Set<Ad> ads) {
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "users_liked_ads",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "ad_id"))
+    private Set<Ad> likedAds;
+
+    public User(UUID id, String name, String email, String password, String profilePicture,
+                Boolean valid, Role role, Set<Ad> ads, Set<Ad> likedAds) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.profilePicture = profilePicture;
+        this.valid = valid;
         this.ads = ads;
         this.roles = new HashSet<>();
         if (role != null) {
             this.roles.add(role);
             role.getUsers().add(this);
         }
+        this.likedAds = likedAds != null ? likedAds : new HashSet<>();
     }
 
     public User() {
@@ -92,6 +104,10 @@ public class User {
         this.profilePicture = profilePicture;
     }
 
+    public boolean isValid() { return valid; }
+
+    public void setValid(boolean valid) { this.valid = valid; }
+
     public Set<Role> getRoles() {
         return roles;
     }
@@ -108,10 +124,29 @@ public class User {
         this.ads = ads;
     }
 
+    public Set<Ad> getLikedAds() { return likedAds; }
+
+    public void setLikedAds(Set<Ad> likedAds) { this.likedAds = likedAds; }
+
+    // Methods to add or remove liked ads
+    public void addLikedAd(Ad ad) {
+        this.likedAds.add(ad);
+        ad.getLikedByUsers().add(this);
+    }
+
+    public void removeLikedAd(Ad ad) {
+        this.likedAds.remove(ad);
+        ad.getLikedByUsers().remove(this);
+    }
+
+
     @Override
     public String toString() {
         return "User{" +
-                ", name='" + name + '\'' +
+                "name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", roles=" + roles +
                 '}';
     }
+
 }

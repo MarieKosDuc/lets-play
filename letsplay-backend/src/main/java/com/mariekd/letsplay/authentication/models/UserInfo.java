@@ -53,6 +53,8 @@ public class UserInfo implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
+
+
         return true;
     }
 
@@ -80,7 +82,7 @@ public class UserInfo implements UserDetails {
         return id.equals(user.id);
     }
 
-    @Override //TODO : vérifier
+    @Override
     public int hashCode() {
         return id.hashCode();
     }

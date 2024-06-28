@@ -1,22 +1,81 @@
-<div class = "card">
-    <div class="flex items-center justify-center mt-6">
-    Crée ton compte !
-    </div>
+<div class="card">
+  <h1 *ngIf="!registerOk">Crée ton compte !</h1>
 
-    <form #signupForm="ngForm" (ngSubmit)="onSubmit(signupForm)">
-        <label for="userName">Nom d'utilisateur :</label><br>
-        <input type="text" id="userName" placeholder="Ton nom" name="userName" ngModel required class="field">
-        <label for="email">Adresse e-mail :</label><br>
-        <input type="text" id="email" placeholder="e-mail" name="email" ngModel required email class="field">
-        <label for="password">Mot de passe (minimum 8 caractères, un chiffre, un caractère spécial):</label><br>
-        <input type="password" id="password" placeholder="Mot de passe" name="password" ngModel required class="field">
-        <label for="confirmPassword">Confirmer le mot de passe :</label><br>
-        <input type="password" placeholder="Mot de passe" name="confirmPassword" ngModel required class="field">
-        <button type="submit" [disabled]="signupForm.form.invalid" class = "button">S'inscrire</button>
+  <div *ngIf="!registerOk" class="register-component-form">
+    <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+      <label for="name">Nom d'utilisateur :</label>
+      <input
+        type="text"
+        id="name"
+        placeholder="Ton nom"
+        formControlName="name"
+        class="field"
+      />
+
+      <label for="email">Adresse e-mail :</label>
+      <input
+        type="text"
+        id="email"
+        placeholder="e-mail"
+        formControlName="email"
+        class="field"
+      />
+
+      <label for="password">
+        Mot de passe (minimum 8 caractères, un chiffre, un caractère spécial):
+      </label>
+      <input
+        type="password"
+        id="password"
+        placeholder="Mot de passe"
+        formControlName="password"
+        class="field"
+      />
+
+      <label for="confirmPassword">Confirmer le mot de passe :</label>
+      <input
+        type="password"
+        id="confirmPassword"
+        placeholder="Mot de passe"
+        formControlName="confirmPassword"
+        class="field"
+      />
+
+      <div id="cgu-acceptance">
+        <input
+          type="checkbox"
+          id="terms"
+          formControlName="terms"
+          class="checkbox"
+        />
+        <label for="terms">J'accepte les
+          <a routerLink="/cgu">conditions générales d'utilisation</a>
+        </label>
+      </div>
+
+      <button type="submit" [disabled]="signupForm.invalid" class="button">
+        S'inscrire
+      </button>
     </form>
-    <div *ngIf="hasMessage">{{ message }}</div>
 
     <div>
-        <p class="text-sm text-center text-gray-900 dark:text-gray-300">Déjà un compte ? <a routerLink="/login" class="text-blue-600 hover:underline">Connecte-toi !</a></p>
+      <p>
+        Déjà un compte ?
+        <a routerLink="/login">Connecte-toi !</a>
+      </p>
     </div>
+  </div>
+
+  <p-progressSpinner
+    *ngIf="loading"
+    class="spinner"
+    mode="indeterminate"
+  ></p-progressSpinner>
+
+  <div *ngIf="registerOk" class="register-component-form">
+    <h1>Ton compte a bien été créé !</h1>
+    <p>Vérifie ta boîte mail pour l'activer.</p>
+    <p style="font-style: italic;">ATTENTION ! Ce lien n'est valable que 24h !</p>
+    <button class="button" (click)="backToHome()">Retour à l'accueil</button>
+  </div>
 </div>

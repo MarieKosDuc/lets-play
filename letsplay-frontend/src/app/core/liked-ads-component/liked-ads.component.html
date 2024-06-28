@@ -1,0 +1,14 @@
+<div class="card">
+    <h1>Tes annonces sauvegardées :</h1>
+
+    <div id="ads-list">
+        <ng-container>
+          <app-ad-recap *ngFor="let ad of ads" [ad]="ad"> </app-ad-recap>
+        </ng-container>
+    </div>
+
+    <div id="'no-ads-founr" *ngIf="noAdsFound">
+        <p>Tu n'as sauvegardé aucune annonce pour le moment.</p>
+        <button class="button" (click)="goToHome()">Retour à l'accueil</button>
+    </div>
+</div>

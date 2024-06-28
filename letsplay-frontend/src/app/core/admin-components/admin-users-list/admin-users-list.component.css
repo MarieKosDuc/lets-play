@@ -1,0 +1,19 @@
+#users-list {
+    display: flex;
+
+    img {
+        width: 8rem;
+    }
+
+    h2 {
+        padding-right: 1rem;
+    }
+
+    .card {
+        width: 100%;
+        background-color: #ffffff;
+        border-bottom: 1px solid #d1d5db;
+        margin: 1rem 0; 
+        flex-direction: row;
+      }
+}

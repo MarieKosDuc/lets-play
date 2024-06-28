@@ -1,20 +1,12 @@
 package com.mariekd.letsplay.authentication.controller;
 
-import com.mariekd.letsplay.authentication.entities.RefreshToken;
-import com.mariekd.letsplay.authentication.entities.Role;
-import com.mariekd.letsplay.authentication.payload.request.SignupRequest;
-import com.mariekd.letsplay.authentication.payload.request.TokenRefreshRequest;
-import com.mariekd.letsplay.authentication.payload.response.LoginOkResponse;
-import com.mariekd.letsplay.authentication.payload.response.TokenRefreshResponse;
-import com.mariekd.letsplay.authentication.jwt.JwtService;
-import com.mariekd.letsplay.authentication.payload.request.LoginRequest;
-import com.mariekd.letsplay.authentication.entities.User;
-import com.mariekd.letsplay.authentication.models.UserInfo;
-import com.mariekd.letsplay.authentication.services.RefreshTokenService;
-import com.mariekd.letsplay.authentication.services.implementations.RoleServiceImpl;
-import com.mariekd.letsplay.authentication.services.implementations.UserServiceImpl;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
+import com.mariekd.letsplay.authentication.dto.UserDTO;
+import com.mariekd.letsplay.authentication.entities.*;
+import com.mariekd.letsplay.authentication.exceptions.UnauthorizedException;
+import com.mariekd.letsplay.authentication.payload.request.*;
+import com.mariekd.letsplay.authentication.payload.response.UserInfoResponse;
+import com.mariekd.letsplay.authentication.services.implementations.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -28,8 +20,19 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+
+import com.mariekd.letsplay.app.services.EmailService;
+import com.mariekd.letsplay.authentication.payload.response.LoginOkResponse;
+import com.mariekd.letsplay.authentication.payload.response.TokenRefreshResponse;
+import com.mariekd.letsplay.authentication.jwt.JwtService;
+import com.mariekd.letsplay.authentication.models.UserInfo;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.client.HttpServerErrorException;
 
 import java.util.*;
 
@@ -43,45 +46,71 @@ public class AuthController {
     private final JwtService jwtService;
     private final UserServiceImpl userService;
     private final RoleServiceImpl roleService;
-    private final RefreshTokenService refreshTokenService;
+    private final RefreshTokenServiceImpl refreshTokenService;
+    private final ValidAccountTokenServiceImpl validAccountTokenService;
+    private final ResetPasswordTokenServiceImpl resetPasswordTokenService;
+    private final EmailService emailService;
 
-    public AuthController(AuthenticationManager authenticationManager,
-                          JwtService jwtService, UserServiceImpl userService, RoleServiceImpl roleService,
-                          RefreshTokenService refreshTokenService) {
+    @Value("${letsplay.app.url}")
+    private String appUrl;
+
+    public AuthController(AuthenticationManager authenticationManager, JwtService jwtService, UserServiceImpl userService,
+                          RoleServiceImpl roleService, RefreshTokenServiceImpl refreshTokenService,
+                          ValidAccountTokenServiceImpl validAccountTokenService, ResetPasswordTokenServiceImpl resetPasswordTokenService,
+                          EmailService emailService) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.userService = userService;
         this.roleService = roleService;
         this.refreshTokenService = refreshTokenService;
+        this.validAccountTokenService = validAccountTokenService;
+        this.resetPasswordTokenService = resetPasswordTokenService;
+        this.emailService = emailService;
+    }
+
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @GetMapping("/{id}")
+    public UserInfoResponse getUser(@PathVariable UUID id) {
+        User user = userService.getUserById(id);
+        return new UserInfoResponse(user.getId(), user.getName(), user.getProfilePicture());
     }
 
     @PostMapping("/login")
     public ResponseEntity<LoginOkResponse> authenticateUser(@RequestBody LoginRequest loginRequest) {
 
-        final Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.username(), loginRequest.password())
-        );
+        try {
+            final Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.name(), loginRequest.password())
+            );
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        final UserInfo userDetails = (UserInfo) authentication.getPrincipal();
+            final UserInfo userDetails = (UserInfo) authentication.getPrincipal();
 
-        String jwt = jwtService.generateJwtToken(userDetails.getUsername());
+            String jwt = jwtService.generateJwtToken(userDetails.getUsername());
 
-        final List<String> roles = userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .toList();
+            final List<String> roles = userDetails.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .toList();
 
-        User connecterUser = userService.getUserByEmail(userDetails.getUsername());
+            User connecterUser = userService.getUserByEmail(userDetails.getUsername());
 
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getUsername());
+            if (!connecterUser.isValid()) {
+                throw new AccessDeniedException("User is not valid");
+            }
+
+            RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getUsername());
 
 
-        LOGGER.info("User {} / {} logged in", userDetails.getUsername(), connecterUser.getName());
+            LOGGER.info("User {} / {} logged in", userDetails.getUsername(), connecterUser.getName());
 
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwt)
-                        .body(new LoginOkResponse(refreshToken.getToken(), connecterUser.getId(), connecterUser.getName(),
-                                connecterUser.getProfilePicture(), connecterUser.getEmail(), roles));
+            return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwt)
+                    .body(new LoginOkResponse(refreshToken.getToken(), connecterUser.getId(), connecterUser.getName(),
+                            connecterUser.getProfilePicture(), connecterUser.getEmail(), roles));
+        } catch (AccessDeniedException e) {
+            LOGGER.error("Error authenticating user: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
     }
 
     @PostMapping("/refreshtoken")
@@ -120,85 +149,195 @@ public class AuthController {
 
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logoutUser(HttpServletRequest request) {
-        ResponseCookie cookie = jwtService.getCleanJwtCookie();
+    public ResponseEntity<Object> logoutUser(HttpServletRequest request) {
+        try {
+            ResponseCookie cookie = jwtService.getCleanJwtCookie();
 
-        User connectedUser = userService.getUserFromRequest(request);
-        refreshTokenService.deleteByUserId(connectedUser.getId());
+            User connectedUser = userService.getUserFromRequest(request);
+            refreshTokenService.deleteByUserId(connectedUser.getId());
 
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Logged out successfully");
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Logged out successfully");
 
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(response);
+            return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
+                    .body(response);
+        } catch (final Exception e) {
+            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error logging out user: " + e.getMessage());
+        }
+
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/all")
-    public List<User> getAllUsers() {
-        LOGGER.info("Getting all users: {} ", userService.getAllUsers());
-        return userService.getAllUsers();
-    }
 
     @PostMapping("/register")
-    public ResponseEntity<String> createUser(@RequestBody SignupRequest userInfos) {
+    public ResponseEntity<Object> createUser(@RequestBody SignupRequest userInfos) {
         try {
-            if (!userService.existsByEmail(userInfos.email()) && !userService.existsByUserName(userInfos.username())) {
-                Role userRole = roleService.findByName("USER");
+            if (!userService.existsByEmail(userInfos.email()) && !userService.existsByUserName(userInfos.name())) {
+                Role userRole = roleService.findByName("ROLE_USER");
 
-                User user = new User(UUID.randomUUID() , userInfos.username(), userInfos.email(), userInfos.password(), userRole, userInfos.profilePicture(),null);
+                User user = new User(UUID.randomUUID() , userInfos.name(), userInfos.email(), userInfos.password(), userInfos.profilePicture(),
+                        false, userRole, null, null);
 
                 userService.createUser(user);
                 LOGGER.info("User created: {}", user.getName());
 
-                return ResponseEntity.ok().body("User created successfully: " + user.getName());
+                ValidAccountToken validationToken = validAccountTokenService.createValidationToken(user);
+
+                sendValidationEmail(user, validationToken);
+
+                LOGGER.info("Validation email sent to: {}", user.getEmail(), " with token: {}", validationToken.getToken());
+
+                return setResponseMessage("User created successfully: " + user.getName(), HttpStatus.CREATED);
+
             } else {
                 LOGGER.error("User already exists");
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("User with this name or email already exists");
+                return setResponseMessage("User with this name or email already exists", HttpStatus.CONFLICT);
             }
         } catch (final Exception e) {
             LOGGER.error("Error creating user: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating user: " + e.getMessage());
+            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error creating user: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/verify/{token}")
+    public ResponseEntity<Object> validateUser(@PathVariable("token") String token) {
+        try {
+            ValidAccountToken checkedToken = validAccountTokenService.findByToken(token)
+                    .orElseThrow(() -> new RuntimeException("Token not found"));
+
+            User user = checkedToken.getUser();
+
+            user.setValid(true);
+            userService.updateUser(user.getId(), user);
+
+            validAccountTokenService.deleteByToken(token);
+
+            LOGGER.info("User validated: {}", user.getName());
+
+            return setResponseMessage("User validated successfully: " + user.getName(), HttpStatus.OK);
+        } catch (final Exception e) {
+            LOGGER.error("Error validating user: {}", e.getMessage());
+            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error validating user: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/resetpassword")
+    public ResponseEntity<Object> forgotPassword(@RequestBody PasswordResetRequest passwordResetRequest) {
+        User user = userService.getUserByEmail(passwordResetRequest.email());
+        if (user != null) {
+            ResetPasswordToken resetToken = resetPasswordTokenService.createResetPasswordToken(user);
+            try {
+                sendForgotPasswordEmail(user.getEmail(), appUrl + "/resetpassword/" + resetToken.getToken());
+                LOGGER.info("Forgot password email sent to: {}", user.getEmail());
+                return setResponseMessage("Forgot password email sent to: " + user.getEmail(), HttpStatus.OK);
+            } catch (MessagingException e) {
+                LOGGER.error("Error sending forgot password email: {}", e.getMessage());
+                throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error sending forgot password email: " + e.getMessage());
+            }
+        }
+        throw new UnauthorizedException("User not found");
+    }
+
+    @PostMapping("/resetpassword/{token}")
+    public ResponseEntity<Object> resetPassword(@PathVariable String token, @RequestBody NewPasswordRequest request) {
+        try {
+            ResetPasswordToken checkedToken = resetPasswordTokenService.findByToken(token)
+                    .orElseThrow(() -> new RuntimeException("Token not found"));
+
+            User user = checkedToken.getUser();
+            userService.updateUserPassword(user.getId(), request.password());
+
+            resetPasswordTokenService.deleteByToken(token);
+
+            LOGGER.info("Password reset for user: {}", user.getName());
+
+            return setResponseMessage("Password reset successfully for user: " + user.getName(), HttpStatus.OK);
+        } catch (final Exception e) {
+            LOGGER.error("Error resetting password: {}", e.getMessage());
+            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error resetting password: " + e.getMessage());
+        }
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @PutMapping("/password/{id}")
+    public ResponseEntity<Object> updatePassword(@PathVariable UUID id, @RequestBody String password, HttpServletRequest request) {
+        if (isUserAuthorizedToModify(id, request))
+            try {
+                userService.updateUserPassword(id, password);
+                return setResponseMessage("Password modified successfully", HttpStatus.OK);
+            } catch (final Exception e) {
+                LOGGER.error("Error modifying password: {}", e.getMessage());
+                return setResponseMessage("Error changing password: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        else {
+            throw new UnauthorizedException("You are not authorized to modify this user");
         }
     }
 
     @PreAuthorize("hasRole('USER')")
     @PutMapping("/{id}")
-    public User updateUser(@PathVariable UUID id, @RequestBody User user, HttpServletRequest request) {
-
+    public ResponseEntity<Object> updateUser(@PathVariable UUID id, @RequestBody UserUpdateRequest updateRequest, HttpServletRequest request) {
         if (isUserAuthorizedToModify(id, request)) {
-            return userService.updateUser(id, user);
+            try {
+                User user = userService.getUserById(id);
+                user.setName(updateRequest.name());
+                user.setProfilePicture(updateRequest.profilePicture());
+                userService.updateUser(id, user);
+                return ResponseEntity.ok(new UserDTO(user.getId(), user.getName(), user.getEmail(), user.getProfilePicture()));
+            } catch (final Exception e) {
+                LOGGER.error("Error updating user: {}", e.getMessage());
+                return setResponseMessage("Error updating user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         } else {
-            throw new AccessDeniedException("You are not authorized to modify this user");
+            throw new UnauthorizedException("You are not authorized to modify this user");
         }
     }
 
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable UUID id, HttpServletRequest request){
+    public ResponseEntity<Object> deleteUser(@PathVariable UUID id, HttpServletRequest request) {
 
         if (isUserAuthorizedToModify(id, request)) {
-            userService.deleteUser(id);
+            try {
+                userService.deleteUser(id);
+                return ResponseEntity.ok().build();
+            } catch (final Exception e) {
+                LOGGER.error("Error deleting user: {}", e.getMessage());
+                return setResponseMessage("Error deleting user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         } else {
-            throw new AccessDeniedException("You are not authorized to delete this user");
+            throw new UnauthorizedException("You are not authorized to delete this user");
         }
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/admin/{id}")
-    public void deleteUserByAdmin(@PathVariable UUID id){
-            userService.deleteUser(id);
-    }
-
-
-    public boolean isUserAuthorizedToModify(UUID userId, HttpServletRequest request) {
+    private boolean isUserAuthorizedToModify(UUID userId, HttpServletRequest request) {
         User connectedUser = userService.getUserFromRequest(request);
 
         if (connectedUser.getId().equals(userId)) {
             return true;
         } else {
-            throw new AccessDeniedException("You are not authorized to modify this user");
+            throw new UnauthorizedException("You are not authorized to modify this user");
         }
     }
 
+    private ResponseEntity<Object> setResponseMessage(String message, HttpStatus status) {
+        Map<String, String> responseMessage = new HashMap<>();
+        responseMessage.put("message", message);
+        return new ResponseEntity<>(responseMessage, status);
+    }
+
+    private void sendValidationEmail(User user, ValidAccountToken validationToken) throws MessagingException {
+        String welcomeMessage = String.format("Bienvenue sur Let's Play, %s !", user.getName());
+        String validationLink = appUrl + "/verify/" + validationToken.getToken();
+
+        emailService.sendConfirmEmail(user.getEmail(), "Validation de ton compte Let's Play",
+                welcomeMessage, "Pour valider ton compte, clique sur le lien suivant : " +
+                        "\n Attention, ce lien est valable 24h ! \n",
+                validationLink, "Valider mon compte");
+    }
+
+    private void sendForgotPasswordEmail(String userEmail, String url) throws MessagingException {
+        emailService.sendConfirmEmail(userEmail, "Réinitialisation de ton mot de passe Let's Play",
+                "Alors, on a oublié son mot de passe ?", "Pour réinitialiser ton mot de passe, clique sur le lien suivant :",
+                url,"Je définis un nouveau mot de passe");
+    }
 }

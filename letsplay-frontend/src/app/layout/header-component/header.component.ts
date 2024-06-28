@@ -1,41 +1,48 @@
-import { Component } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
-import { Observable, Subscription } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 
-import { MessageService } from 'primeng/api';
+import { Subscription } from 'rxjs';
+
+import { MenuItem, MessageService } from 'primeng/api';
 
 import { AuthenticationService } from '../../authentication/services/authentication.service';
 import { User } from '../../authentication/models/user.model';
-import { StorageService } from '../../_services/storage.service';
-import { EventBusService } from 'src/app/_shared/event-bus.service';
-
+import { AuthStorageService } from '../../shared/services/storage.service';
+import { EventBusService } from 'src/app/shared/services/event-bus.service';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
-  providers: [MessageService]
 })
-export class HeaderComponent {
-  public showDescription!: boolean;
-  public userLoggedIn = false;
-  public userInfos!: User | null;
-  public showDropdown: boolean = false;
+export class HeaderComponent implements OnInit {
+  protected showDescription!: boolean;
+  protected userLoggedIn = false;
+  protected userInfos!: User | null;
+  protected isAdmin: boolean = false;
+  protected items: MenuItem[] | undefined;
+  protected itemsSmall: MenuItem[] | undefined;
+  protected itemsSmallConnected: MenuItem[] | undefined;
+  protected itemsAdminSmall: MenuItem[] | undefined;
+
   private userSubscription: Subscription;
 
   private eventBusSubscription?: Subscription;
-  
 
   constructor(
     private router: Router,
     private authService: AuthenticationService,
-    private storageService: StorageService,
+    private authStorageService: AuthStorageService,
     private eventBusService: EventBusService,
-    private MessageService: MessageService
+    private messageService: MessageService,
+    private activatedRoute: ActivatedRoute
   ) {
-    this.userSubscription = this.storageService.user$.subscribe((user) => {
+    this.userSubscription = this.authStorageService.user$.subscribe((user) => {
       this.userInfos = user;
       this.userLoggedIn = !!user;
+      if (user) {
+        this.isAdmin = user?.roles?.includes('ROLE_ADMIN') ?? false;
+      }
     });
   }
 
@@ -51,43 +58,148 @@ export class HeaderComponent {
       }
     });
 
-    this.userLoggedIn = this.storageService.isLoggedIn();
+    this.userLoggedIn = this.authStorageService.isLoggedIn();
+    this.userInfos = this.authStorageService.getUser();
 
-    this.eventBusSubscription = this.eventBusService
-      .on('logout', () => {
-        console.log('Logout event received');
-        this.logOut();
-      });
+    this.eventBusSubscription = this.eventBusService.on('logout', () => {
+      console.log('Logout event received');
+      this.logOut();
+    });
+
+    this.items = [
+      {
+        items: [
+          {
+            label: 'Profil',
+            command: () => {
+              if (this.userInfos && this.userInfos.id) {
+                this.router.navigate(['/profile', this.userInfos.id]);
+              }
+            },
+          },
+          {
+            label: 'Nouvelle annonce',
+            command: () => {
+              this.router.navigate(['/create-ad']);
+            },
+          },
+          {
+            label: 'Favorites',
+            command: () => {
+              this.router.navigate(['/fav-ads']);
+            },
+          },
+          {
+            label: 'Déconnexion',
+            command: () => {
+              this.logOut();
+            },
+          },
+        ],
+      },
+    ];
+
+    this.itemsSmall = [
+      {
+        items: [
+          {
+            label: 'Rechercher',
+            command: () => {
+              this.router.navigate(['/search']);
+            },
+          },
+          {
+            label: 'Connexion/Inscription',
+            command: () => {
+              this.router.navigate(['/login']);
+            },
+          },
+        ],
+      },
+    ];
+
+    this.itemsAdminSmall = [
+      {
+        items: [
+          {
+            label: 'Membres',
+            command: () => {
+              this.router.navigate(['/admin/users']);
+            },
+          },
+          {
+            label: 'Annonces',
+            command: () => {
+              this.router.navigate(['/admin/ads']);
+            },
+          },
+          {
+            label: 'Déconnexion',
+            command: () => {
+              this.logOut();
+            },
+          },
+        ],
+      },
+    ]
+
+    this.itemsSmallConnected = [
+      {
+        items: [
+          {
+            label: 'Rechercher',
+            command: () => {
+              this.router.navigate(['/search']);
+            },
+          },
+          {
+            label: 'Profil',
+            command: () => {
+              if (this.userInfos && this.userInfos.id) {
+                this.router.navigate(['/profile', this.userInfos.id]);
+              }
+            },
+          },
+          {
+            label: 'Nouvelle annonce',
+            command: () => {
+              this.router.navigate(['/create-ad']);
+            },
+          },
+          {
+            label: 'Favorites',
+            command: () => {
+              this.router.navigate(['/fav-ads']);
+            },
+          },
+          {
+            label: 'Déconnexion',
+            command: () => {
+              this.logOut();
+            },
+          },
+        ],
+      },
+    ];
   }
 
-  toggleDropdown() {
-    this.showDropdown = !this.showDropdown;
-  }
-
-  handleKeyPress(event: KeyboardEvent) {
-    if (event.key === 'Enter' || event.key === ' ') {
-      // Si la touche Entrée ou Espace est pressée
-      this.toggleDropdown(); // Ouvre ou ferme le menu déroulant
-    } //TODO : gérer le problème du menu déroulant qui s'ouvre quand on appuie sur entrée même non connecté
-    //TODO : refermer le menu déroulant quand navigation
-  }
-
-  logOut() {
+  public logOut() {
     this.authService.logout().subscribe(
       (response) => {
         this.userLoggedIn = false;
         this.userInfos = null;
-        this.storageService.clean();
-        this.showDropdown = false;
-        setTimeout(() => {
-          this.router.navigate(['/home']);
-        }, 1000);
-        ;
+        this.authStorageService.clean();
+        this.router.navigate(['/home']);
+        this.messageService.add({
+          severity: 'info',
+          summary: 'Déconnexion',
+          detail: 'Tu es deconnecté.e',
+        });
       },
       (error) => {
         console.log(error);
+        this.router.navigate(['/home']);
       }
-    )
+    );
   }
-
 }

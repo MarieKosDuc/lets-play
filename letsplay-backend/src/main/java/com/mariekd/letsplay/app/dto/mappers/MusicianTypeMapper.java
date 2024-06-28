@@ -1,7 +1,6 @@
 package com.mariekd.letsplay.app.dto.mappers;
 
 import com.mariekd.letsplay.app.dto.MusicianTypeDTO;
-import com.mariekd.letsplay.app.dto.UserDTO;
 import com.mariekd.letsplay.app.entities.MusicianType;
 
 public class MusicianTypeMapper {

@@ -1,5 +1,5 @@
 # Build front-end
-FROM node:16-alpine AS builder
+FROM node:18-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
@@ -8,8 +8,6 @@ COPY angular.json .
 COPY tsconfig.json .
 COPY tsconfig.app.json .
 COPY tsconfig.spec.json .
-COPY tailwind.config.js .
-COPY postcss.config.js .
 RUN npm run build
 
 # Serve app with Nginx

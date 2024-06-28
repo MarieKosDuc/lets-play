@@ -2,29 +2,31 @@ package com.mariekd.letsplay.app.dto;
 
 import lombok.Data;
 
+import java.time.Instant;
 import java.util.Date;
 
 @Data
 public class AdDTO {
 
     private int id;
-    private Date createdAt;
-    private String postedBy;
+    private Instant createdAt;
+    private String postedByName;
+    private String postedById;
     private String title;
-    private String seekingMusicianType;
+    private String from;
+    private String searching;
     private String image;
     private String[] styles;
     private String location;
     private String description;
 
-    public AdDTO(int id, Date createdAt, String postedBy, String title,
-                 String seekingMusicianType, String image, String styleType,
-                 String location, String description) {
+    public AdDTO(int id, Instant createdAt, String postedBy, String title, String from, String searching, String image, String[] styles, String location, String description) {
         this.id = id;
         this.createdAt = createdAt;
-        this.postedBy = postedBy;
+        this.postedByName = postedBy;
         this.title = title;
-        this.seekingMusicianType = seekingMusicianType;
+        this.from = from;
+        this.searching = searching;
         this.image = image;
         this.styles = styles;
         this.location = location;
@@ -42,21 +44,23 @@ public class AdDTO {
         this.id = id;
     }
 
-    public Date getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 
-    public String getPostedBy() {
-        return postedBy;
+    public String getPostedByName() {
+        return postedByName;
     }
 
-    public void setPostedBy(String postedBy) {
-        this.postedBy = postedBy;
-    }
+    public void setPostedByName(String postedByName) { this.postedByName = postedByName; }
+
+    public String getPostedById() { return postedById; }
+
+    public void setPostedById(String postedById) { this.postedById = postedById; }
 
     public String getTitle() {
         return title;
@@ -66,13 +70,13 @@ public class AdDTO {
         this.title = title;
     }
 
-    public String getSeekingMusicianType() {
-        return seekingMusicianType;
-    }
+    public String getFrom() { return from; }
 
-    public void setSeekingMusicianType(String seekingMusicianType) {
-        this.seekingMusicianType = seekingMusicianType;
-    }
+    public void setFrom(String from) { this.from = from; }
+
+    public String getSearching() { return searching; }
+
+    public void setSearching(String searching) { this.searching = searching; }
 
     public String getImage() {
         return image;

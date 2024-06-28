@@ -7,15 +7,15 @@ public class LoginOkResponse {
     private String refreshToken;
     private String type = "Bearer";
     private UUID id;
-    private String username;
+    private String name;
     private String profilePicture;
     private String email;
     private List<String> roles;
 
-    public LoginOkResponse(String refreshToken, UUID id, String username, String profilePicture, String email, List<String> roles) {
+    public LoginOkResponse(String refreshToken, UUID id, String name, String profilePicture, String email, List<String> roles) {
         this.refreshToken = refreshToken;
         this.id = id;
-        this.username = username;
+        this.name = name;
         this.profilePicture = profilePicture;
         this.email = email;
         this.roles = roles;
@@ -45,12 +45,12 @@ public class LoginOkResponse {
         this.id = id;
     }
 
-    public String getUsername() {
-        return username;
+    public String getName() {
+        return name;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getProfilePicture() {

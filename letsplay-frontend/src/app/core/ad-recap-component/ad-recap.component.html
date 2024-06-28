@@ -1,0 +1,43 @@
+<div class="card">
+    <div id="ad-small-card">
+        <div id="picture">
+            <img [src]="ad.image" alt="image de l'annonce">
+        </div>
+       
+        <div id="content">
+            <h1>{{ad.title}}</h1>
+        </div>
+
+        <div id="add-buttons">
+            <div id="see-add-button">
+                <button class="button" (click)="goToAd()">Voir l'annonce</button>
+            </div>
+    
+            <div id="delete-add-button" *ngIf="isUserAuthor() || isAdmin()">
+                <button class="button" (click)="showConfirm()">Supprimer</button>
+            </div>
+
+            <div id="update-add-button" *ngIf="isUserAuthor() && !isAdmin()">
+                <button class="button" (click)="updateAd()">Modifier</button>
+            </div>
+        </div>
+
+        <div><i class="{{starIcon}}" style="font-size: 2rem; cursor: pointer" (click)="onFavoriteClick($event)" *ngIf="!isUserAuthor() && !isAdmin()"
+            alt="Mettre l'annonce en favori ou l'en retirer"></i>
+        </div>
+    </div>
+
+    <p-toast 
+    position="center" 
+    key="confirm"
+    [baseZIndex]="5000">
+        <ng-template let-message pTemplate="message">
+                <div>
+                    {{ message.summary }}
+                </div>
+                <button class="button" (click)="onConfirm()"> Oui </button>
+                <button class="button" (click)="onReject()"> Non </button>
+        </ng-template>
+    </p-toast>
+</div>
+

@@ -6,18 +6,21 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import * as fr from '@angular/common/locales/fr';
-import { Toast, ToastrModule } from 'ngx-toastr';
 
 import { CloudinaryModule } from '@cloudinary/ng';
-import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
+import { ToastModule } from 'primeng/toast';
+import { ScrollTopModule } from 'primeng/scrolltop';
+import { MessageService } from 'primeng/api';
 
-import { LayoutModule } from './layout/modules/layout.module';
-import { AdModule } from './ad-components/modules/ad.module';
-import { AuthenticationModule } from './authentication/modules/authentication.module';
+import { LayoutModule } from './layout/layout.module';
+import { CoreModule } from './core/core.module';
+import { AuthenticationModule } from './authentication/authentication.module';
 import { AppRoutingModule } from './router/app-routing.module';
 
 import { AppComponent } from './app.component';
-import { HttpRequestInterceptor, httpInterceptorProviders } from './_helpers/auth.interceptor.service';
+
+import { HttpRequestInterceptor, httpInterceptorProviders } from './shared/services/auth.interceptor.service';
+import { EmailingService } from './shared/services/emailing.service';
 
 
 @NgModule({
@@ -26,20 +29,22 @@ import { HttpRequestInterceptor, httpInterceptorProviders } from './_helpers/aut
   imports: [
     HttpClientModule,
     BrowserModule,
+    ToastModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    ToastrModule.forRoot(),
     FormsModule,
     ReactiveFormsModule,
     CloudinaryModule,
-    NgMultiSelectDropDownModule.forRoot(),
     LayoutModule,
-    AdModule,
+    CoreModule,
     AuthenticationModule,
+    ScrollTopModule
   ],
   providers: [
     { provide: LOCALE_ID, useValue: 'fr-FR'}, 
-    {provide: HTTP_INTERCEPTORS, useClass: HttpRequestInterceptor, multi: true}],
+    {provide: HTTP_INTERCEPTORS, useClass: HttpRequestInterceptor, multi: true},
+    MessageService, EmailingService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { 

@@ -1,0 +1,57 @@
+<div class="card">
+    <h1>Recherche tes futurs musiciens parmi nos annonces !</h1>
+  
+    <div id="form-container">
+      <form [formGroup]="adForm" (ngSubmit)="onSubmit()">
+          
+        <div class="select-options"><p>Je suis : </p>
+  
+          <p-dropdown 
+            ariaLabel="Choisis si tu es un groupe ou un musicien solo"
+            formControlName="selectedMusicianTypeFrom"
+            [options]="fromMusicianTypes" 
+            optionLabel="name" 
+            placeholder="Ton instrument"
+            (onChange)="setBandSearching($event)" />
+        </div>
+      
+          <div class="select-options" *ngIf='isBandSearching'><p>Je recherche : </p>
+            <p-dropdown 
+              ariaLabel="Choisis le type de musicien recherché"
+              formControlName="selectedSearchingMusicianType"
+              [options]="searchingMusicianTypes" 
+              optionLabel="name"/>
+          </div>
+      
+          <div id="style-selection" class="select-options"><p>Styles recherchés :</p>
+  
+            <p-multiSelect 
+            ariaLabel="Choisis les styles de musique recherchés"
+            formControlName="selectedMusicStyles" 
+            [options]="musicStyles" 
+            optionLabel="name" 
+            placeholder="Sélectionne les styles de ton choix"/>
+          </div>
+  
+          <div id="location" class="select-options">
+            <p>Dans la région suivante : </p>
+            <p-dropdown 
+              ariaLabel="Sélectionne une région pour ton annonce"
+              formControlName="selectedLocation"
+              [options]="locations" 
+              optionLabel="name" 
+              placeholder="Choisis une région"/>
+          </div>
+  
+            <button type="submit" [disabled]="adForm.invalid" class="button" *ngIf="!loading && !submitted">
+              Rechercher
+            </button>
+  
+            <p-progressSpinner *ngIf="loading" class="spinner" mode="indeterminate"></p-progressSpinner>
+        </form>
+    </div>
+  </div>
+  
+  <div>
+    <app-ads-list *ngFor="let ad of ads" [ads]="ads"></app-ads-list>
+</div>

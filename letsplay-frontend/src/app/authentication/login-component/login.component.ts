@@ -1,66 +1,71 @@
 import { Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { Router } from '@angular/router'
-
+import { Router } from '@angular/router';
 
 import { AuthenticationService } from '../services/authentication.service';
-import { StorageService } from 'src/app/_services/storage.service';
+import { AuthStorageService } from 'src/app/shared/services/storage.service';
+
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css'],
 })
 export class LoginComponent {
+  protected isLoggedIn: boolean = false;
+  protected loading: boolean = false;
 
-  hasError: boolean = false;
-  error: String = '';
-  isLoggedIn = false;
-  isLoginFailed = false;
-  loading: boolean = false;
-
-  constructor(private authService: AuthenticationService, private router: Router, private storageService: StorageService) {}
+  constructor(
+    private authService: AuthenticationService,
+    private router: Router,
+    private authStorageService: AuthStorageService,
+    private messageService: MessageService
+  ) {}
 
   ngOnInit(): void {
-    if (this.storageService.isLoggedIn()) {
+    if (this.authStorageService.isLoggedIn()) {
       this.isLoggedIn = true;
     }
   }
 
-  onSubmit(form: NgForm) {
-    this.hasError = false;
+  protected onSubmit(form: NgForm) {
     this.loading = true;
+    this.isLoggedIn = true;
 
-    const username = form.value.email;
+    const name = form.value.email;
     const password = form.value.password;
 
-    this.authService.login(username, password).subscribe(
+    this.authService.login(name, password).subscribe(
       (response) => {
-        this.storageService.saveUser(response);
+        this.authStorageService.saveUser(response);
 
         this.isLoggedIn = true;
-        this.isLoginFailed = false; //TODO : utiliser pour l'affichage du composant ?
         this.loading = false;
 
-        this.error = `Te voilà connecté, ${response.username}. Bonne recherche !`
-        this.hasError = true;
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Connexion réussie',
+          detail: `Te voila connecté.e, ${response.name}. Bonne recherche !`,
+        });
+
         setTimeout(() => {
-          this.router.navigateByUrl('/home');
-        }, 2000)        
+          if (this.authStorageService.getUser().roles.includes('ROLE_ADMIN')) {
+            this.router.navigate(['/admin/users']);
+          } else {
+          this.router.navigate(['/home']);
+          }
+        }, 2000);
       },
       (error) => {
         this.loading = false;
-        this.hasError = true;
-        if(error.status == 403){
-          this.error = "Identifiant ou mot de passe incorrect"
+        this.isLoggedIn = false;
+        if (error.status == 403) {
+          this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Identifiant ou mot de passe incorrect' });
         } else {
-          this.error = error.message;
-          this.isLoginFailed = true;
+          this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Une erreur est survenue' });
         }
-        
       }
-    
-    )
-
+    );
   }
 }

@@ -1,7 +1,5 @@
 package com.mariekd.letsplay.authentication.services.implementations;
 
-import com.mariekd.letsplay.authentication.payload.response.TokenRefreshResponse;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -17,8 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class RefreshTokenServiceImpl implements RefreshTokenService {
 
-    private RefreshTokenRepository refreshTokenRepository;
-    private UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final UserRepository userRepository;
 
     public RefreshTokenServiceImpl(RefreshTokenRepository refreshTokenRepository, UserRepository userRepository) {
         this.refreshTokenRepository = refreshTokenRepository;

@@ -1,0 +1,89 @@
+<div class="card">
+  <h1>Crée ton annonce !</h1>
+
+  <div id="form-container">
+    <form [formGroup]="adForm" (ngSubmit)="onSubmit()">
+        <label for="title">Titre :</label>
+        <input
+          type="text"
+          id="title"
+          name="title"
+          class="field"
+          formControlName="title"
+          required
+        /><br />
+
+      <div class="select-options">Je suis : 
+
+        <p-dropdown 
+          ariaLabel="Choisis si tu es un groupe ou un musicien solo"
+          formControlName="selectedMusicianTypeFrom"
+          [options]="fromMusicianTypes" 
+          optionLabel="name" 
+          placeholder="Ton instrument"
+          (onChange)="setDefaultImage($event)" />
+      </div>
+    
+        <div id="image-container" *ngIf="imageSrc !== ''">
+          <img
+            id="selected-image"
+          
+            src="{{ imageSrc }}"
+            alt="Image de l'annonce par défaut"
+          />
+    
+          <button
+            class="button"
+            type="button"
+            id="upload-image"
+            (click)="openWidget()"
+          >
+            Choisir une autre image
+          </button>
+        </div>
+
+        <div class="select-options" *ngIf='isBandSearching'>Je recherche : 
+          <p-dropdown 
+            ariaLabel="Choisis le type de musicien recherché"
+            formControlName="selectedSearchingMusicianType"
+            [options]="searchingMusicianTypes" 
+            optionLabel="name"/>
+        </div>
+    
+        <div id="style-selection" class="select-options">Styles recherchés :
+
+          <p-multiSelect 
+          ariaLabel="Choisis les styles de musique recherchés"
+          formControlName="selectedMusicStyles" 
+          [options]="musicStyles" 
+          optionLabel="name" 
+          placeholder="Sélectionne les styles de ton choix"/>
+        </div>
+
+        <div id="location" class="select-options">
+          Dans la région suivante : 
+          <p-dropdown 
+            ariaLabel="Sélectionne une région pour ton annonce"
+            formControlName="selectedLocation"
+            [options]="locations" 
+            optionLabel="name" 
+            placeholder="Choisis une région"/>
+        </div>
+    
+        <label for="description">Ton annonce :</label>
+        <textarea
+          id="description"
+          name="description"
+          class="field"
+          formControlName="description"
+          required
+        ></textarea>
+
+          <button type="submit" [disabled]="adForm.invalid" class="button" *ngIf="!loading && !submitted">
+            Poster mon annonce
+          </button>
+
+          <p-progressSpinner *ngIf="loading" class="spinner" mode="indeterminate"></p-progressSpinner>
+      </form>
+  </div>
+</div>

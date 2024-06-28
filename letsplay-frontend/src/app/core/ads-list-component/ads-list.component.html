@@ -1,0 +1,12 @@
+<ng-container *ngIf="!isRecap">
+  <app-ad *ngFor="let ad of ads" [ad]="ad"> </app-ad>
+</ng-container>
+
+<ng-container *ngIf="isRecap">
+    <app-ad-recap *ngFor="let ad of ads" [ad]="ad"> </app-ad-recap>
+</ng-container>
+
+<div class="card" *ngIf="noAdsForUser">
+    <h1>On dirait que tu n'as publié aucune annonce...</h1>
+    <a routerLink="/create-ad" class="button">Publie ta première annonce</a>
+</div>
