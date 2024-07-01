@@ -154,9 +154,6 @@ public class AuthController {
             User connectedUser = userService.getUserFromRequest(request);
             refreshTokenService.deleteByUserId(connectedUser.getId());
 
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "Logged out successfully");
-
             return ResponseEntity.ok()
                     .header(HttpHeaders.SET_COOKIE, cookie.toString())
                     .build();
