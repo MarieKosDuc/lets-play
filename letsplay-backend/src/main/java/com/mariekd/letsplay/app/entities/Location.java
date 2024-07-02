@@ -1,14 +1,11 @@
 package com.mariekd.letsplay.app.entities;
 
 import jakarta.persistence.*;
-import lombok.Data;
-
 import java.util.Objects;
 import java.util.Set;
 
 @Entity
 @Table(name = "location")
-@Data
 public class Location {
     @Id
     @Column(updatable = false, nullable = false)

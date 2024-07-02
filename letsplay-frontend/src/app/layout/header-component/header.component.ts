@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 
 import { Subscription } from 'rxjs';
@@ -35,7 +35,8 @@ export class HeaderComponent implements OnInit {
     private authStorageService: AuthStorageService,
     private eventBusService: EventBusService,
     private messageService: MessageService,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private cd: ChangeDetectorRef
   ) {
     this.userSubscription = this.authStorageService.user$.subscribe((user) => {
       this.userInfos = user;
@@ -57,6 +58,12 @@ export class HeaderComponent implements OnInit {
         this.showDescription = currentRoute === '/home';
       }
     });
+
+    this.authService.userLoggedIn.subscribe((loggedIn) => {
+      this.userLoggedIn = loggedIn;
+      this.cd.detectChanges(); // Force la détection de changement
+    });
+
 
     this.userLoggedIn = this.authStorageService.isLoggedIn();
     this.userInfos = this.authStorageService.getUser();

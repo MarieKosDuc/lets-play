@@ -1,11 +1,13 @@
 package com.mariekd.letsplay.app.services.implementation;
 
-import com.mariekd.letsplay.app.entities.MusicianType;
-import com.mariekd.letsplay.app.repositories.MusicianTypeRepository;
 import org.springframework.stereotype.Service;
 
+import com.mariekd.letsplay.app.entities.MusicianType;
+import com.mariekd.letsplay.app.repositories.MusicianTypeRepository;
+import com.mariekd.letsplay.app.services.MusicianTypeService;
+
 @Service
-public class MusicianTypeServiceImpl {
+public class MusicianTypeServiceImpl implements MusicianTypeService {
 
     final MusicianTypeRepository musicianTypeRepository;
 
