@@ -1,4 +1,4 @@
-package com.mariekd.letsplay.authentication;
+package com.mariekd.letsplay.authentication.controllers;
 
 import com.mariekd.letsplay.authentication.entities.RefreshToken;
 import com.mariekd.letsplay.authentication.entities.ResetPasswordToken;
