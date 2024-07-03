@@ -1,4 +1,4 @@
-package com.mariekd.letsplay.app;
+package com.mariekd.letsplay.app.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
