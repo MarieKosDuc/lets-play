@@ -1,15 +1,9 @@
 package com.mariekd.letsplay.authentication;
 
 
-import com.mariekd.letsplay.authentication.dto.UserDTO;
 import com.mariekd.letsplay.authentication.entities.Role;
 import com.mariekd.letsplay.authentication.entities.User;
-import com.mariekd.letsplay.authentication.services.RoleService;
 import com.mariekd.letsplay.authentication.services.UserService;
-import com.mariekd.letsplay.app.services.AdService;
-import jakarta.persistence.EntityManager;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -33,7 +27,7 @@ import static org.hamcrest.Matchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class AdminControllerIntegrationTest {
+public class AdminControllerTest {
 
     @Autowired
     private MockMvc mockMvc;

@@ -1,59 +1,42 @@
 package com.mariekd.letsplay.authentication;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mariekd.letsplay.authentication.entities.RefreshToken;
 import com.mariekd.letsplay.authentication.entities.ResetPasswordToken;
 import com.mariekd.letsplay.authentication.entities.User;
+import com.mariekd.letsplay.authentication.entities.ValidAccountToken;
 import com.mariekd.letsplay.authentication.jwt.JwtService;
-import com.mariekd.letsplay.authentication.models.UserInfo;
-import com.mariekd.letsplay.authentication.payload.request.LoginRequest;
+import com.mariekd.letsplay.authentication.payload.request.NewPasswordRequest;
 import com.mariekd.letsplay.authentication.payload.request.TokenRefreshRequest;
-import com.mariekd.letsplay.authentication.payload.response.LoginOkResponse;
 import com.mariekd.letsplay.authentication.services.RefreshTokenService;
 import com.mariekd.letsplay.authentication.services.UserService;
 import com.mariekd.letsplay.authentication.services.ResetPasswordTokenService;
 import com.mariekd.letsplay.app.services.EmailService;
+import com.mariekd.letsplay.authentication.services.ValidAccountTokenService;
+
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.util.List;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.hamcrest.Matchers.is;
+
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-/**
- * This class contains integration tests for the authentication controller.
- * It tests the behavior of the controller when the user is not logged in.
- */
-
 @SpringBootTest
 @AutoConfigureMockMvc
-public class AuthControllerIntegrationTestNotLoggedInMethods {
+public class AuthControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -62,13 +45,14 @@ public class AuthControllerIntegrationTestNotLoggedInMethods {
     private ObjectMapper objectMapper;
 
     @MockBean
-    private AuthenticationManager authenticationManager;
-
-    @MockBean
     private JwtService jwtService;
 
     @MockBean
     private UserService userService;
+
+    @MockBean
+    private ValidAccountTokenService validAccountTokenService;
+
     @MockBean
     private RefreshTokenService refreshTokenService;
 
@@ -78,8 +62,9 @@ public class AuthControllerIntegrationTestNotLoggedInMethods {
     @MockBean
     private EmailService emailService;
 
+    //GET all users
     @Test
-    @WithMockUser(roles = {"USER"}) //TODO : remettre dans les tests authentifiés
+    @WithMockUser(roles = {"USER"})
     public void getUser_ReturnsUserInfoResponse() throws Exception {
         UUID testUserId = UUID.randomUUID();
         User testUser = new User();
@@ -98,7 +83,7 @@ public class AuthControllerIntegrationTestNotLoggedInMethods {
     }
 
     @Test
-    @WithMockUser(roles = {"ADMIN"}) //TODO : remettre dans les tests authentifiés
+    @WithMockUser(roles = {"ADMIN"})
     public void getUser_ReturnsUserInfoResponseForAdmin() throws Exception {
         UUID testUserId = UUID.randomUUID();
         User testUser = new User();
@@ -117,7 +102,7 @@ public class AuthControllerIntegrationTestNotLoggedInMethods {
     }
 
     @Test
-    public void getUser_FailsIfNotAuthenticated() throws Exception { //TODO : remettre dans les tests authentifiés
+    public void getUser_ReturnsUnauthorized_IfNotAuthenticated() throws Exception { //TODO : remettre dans les tests authentifiés
         UUID testUserId = UUID.randomUUID();
         User testUser = new User();
         testUser.setId(testUserId);
@@ -128,16 +113,44 @@ public class AuthControllerIntegrationTestNotLoggedInMethods {
 
         mockMvc.perform(get("/api/users/" + testUserId)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 
-    //TODO : écrire test pour le login
+    //POST logout
+    @Test
+    public void logoutUser_ReturnsOk_WhenUserIsRecognized() throws Exception {
+        User testUser = new User();
+        UUID testUserId = UUID.randomUUID();
+        testUser.setEmail("testUser@example.com");
+        testUser.setId(testUserId);
 
-    //TODO : test pour la validation du compte
+        ResponseCookie mockCookie = ResponseCookie.from("jwtCookieName", "")
+                .httpOnly(true)
+                .maxAge(0)
+                .path("/")
+                .build();
+
+        when(userService.getUserFromRequest(any())).thenReturn(testUser);
+        when(jwtService.getCleanJwtCookie()).thenReturn(mockCookie);
+
+        mockMvc.perform(post("/api/users/logout")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
 
     @Test
+    public void logoutUser_ReturnsInternalServerError_WhenUserIsNotRecognized() throws Exception {
+        when(userService.getUserFromRequest(any())).thenReturn(null);
+
+        mockMvc.perform(post("/api/users/logout")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError());
+    }
+
+    //POST refresh token
+    @Test
     public void refreshToken_ReturnsOk_WhenTokenIsValid() throws Exception {
-        // Arrange
         String testToken = "testToken";
         TokenRefreshRequest tokenRefreshRequest = new TokenRefreshRequest(testToken);
         String tokenRefreshRequestJson = objectMapper.writeValueAsString(tokenRefreshRequest);
@@ -181,6 +194,36 @@ public class AuthControllerIntegrationTestNotLoggedInMethods {
                 .andExpect(status().isForbidden());
     }
 
+    //POST verify user account
+    @Test
+    public void validateUser_ReturnsOk_WhenTokenIsValid() throws Exception {
+        String validToken = "validToken";
+        User testUser = new User();
+        testUser.setId(UUID.randomUUID());
+        testUser.setValid(false);
+
+        ValidAccountToken validAccountToken = new ValidAccountToken();
+        validAccountToken.setToken(validToken);
+        validAccountToken.setUser(testUser);
+
+        when(validAccountTokenService.findByToken(validToken)).thenReturn(Optional.of(validAccountToken));
+        when(userService.getUserById(any())).thenReturn(testUser);
+
+        mockMvc.perform(post("/api/users/verify/" + validToken))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void validateUser_ReturnsInternalServerError_WhenTokenIsInvalid() throws Exception {
+        String invalidToken = "invalidToken";
+
+        when(validAccountTokenService.findByToken(invalidToken)).thenReturn(Optional.empty());
+
+        mockMvc.perform(post("/api/users/verify/" + invalidToken))
+                .andExpect(status().isInternalServerError());
+    }
+
+    //POST reset password request from user
     @Test
     public void forgotPassword_ReturnsOk_IfEmailSent() throws Exception {
         String passwordResetRequestJson = "{ \"email\": \"testUser@example.com\" }";
@@ -206,34 +249,37 @@ public class AuthControllerIntegrationTestNotLoggedInMethods {
                 .andExpect(status().isInternalServerError());
     }
 
+    //POST reset password
     @Test
-    public void logoutUser_ReturnsOk_WhenUserIsRecognized() throws Exception {
+    public void resetPassword_ReturnsOk_WhenTokenIsValid() throws Exception {
+        String validToken = "validToken";
         User testUser = new User();
-        UUID testUserId = UUID.randomUUID();
-        testUser.setEmail("testUser@example.com");
-        testUser.setId(testUserId);
+        testUser.setId(UUID.randomUUID());
+        testUser.setValid(true);
 
-        ResponseCookie mockCookie = ResponseCookie.from("jwtCookieName", "")
-                .httpOnly(true)
-                .maxAge(0)
-                .path("/")
-                .build();
+        ResetPasswordToken resetPasswordToken = new ResetPasswordToken();
+        resetPasswordToken.setToken(validToken);
+        resetPasswordToken.setUser(testUser);
 
-        when(userService.getUserFromRequest(any())).thenReturn(testUser);
-        when(jwtService.getCleanJwtCookie()).thenReturn(mockCookie);
+        NewPasswordRequest newPasswordRequest = new NewPasswordRequest("newPassword");
+        String newPasswordRequestJson = objectMapper.writeValueAsString(newPasswordRequest);
 
-        mockMvc.perform(post("/api/users/logout")
-                        .contentType(MediaType.APPLICATION_JSON))
+        when(resetPasswordTokenService.findByToken(validToken)).thenReturn(Optional.of(resetPasswordToken));
+        when(userService.updateUserPassword(any(), any())).thenReturn(testUser);
+
+        mockMvc.perform(post("/api/users/resetpassword/" + validToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(newPasswordRequestJson))
                 .andExpect(status().isOk());
     }
 
-    //TODO : test pour le reset du password
     @Test
-    public void logoutUser_ReturnsInternalServerError_WhenUserIsNotRecognized() throws Exception {
-        when(userService.getUserFromRequest(any())).thenReturn(null);
+    public void resetPassword_ReturnsInternalServerError_WhenTokenIsInvalid() throws Exception {
+        String invalidToken = "invalidToken";
 
-        mockMvc.perform(post("/api/users/logout")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isInternalServerError());
+        when(resetPasswordTokenService.findByToken(invalidToken)).thenReturn(Optional.empty());
+
+        mockMvc.perform(post("/api/users/resetpassword/" + invalidToken))
+                .andExpect(status().isBadRequest());
     }
 }
