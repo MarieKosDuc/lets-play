@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class EmailingControllerIntegrationTest {
+public class EmailingControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
