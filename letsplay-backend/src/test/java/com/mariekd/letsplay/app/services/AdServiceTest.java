@@ -1,14 +1,12 @@
-package com.mariekd.letsplay.app;
+package com.mariekd.letsplay.app.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
 
 import com.mariekd.letsplay.app.entities.Ad;
 import com.mariekd.letsplay.app.repositories.AdRepository;
-import com.mariekd.letsplay.app.services.AdService;
 import com.mariekd.letsplay.app.services.implementation.AdServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.time.Instant;
 import java.util.Arrays;

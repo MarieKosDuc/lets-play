@@ -27,7 +27,7 @@ public class EmailingController {
     private final AdService adService;
     private final EmailService emailService;
 
-    public EmailingController(AdServiceImpl adService, UserServiceImpl userService, EmailService emailService) {
+    public EmailingController(AdService adService, UserService userService, EmailService emailService) {
         this.userService = userService;
         this.adService = adService;
         this.emailService = emailService;
@@ -35,7 +35,7 @@ public class EmailingController {
 
     @PreAuthorize("hasRole('USER')")
     @PostMapping
-    public ResponseEntity<Object> sendContactEmail(@RequestBody ContactEmailRequest contactEmailRequest) {
+    public ResponseEntity<Map<String, String>> sendContactEmail(@RequestBody ContactEmailRequest contactEmailRequest) {
         try {
             Ad contactAd = adService.getAdById(Integer.parseInt(contactEmailRequest.adId())).get();
 

@@ -50,9 +50,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     @Override
     @Transactional
-    public int deleteByUserId(UUID userId) {
-        return refreshTokenRepository.deleteByUser(userRepository.findById(userId).get());
-    }
+    public void deleteByUserId(UUID userId) { refreshTokenRepository.deleteByUser(userRepository.findById(userId).get()); }
 
     @Override
     @Transactional

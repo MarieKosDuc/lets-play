@@ -73,6 +73,35 @@ public class AuthController {
         return new UserInfoResponse(user.getId(), user.getName(), user.getProfilePicture());
     }
 
+    @PostMapping("/register")
+    public ResponseEntity<Void> createUser(@RequestBody SignupRequest userInfos) {
+        try {
+            if (!userService.existsByEmail(userInfos.email()) && !userService.existsByUserName(userInfos.name())) {
+                Role userRole = roleService.findByName("ROLE_USER");
+
+                User user = new User(UUID.randomUUID(), userInfos.name(), userInfos.email(), userInfos.password(), userInfos.profilePicture(),
+                        false, userRole, null, null);
+
+                userService.createUser(user);
+                LOGGER.info("User created: {}", user.getName());
+
+                ValidAccountToken validationToken = validAccountTokenService.createValidationToken(user);
+
+                sendValidationEmail(user, validationToken);
+
+                LOGGER.info("Validation email sent to: {}", user.getEmail(), " with token: {}", validationToken.getToken());
+
+                return ResponseEntity.status(HttpStatus.CREATED).build();
+            } else {
+                LOGGER.error("User already exists");
+                return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            }
+        } catch (final Exception e) {
+            LOGGER.error("Error creating user: {}", e.getMessage());
+            return  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @PostMapping("/login")
     public ResponseEntity<LoginOkResponse> authenticateUser(@RequestBody LoginRequest loginRequest) {
 
@@ -111,6 +140,24 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logoutUser(HttpServletRequest request) {
+        try {
+            ResponseCookie cookie = jwtService.getCleanJwtCookie();
+
+            User connectedUser = userService.getUserFromRequest(request);
+            refreshTokenService.deleteByUserId(connectedUser.getId());
+
+            LOGGER.info("User {} logged out", connectedUser.getName());
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                    .build();
+        } catch (final Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @PostMapping("/refreshtoken")
     public ResponseEntity<TokenRefreshResponse> refreshtoken(@Valid @RequestBody TokenRefreshRequest request, HttpServletRequest httpRequest) {
         LOGGER.info("Refreshing token: {} ", request.getToken());
@@ -142,56 +189,6 @@ public class AuthController {
         } catch (AccessDeniedException e) {
             LOGGER.error("Invalid refresh token: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-    }
-
-
-    @PostMapping("/logout")
-    public ResponseEntity<Void> logoutUser(HttpServletRequest request) {
-        try {
-            ResponseCookie cookie = jwtService.getCleanJwtCookie();
-
-            User connectedUser = userService.getUserFromRequest(request);
-            refreshTokenService.deleteByUserId(connectedUser.getId());
-
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "Logged out successfully");
-
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                    .build();
-        } catch (final Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-
-    @PostMapping("/register")
-    public ResponseEntity<Void> createUser(@RequestBody SignupRequest userInfos) {
-        try {
-            if (!userService.existsByEmail(userInfos.email()) && !userService.existsByUserName(userInfos.name())) {
-                Role userRole = roleService.findByName("ROLE_USER");
-
-                User user = new User(UUID.randomUUID(), userInfos.name(), userInfos.email(), userInfos.password(), userInfos.profilePicture(),
-                        false, userRole, null, null);
-
-                userService.createUser(user);
-                LOGGER.info("User created: {}", user.getName());
-
-                ValidAccountToken validationToken = validAccountTokenService.createValidationToken(user);
-
-                sendValidationEmail(user, validationToken);
-
-                LOGGER.info("Validation email sent to: {}", user.getEmail(), " with token: {}", validationToken.getToken());
-
-                return ResponseEntity.status(HttpStatus.CREATED).build();
-            } else {
-                LOGGER.error("User already exists");
-                return ResponseEntity.status(HttpStatus.CONFLICT).build();
-            }
-        } catch (final Exception e) {
-            LOGGER.error("Error creating user: {}", e.getMessage());
-            return  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
