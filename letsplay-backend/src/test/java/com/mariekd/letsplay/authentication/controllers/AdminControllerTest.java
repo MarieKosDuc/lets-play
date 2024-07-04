@@ -25,6 +25,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.hamcrest.Matchers.*;
 
+/**
+ * Test class for the AdminController REST controller.
+ * Utilizes Spring Boot's testing support to simulate HTTP requests and assert responses.
+ */
+
 @SpringBootTest
 @AutoConfigureMockMvc
 public class AdminControllerTest {
