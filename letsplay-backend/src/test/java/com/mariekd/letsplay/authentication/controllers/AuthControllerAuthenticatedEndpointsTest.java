@@ -29,11 +29,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.UUID;
 
+/**
+ * Test class for the AuthController REST controller.
+ * Utilizes Spring Boot's testing support to simulate HTTP requests and assert responses.
+ * Tests endpoints for which no a specific user is needed.
+ */
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class AuthControllerIntegrationTest {
+public class AuthControllerAuthenticatedEndpointsTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -59,7 +64,10 @@ public class AuthControllerIntegrationTest {
         );
     }
 
-    //POST update password
+    /**
+     * Test the POST /api/users/password/{id} endpoint for password update
+     * @throws Exception
+     */
     @Test
     @WithMockUser(username = "validUser", roles = {"USER"})
     void updatePassword_ReturnsOk_WhenUserIsModifyingTheirOwnPassword() throws Exception {
@@ -94,7 +102,10 @@ public class AuthControllerIntegrationTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    //POST update user
+    /**
+     * Test the POST /api/users/{id} endpoint to update a user
+     * @throws Exception
+     */
     @Test
     @WithMockUser(username = "validUser", roles = {"USER"})
     public void updateUser_ReturnsOk_WhenUserIsAuthorized() throws Exception {
@@ -129,6 +140,4 @@ public class AuthControllerIntegrationTest {
                         .content(updateRequestJson))
                 .andExpect(status().isUnauthorized());
     }
-
-
 }

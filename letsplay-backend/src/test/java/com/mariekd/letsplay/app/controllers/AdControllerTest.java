@@ -27,7 +27,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.Instant;
 import java.util.*;
 
-
+/**
+ * Test class for the AdController REST controller.
+ * Utilizes Spring Boot's testing support to simulate HTTP requests and assert responses.
+ * Tests endpoints for which no authentication is required.
+ */
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest

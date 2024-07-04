@@ -34,6 +34,12 @@ import static org.hamcrest.Matchers.is;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Test class for the AuthController REST controller.
+ * Utilizes Spring Boot's testing support to simulate HTTP requests and assert responses.
+ * Tests endpoints for which no definite user is needed (non-authenticated requests/requests that can be accessed by any user/admin).
+ */
+
 @SpringBootTest
 @AutoConfigureMockMvc
 public class AuthControllerTest {
@@ -62,7 +68,10 @@ public class AuthControllerTest {
     @MockBean
     private EmailService emailService;
 
-    //GET all users
+    /**
+     * Test the /api/users GET endpoint for user, admin, non-authenticated user.
+     * @throws Exception
+     */
     @Test
     @WithMockUser(roles = {"USER"})
     public void getUser_ReturnsUserInfoResponse() throws Exception {
@@ -102,7 +111,7 @@ public class AuthControllerTest {
     }
 
     @Test
-    public void getUser_ReturnsUnauthorized_IfNotAuthenticated() throws Exception { //TODO : remettre dans les tests authentifiés
+    public void getUser_ReturnsForbidden_IfNotAuthenticated() throws Exception { //TODO : remettre dans les tests authentifiés
         UUID testUserId = UUID.randomUUID();
         User testUser = new User();
         testUser.setId(testUserId);
@@ -113,10 +122,13 @@ public class AuthControllerTest {
 
         mockMvc.perform(get("/api/users/" + testUserId)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isForbidden());
     }
 
-    //POST logout
+    /**
+     * Test the /api/users/logout POST endpoint
+     * @throws Exception
+     */
     @Test
     public void logoutUser_ReturnsOk_WhenUserIsRecognized() throws Exception {
         User testUser = new User();
@@ -148,7 +160,10 @@ public class AuthControllerTest {
                 .andExpect(status().isInternalServerError());
     }
 
-    //POST refresh token
+    /**
+     * Test the /api/users/refreshtoken POST endpoint to generate a new JWT
+     * @throws Exception
+     */
     @Test
     public void refreshToken_ReturnsOk_WhenTokenIsValid() throws Exception {
         String testToken = "testToken";
@@ -194,7 +209,10 @@ public class AuthControllerTest {
                 .andExpect(status().isForbidden());
     }
 
-    //POST verify user account
+    /**
+     * Test the /api/users/verify POST endpoint to validate user account
+     * @throws Exception
+     */
     @Test
     public void validateUser_ReturnsOk_WhenTokenIsValid() throws Exception {
         String validToken = "validToken";
@@ -223,7 +241,10 @@ public class AuthControllerTest {
                 .andExpect(status().isInternalServerError());
     }
 
-    //POST reset password request from user
+    /**
+     * Test the /api/users/resetpassword POST endpoint to request a password reset
+     * @throws Exception
+     */
     @Test
     public void forgotPassword_ReturnsOk_IfEmailSent() throws Exception {
         String passwordResetRequestJson = "{ \"email\": \"testUser@example.com\" }";
@@ -249,7 +270,10 @@ public class AuthControllerTest {
                 .andExpect(status().isInternalServerError());
     }
 
-    //POST reset password
+    /**
+     * Test the /api/users/resetpassword POST endpoint to reset password
+     * @throws Exception
+     */
     @Test
     public void resetPassword_ReturnsOk_WhenTokenIsValid() throws Exception {
         String validToken = "validToken";
