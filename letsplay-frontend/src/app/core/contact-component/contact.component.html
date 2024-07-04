@@ -14,7 +14,12 @@
         required
       ></textarea>
 
-      <button type="submit" class="button" [disabled]="contactForm.invalid">
+      <button
+        type="submit"
+        class="button"
+        [disabled]="contactForm.invalid"
+        name="Envoyer ce message"
+      >
         Envoyer
       </button>
     </form>
@@ -31,9 +36,6 @@
       Ton message a bien été envoyé à l'auteur de l'annonce. Tu devrais recevoir
       une réponse très prochainement !
     </p>
-    <button class="button"
-    (click)="backToAd()">
-     Retour à l'annonce
-    </button>
+    <button class="button" (click)="backToAd()" name="Retour à l'annonce">Retour à l'annonce</button>
   </div>
 </div>

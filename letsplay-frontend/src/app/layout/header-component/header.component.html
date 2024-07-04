@@ -1,6 +1,6 @@
 <header>
     <!-- Non connected user header - large screen -->
-    <nav id="header-large" class="header-large" *ngIf="!isAdmin">
+    <nav id="header-large" class="header-large" *ngIf="!isAdmin" aria-label="menu de navigation utilisateur non connecté - écran large">
         <a routerLink="home"><img src="assets/images/Logo.png" alt="Logo Let's Play" id="logo"></a>
         <a routerLink="home" routerLinkActive="underline" class="link">ACCUEIL</a>
         <a routerLink="search" routerLinkActive="underline" class="link">RECHERCHER</a>
@@ -8,7 +8,7 @@
         <a *ngIf="userLoggedIn; else loginLink">
             <div>
                 <p-menu #menu [model]="items" [popup]="true" />
-                <button (click)="menu.toggle($event)">
+                <button (click)="menu.toggle($event)" name="Dérouler le menu de navigation">
                     <img id="profile-pic" src="{{userInfos?.profilePicture}}" alt="Photo de profil" >
                 </button>
             </div>
@@ -19,13 +19,13 @@
     </nav>
 
     <!-- Connected user header - small screen -->
-    <nav id="header-small" class="header-small" *ngIf="!isAdmin">
+    <nav id="header-small" class="header-small" *ngIf="!isAdmin" aria-label="menu de navigation utilisateur connecté - écran large">
         <a routerLink="home"><img src="assets/images/Logo.png" alt="Logo Let's Play" id="logo"></a>
 
         <a *ngIf="userLoggedIn; else connectedUserMenu">
             <div>
                 <p-menu #menu [model]="itemsSmallConnected" [popup]="true" />
-                <button (click)="menu.toggle($event)">
+                <button (click)="menu.toggle($event)" name="Dérouler le menu de navigation">
                     <img id="profile-pic" src="{{userInfos?.profilePicture}}" alt="Photo de profil" >
                 </button>
             </div>
@@ -33,7 +33,7 @@
 
         <ng-template #connectedUserMenu>
             <p-menu #menu2 [model]="itemsSmall" [popup]="true" />
-            <button id="burger-menu" (click)="menu2.toggle($event)">
+            <button id="burger-menu" (click)="menu2.toggle($event)" name="Dérouler le menu de navigation">
                 <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
                 </svg> 
@@ -42,7 +42,7 @@
     </nav>
 
     <!-- Connected admin header - large screen -->
-    <nav id="header-admin" class="header-large" *ngIf="isAdmin">
+    <nav id="header-admin" class="header-large" *ngIf="isAdmin" aria-label="menu de navigation utilisateur non connecté - écran de mobile">
         <a routerLink="home"><img src="assets/images/Logo.png" alt="Logo Let's Play" id="logo"></a>
         <a routerLink="/admin/users" routerLinkActive="underline" class="link">MEMBRES</a>
         <a routerLink="/admin/ads" routerLinkActive="underline" class="link">ANNONCES</a>
@@ -50,11 +50,11 @@
     </nav>
 
     <!-- Connected admin header - small screen -->
-    <nav id="header-admin-small" class="header-small" *ngIf="isAdmin">
+    <nav id="header-admin-small" class="header-small" *ngIf="isAdmin" aria-label="menu de navigation utilisateur connecté - écran de mobile">
         <a routerLink="home"><img src="assets/images/Logo.png" alt="Logo Let's Play" id="logo"></a>
 
             <p-menu #menu2 [model]="itemsAdminSmall" [popup]="true" />
-            <button id="burger-menu" (click)="menu2.toggle($event)">
+            <button id="burger-menu" (click)="menu2.toggle($event)" name="Dérouler le menu de navigation">
                 <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
                 </svg> 

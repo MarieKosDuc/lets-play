@@ -10,15 +10,15 @@
 
         <div id="add-buttons">
             <div id="see-add-button">
-                <button class="button" (click)="goToAd()">Voir l'annonce</button>
+                <button class="button" (click)="goToAd()" name="Voir l'annonce">Voir l'annonce</button>
             </div>
     
             <div id="delete-add-button" *ngIf="isUserAuthor() || isAdmin()">
-                <button class="button" (click)="showConfirm()">Supprimer</button>
+                <button class="button" (click)="showConfirm()" name="Supprimer mon annonce">Supprimer</button>
             </div>
 
             <div id="update-add-button" *ngIf="isUserAuthor() && !isAdmin()">
-                <button class="button" (click)="updateAd()">Modifier</button>
+                <button class="button" (click)="updateAd()" name="Modifier mon annonce">Modifier</button>
             </div>
         </div>
 
@@ -35,8 +35,8 @@
                 <div>
                     {{ message.summary }}
                 </div>
-                <button class="button" (click)="onConfirm()"> Oui </button>
-                <button class="button" (click)="onReject()"> Non </button>
+                <button class="button" (click)="onConfirm()" name="Oui"> Oui </button>
+                <button class="button" (click)="onReject()" name="Non"> Non </button>
         </ng-template>
     </p-toast>
 </div>

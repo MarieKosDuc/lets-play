@@ -25,18 +25,20 @@ export class LikedAdsComponent {
   ) {}
 
   ngOnInit(): void {
-    this.authStorageService.user$.subscribe((user) => {
-      this.user = user;
-      this.adService.getUserFavorites(this.user.id).subscribe(
-        (ads: Ad[]) => {
-          this.ads = ads;
-        },
-        (error) => {
-          if (error.status === 404) {
-            this.noAdsFound = true;
-          }
-        }
-      );
+    this.authStorageService.user$.subscribe({
+      next: (user) => {
+        this.user = user;
+        this.adService.getUserFavorites(this.user.id).subscribe({
+          next: (ads: Ad[]) => {
+            this.ads = ads;
+          },
+          error: (error) => {
+            if (error.status === 404) {
+              this.noAdsFound = true;
+            }
+          },
+        });
+      },
     });
   }
 

@@ -47,7 +47,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
-public class AdControllerAuthenticatedEndpointsTest {
+public class AdControllerIntegrationTest {
 
     @Autowired
     private ObjectMapper om;

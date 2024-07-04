@@ -66,12 +66,12 @@ export class SignupComponent {
         this.defaultProfilePicture,
         this.signupForm.value.password
       )
-      .subscribe(
-        (response) => {
+      .subscribe({
+        next: (response) => {
           this.loading = false;
           this.registerOk = true;
         },
-        (error) => {
+        error: (error) => {
           this.loading = false;
           this.registerOk = false;
           if (error.status == 409) {
@@ -80,7 +80,7 @@ export class SignupComponent {
             this.messageService.add ({ severity: 'error', summary: 'Erreur', detail: 'Erreur lors de la création du compte' });
           }
         }
-      );
+      });
     }
 
     protected backToHome() {

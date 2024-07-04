@@ -38,7 +38,7 @@ import java.util.UUID;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class AuthControllerAuthenticatedEndpointsTest {
+public class AuthControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;

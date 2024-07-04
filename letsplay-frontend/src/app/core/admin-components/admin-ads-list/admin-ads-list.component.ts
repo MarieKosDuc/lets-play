@@ -5,7 +5,7 @@ import { AdService } from '../../services/ad.service';
 @Component({
   selector: 'app-admin-ads-list',
   templateUrl: './admin-ads-list.component.html',
-  styleUrl: './admin-ads-list.component.css'
+  styleUrl: './admin-ads-list.component.css',
 })
 export class AdminAdsListComponent {
   @Input() ads: Ad[] = [];
@@ -13,16 +13,13 @@ export class AdminAdsListComponent {
   constructor(private adService: AdService) {}
 
   ngOnInit(): void {
-    this.adService.getAllAds().subscribe(
-      (ads: Ad[]) => {
-        console.log('Ads fetched:', ads);
+    this.adService.getAllAds().subscribe({
+      next: (ads) => {
         this.ads = ads;
       },
-      (error) => {
+      error: (error) => {
         console.error('Error fetching ads:', error);
-      }
-    );
+      },
+    });
   }
-
-
 }

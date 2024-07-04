@@ -38,12 +38,14 @@ export class HeaderComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private cd: ChangeDetectorRef
   ) {
-    this.userSubscription = this.authStorageService.user$.subscribe((user) => {
-      this.userInfos = user;
-      this.userLoggedIn = !!user;
-      if (user) {
-        this.isAdmin = user?.roles?.includes('ROLE_ADMIN') ?? false;
-      }
+    this.userSubscription = this.authStorageService.user$.subscribe({
+      next: (user) => {
+        this.userInfos = user;
+        this.userLoggedIn = !!user;
+        if (user) {
+          this.isAdmin = user?.roles?.includes('ROLE_ADMIN') ?? false;
+        }
+      },
     });
   }
 
@@ -61,9 +63,8 @@ export class HeaderComponent implements OnInit {
 
     this.authService.userLoggedIn.subscribe((loggedIn) => {
       this.userLoggedIn = loggedIn;
-      this.cd.detectChanges(); // Force la détection de changement
+      this.cd.detectChanges();
     });
-
 
     this.userLoggedIn = this.authStorageService.isLoggedIn();
     this.userInfos = this.authStorageService.getUser();
@@ -148,7 +149,7 @@ export class HeaderComponent implements OnInit {
           },
         ],
       },
-    ]
+    ];
 
     this.itemsSmallConnected = [
       {
@@ -191,11 +192,12 @@ export class HeaderComponent implements OnInit {
   }
 
   public logOut() {
-    this.authService.logout().subscribe(
-      (response) => {
+    this.authService.logout().subscribe({
+      next: () => {
         this.userLoggedIn = false;
         this.userInfos = null;
         this.authStorageService.clean();
+        this.eventBusService.emit({name: 'logout', value: 'User logged out'});
         this.router.navigate(['/home']);
         this.messageService.add({
           severity: 'info',
@@ -203,10 +205,11 @@ export class HeaderComponent implements OnInit {
           detail: 'Tu es deconnecté.e',
         });
       },
-      (error) => {
-        console.log(error);
+      error: (error) => {
+        console.error(error);
+        this.eventBusService.emit({name: 'logout', value: 'User logged out'});
         this.router.navigate(['/home']);
-      }
-    );
+      },
+    });
   }
 }

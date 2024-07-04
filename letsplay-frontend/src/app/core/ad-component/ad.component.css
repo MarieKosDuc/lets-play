@@ -18,7 +18,7 @@
   align-items: center;
   padding-bottom: 1rem;
 
-  & #styles{
+  #styles{
     max-width: 60%;
   }
 }
@@ -30,7 +30,7 @@
   position: relative;
   background-color: black;
 
-  & img {
+  img {
     object-fit: cover;
     width: 100%;
     height: 100%;
@@ -40,6 +40,11 @@
 @media (min-width: 375px) {
   #picture {
     height: 15rem;
+  }
+
+  #ad-text-container {
+    margin-left: 0rem;
+    margin-right: 0rem;
   }
 }
 
@@ -62,7 +67,7 @@
   z-index: 10;
   background-color: var(--backgroundMain);
 
-  & .button {
+  .button {
     margin: auto;
   }
 }

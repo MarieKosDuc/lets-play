@@ -28,8 +28,8 @@
 
     <div id="ad-text-container">
         <p id="ad-text">{{ ad.description }}</p>
-        <button class="button" *ngIf="!isSingleAd" (click)="goToAd()">PLUS</button>
-        <button class="button" *ngIf="isSingleAd && !isAuthorUser() && !isAdmin()" (click)="contact()">CONTACT</button> 
-        <button class="button" *ngIf="isSingleAd && isAuthorUser()" (click)="updateAd()">MODIFIER</button> 
+        <button class="button" *ngIf="!isSingleAd" (click)="goToAd()" name="Aller à l'annonce détaillée">PLUS</button>
+        <button class="button" *ngIf="isSingleAd && !isAuthorUser() && !isAdmin()" (click)="contact()" name="Contacter l'auteur de l'annonce">CONTACT</button> 
+        <button class="button" *ngIf="isSingleAd && isAuthorUser()" (click)="updateAd()" name="Modifier mon annonce">MODIFIER</button> 
     </div>
 </div>

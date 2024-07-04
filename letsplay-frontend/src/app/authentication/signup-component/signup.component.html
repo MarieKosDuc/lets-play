@@ -53,7 +53,7 @@
         </label>
       </div>
 
-      <button type="submit" [disabled]="signupForm.invalid" class="button">
+      <button type="submit" [disabled]="signupForm.invalid" class="button" name="S'inscrire">
         S'inscrire
       </button>
     </form>
@@ -76,6 +76,6 @@
     <h1>Ton compte a bien été créé !</h1>
     <p>Vérifie ta boîte mail pour l'activer.</p>
     <p style="font-style: italic;">ATTENTION ! Ce lien n'est valable que 24h !</p>
-    <button class="button" (click)="backToHome()">Retour à l'accueil</button>
+    <button class="button" (click)="backToHome()" name="Retour à l'accueil">Retour à l'accueil</button>
   </div>
 </div>
