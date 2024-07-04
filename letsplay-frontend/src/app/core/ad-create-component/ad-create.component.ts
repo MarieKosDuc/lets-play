@@ -95,8 +95,10 @@ export class AdCreateComponent {
   ) {}
 
   ngOnInit() {
-    this.authStorageService.user$.subscribe((user) => {
-      this.user = user;
+    this.authStorageService.user$.subscribe({
+      next: (user) => {
+        this.user = user;
+      },
     });
 
     // Form Group creation
@@ -204,8 +206,8 @@ export class AdCreateComponent {
     this.createTempAd();
     this.loading = true;
 
-    this.adService.createAd(this.adData).subscribe(
-      (response) => {
+    this.adService.createAd(this.adData).subscribe({
+      next: (response) => {
         this.loading = false;
         this.submitted = true;
         this.messageService.add({
@@ -217,7 +219,7 @@ export class AdCreateComponent {
           this.router.navigate(['/home']);
         }, 2000);
       },
-      (error) => {
+      error: (error) => {
         this.submitted = false;
         if (error.error.message === 'Ad with this title already exists') {
           this.messageService.add({
@@ -232,7 +234,7 @@ export class AdCreateComponent {
             detail: "Une erreur est survenue lors de la création de l'annonce",
           });
         }
-      }
-    );
+      },
+    });
   }
 }

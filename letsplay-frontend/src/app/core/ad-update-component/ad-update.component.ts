@@ -66,22 +66,33 @@ export class AdUpdateComponent {
   ) {}
 
   ngOnInit() {
-    this.authStorageService.user$.subscribe((user) => {
-      this.user = user;
+    this.authStorageService.user$.subscribe({
+      next: (user) => {
+        this.user = user;
+      },
     });
 
     const adId = this.route.snapshot.params['id'];
 
-    this.adService.getAdById(adId).subscribe((ad: Ad) => {
-      this.ad = ad;
-      this.adForm.get('title')?.setValue(this.ad.title);
-      this.adForm.get('description')?.setValue(this.ad.description);
-      this.from = 'un ' + MusicianTypesEnum[this.ad.from as keyof typeof MusicianTypesEnum];
-      this.searching = 'qui recherche un ' + MusicianTypesEnum[this.ad.searching as keyof typeof MusicianTypesEnum];
-      this.location = LocationsEnum[this.ad.location as keyof typeof LocationsEnum];
-      if (this.ad.image) {
-        this.imageSrc = this.ad.image;
-      }
+    this.adService.getAdById(adId).subscribe({
+      next: (ad: Ad) => {
+        this.ad = ad;
+        this.adForm.get('title')?.setValue(this.ad.title);
+        this.adForm.get('description')?.setValue(this.ad.description);
+        this.from =
+          'un ' +
+          MusicianTypesEnum[this.ad.from as keyof typeof MusicianTypesEnum];
+        this.searching =
+          'qui recherche un ' +
+          MusicianTypesEnum[
+            this.ad.searching as keyof typeof MusicianTypesEnum
+          ];
+        this.location =
+          LocationsEnum[this.ad.location as keyof typeof LocationsEnum];
+        if (this.ad.image) {
+          this.imageSrc = this.ad.image;
+        }
+      },
     });
 
     // Form Group creation
@@ -141,8 +152,8 @@ export class AdUpdateComponent {
     this.createTempAd();
     this.loading = true;
 
-    this.adService.updateAd(this.adData, this.ad.id).subscribe(
-      (response) => {
+    this.adService.updateAd(this.adData, this.ad.id).subscribe({
+      next: (response) => {
         this.loading = false;
         this.submitted = true;
         this.messageService.add({
@@ -154,16 +165,16 @@ export class AdUpdateComponent {
           this.router.navigate(['/home']);
         }, 2000);
       },
-      (error) => {
+      error: (error) => {
         this.submitted = false;
         this.loading = false;
-      
+
         this.messageService.add({
           severity: 'error',
           summary: 'Erreur',
           detail: "Une erreur est survenue lors de la création de l'annonce",
         });
-      }
-    );
+      },
+    });
   }
 }

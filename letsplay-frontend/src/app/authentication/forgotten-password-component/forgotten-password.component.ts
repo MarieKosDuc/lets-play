@@ -37,21 +37,21 @@ export class ForgottenPasswordComponent {
   onSubmit(form: NgForm) {
     this.loading = true;
 
-    this.authenticationService.sendResetPasswordEmail(form.value.email).subscribe(
-      (response) => {
+    this.authenticationService.sendResetPasswordEmail(form.value.email).subscribe({
+      next: (response) => {
         this.loading = false;
         this.submitted = true;
       },
-      (error) => {
+      error: (error) => {
         this.loading = false;
-        console.error('Error while resetting password:', error);
+        console.error('Error while sending reset password email:', error);
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
           detail: 'Une erreur est survenue. Merci de réessayer ultérieurement.',
         });
-      }
-    );
+      },
+    });
   }
 
   onSubmitNewPassword(form: NgForm) {
@@ -76,12 +76,12 @@ export class ForgottenPasswordComponent {
       return;
     }
 
-    this.authenticationService.resetPassword(this.route.snapshot.params['token'], password).subscribe(
-      (response) => {
+    this.authenticationService.resetPassword(this.route.snapshot.params['token'], password).subscribe({
+      next: (response) => {
         this.loading = false;
         this.submitted = true;
       },
-      (error) => {
+      error: (error) => {
         this.loading = false;
         console.error('Error while resetting password:', error);
         this.messageService.add({
@@ -89,8 +89,7 @@ export class ForgottenPasswordComponent {
           summary: 'Error',
           detail: 'Une erreur est survenue. Merci de réessayer ultérieurement.',
         });
-      }
-    );
-
+      },
+    });
   }
 }

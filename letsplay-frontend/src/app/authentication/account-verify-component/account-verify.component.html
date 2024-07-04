@@ -1,6 +1,8 @@
 <div class="card" *ngIf="loading">
   <h1>Attente de validation</h1>
-  <p-progressSpinner ariaLabel="loading"></p-progressSpinner>
+  <div id="loading-indicator">
+    <p-progressSpinner ariaLabel="loading"></p-progressSpinner>
+  </div>
 </div>
 
 <div class="card" *ngIf="isValidationSuccess && !loading">

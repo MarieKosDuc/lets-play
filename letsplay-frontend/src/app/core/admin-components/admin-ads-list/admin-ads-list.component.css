@@ -6,7 +6,7 @@
     padding: 1rem;
     box-sizing: border-box;
   
-    & .card {
+    .card {
         width: auto;
         background-color: #ffffff;
         border-bottom: 1px solid #d1d5db;
@@ -14,7 +14,7 @@
     }
     
   
-    & #button {
+    #button {
       margin: auto;
       display: flex;
       justify-content: flex-end;

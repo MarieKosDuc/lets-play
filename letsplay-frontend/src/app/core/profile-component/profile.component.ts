@@ -17,7 +17,7 @@ import { Subscription, tap } from 'rxjs';
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.css']
+  styleUrls: ['./profile.component.css'],
 })
 export class ProfileComponent {
   @Input() ads: Ad[] = [];
@@ -52,23 +52,28 @@ export class ProfileComponent {
     private router: Router
   ) {}
 
-  ngOnInit():void {
+  ngOnInit(): void {
+    this.loggedInSubscription = this.authService
+      .isLoggedIn()
+      .subscribe((loggedIn: boolean) => {
+        if (!loggedIn) {
+          // Handle logic when user is not logged in (e.g., redirect or clear profile data)
+        }
+      });
 
-    this.loggedInSubscription = this.authService.isLoggedIn().subscribe((loggedIn: boolean) => {
-      if (!loggedIn) {
-        // Handle logic when user is not logged in (e.g., redirect or clear profile data)
-      }
-    });
+    this.currentUserSubscription = this.authService
+      .getCurrentUser()
+      .subscribe((user) => {
+        if (!user) {
+          // Handle logic when current user is null (e.g., clear profile data)
+        }
+      });
 
-    this.currentUserSubscription = this.authService.getCurrentUser().subscribe((user) => {
-      if (!user) {
-        // Handle logic when current user is null (e.g., clear profile data)
-      }
-    });
-
-    this.authStorageService.user$.subscribe((user) => {
-      this.currentUser = user;
-      this.checkIfConnectedUserIsProfileUser() 
+    this.authStorageService.user$.subscribe({
+      next: (user) => {
+        this.currentUser = user;
+        this.checkIfConnectedUserIsProfileUser();
+      },
     });
 
     const cld = this.cloudinaryService.getCloudinary();
@@ -100,7 +105,7 @@ export class ProfileComponent {
   }
 
   ngOnDestroy() {
-   if (this.loggedInSubscription) {
+    if (this.loggedInSubscription) {
       this.loggedInSubscription.unsubscribe();
     }
     if (this.currentUserSubscription) {
@@ -113,20 +118,23 @@ export class ProfileComponent {
   }
 
   protected getUserAds(id: string) {
-    this.adService.getUserAds(id).subscribe(
-      (ads: Ad[]) => {
+    this.adService.getUserAds(id).subscribe({
+      next: (ads) => {
         this.ads = ads;
       },
-      (error) => {
-        console.error('Error fetching ads:', error);
+      error: (error) => {
+        console.error(
+          'Erreur lors de la récupération des annonces de l’utilisateur',
+          error
+        );
         if (error.status === 404) {
           this.noAdsForUser = true;
         }
-      }
-    );
+      },
+    });
   }
 
-  protected onSubmit(form: NgForm){
+  protected onSubmit(form: NgForm) {
     const password = form.value.newPassword;
 
     if (!this.passwordRegex.test(password)) {
@@ -142,7 +150,11 @@ export class ProfileComponent {
 
     if (password !== form.value.confirmNewPassword) {
       console.error('Invalid password');
-      this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Les mots de passe ne correspondent pas' });
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erreur',
+        detail: 'Les mots de passe ne correspondent pas',
+      });
       return;
     }
 
@@ -150,52 +162,67 @@ export class ProfileComponent {
   }
 
   protected updateProfilePicture(pictureUrl: string) {
-    if(this.currentUser) {
-
+    if (this.currentUser) {
       const request: profileToUpdate = {
         name: this.currentUser.name,
         profilePicture: pictureUrl,
       };
 
-      this.authService.updateUser(this.currentUser.id, request).subscribe(
-        (user: User) => {
+      this.authService.updateUser(this.currentUser.id, request).subscribe({
+        next: (user: User) => {
           this.authStorageService.saveUser(user);
-          this.messageService.add({ severity: 'success', summary: 'Succès', detail: 'Image de profil mise à jour' });
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Succès',
+            detail: 'Image de profil mise à jour',
+          });
         },
-        (error) => {
+        error: (error) => {
           console.error('Error updating user:', error);
-          this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Erreur lors de la mise à jour de l\'image de profil' });
-        }
-      );
-
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erreur',
+            detail: "Erreur lors de la mise à jour de l'image de profil",
+          });
+        },
+      });
     }
   }
 
   protected updatePassword(password: string) {
     if (this.currentUser) {
-      this.authService.updatePassword(this.currentUser.id, password).subscribe(
-        data => {
-          this.messageService.add({ severity: 'success', summary: 'Succès', detail: 'Mot de passe mis à jour' });
+      this.authService.updatePassword(this.currentUser.id, password).subscribe({
+        next: (data) => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Succès',
+            detail: 'Mot de passe mis à jour',
+          });
         },
-        error => {
+        error: (error) => {
           console.error('Error updating password:', error);
-          this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Erreur lors de la mise à jour du mot de passe' });
-        }
-      );
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erreur',
+            detail: 'Erreur lors de la mise à jour du mot de passe',
+          });
+        },
+      });
     }
   }
 
   protected showConfirmSuppressAccount() {
     console.log('showConfirmSuppressAccount');
-    console.log('this.visibleSuppressToast:', this.visibleSuppressToast)
+    console.log('this.visibleSuppressToast:', this.visibleSuppressToast);
     if (!this.visibleSuppressToast) {
       this.messageService.add({
         key: 'confirm-account-deletion',
         sticky: true,
         severity: 'info',
-        summary: 'Es-tu sûr.e de vouloir supprimer ton compte ? Cette suppression est irréversible.',
+        summary:
+          'Es-tu sûr.e de vouloir supprimer ton compte ? Cette suppression est irréversible.',
       });
-      console.log(this.messageService.messageObserver)
+      console.log(this.messageService.messageObserver);
       this.visibleSuppressToast = true;
     }
   }
@@ -213,18 +240,25 @@ export class ProfileComponent {
 
   protected deleteUser() {
     console.log('delete user');
-    this.authService.deleteUser(this.currentUser?.id || '').subscribe(
-      data => {
+    this.authService.deleteUser(this.currentUser?.id || '').subscribe({
+      next: (data) => {
         this.authStorageService.clean();
-        this.messageService.add({ severity: 'success', summary: 'Succès', detail: 'Compte supprimé' });
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Succès',
+          detail: 'Compte supprimé',
+        });
         this.router.navigate(['/']);
       },
-      error => {
+      error: (error) => {
         console.error('Error deleting user:', error);
-        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Erreur lors de la suppression du compte' });
-      }
-    );
-
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erreur',
+          detail: 'Erreur lors de la suppression du compte',
+        });
+      },
+    });
   }
 
   private checkIfConnectedUserIsProfileUser() {
@@ -239,7 +273,9 @@ export class ProfileComponent {
 
   private async loadProfileUser(userId: string) {
     try {
-      const userFetched = await this.authService.getUserById(userId).toPromise();
+      const userFetched = await this.authService
+        .getUserById(userId)
+        .toPromise();
       console.log('User fetched:', userFetched);
       this.profileUser = userFetched;
       this.getUserAds(this.profileUser?.id || '');

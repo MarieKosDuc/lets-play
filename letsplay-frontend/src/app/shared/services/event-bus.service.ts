@@ -15,6 +15,7 @@ export class EventBusService {
   }
 
   on(eventName: string, action: any): Subscription {
+    console.log('EventBusService.on', eventName);
     return this.subject$.pipe(
       filter((e: EventData) => e.name === eventName),
       map((e: EventData) => e["value"])).subscribe(action);

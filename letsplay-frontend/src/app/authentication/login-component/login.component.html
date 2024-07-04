@@ -7,8 +7,8 @@
        
         <input type="email" name="email" placeholder="e-mail" ngModel required class="field">
         <input type="password" name="password" placeholder="mot de passe" ngModel required class="field">
-        <button type="submit" [disabled]="!loginForm.form.valid" class="button" *ngIf="!loading && !isLoggedIn">Submit</button>
-        <div *ngIf="loading">
+        <button type="submit" [disabled]="!loginForm.form.valid" class="button" *ngIf="!loading && !isLoggedIn" name="Se connecter">Envoyer</button>
+        <div id="loading-indicator" *ngIf="loading">
             <p-progressSpinner ariaLabel="loading"></p-progressSpinner>
         </div>
     </form>

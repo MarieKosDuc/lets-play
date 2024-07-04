@@ -11,7 +11,7 @@
         class="field"
         formControlName="title"
         required
-      /><br />
+      />
 
       <div id="image-container" *ngIf="imageSrc !== ''">
         <img
@@ -25,6 +25,7 @@
           type="button"
           id="upload-image"
           (click)="openWidget()"
+          name="Choisir une autre image pour l'annonce"
         >
           Choisir une autre image
         </button>
@@ -58,6 +59,7 @@
         [disabled]="adForm.invalid"
         class="button"
         *ngIf="!loading && !submitted"
+        name="Mettre à jour mon annonce"
       >
         Mettre à jour mon annonce
       </button>

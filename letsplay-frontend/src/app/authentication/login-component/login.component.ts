@@ -36,8 +36,8 @@ export class LoginComponent {
     const name = form.value.email;
     const password = form.value.password;
 
-    this.authService.login(name, password).subscribe(
-      (response) => {
+    this.authService.login(name, password).subscribe({
+      next: (response) => {
         this.authStorageService.saveUser(response);
 
         this.isLoggedIn = true;
@@ -48,24 +48,31 @@ export class LoginComponent {
           summary: 'Connexion réussie',
           detail: `Te voila connecté.e, ${response.name}. Bonne recherche !`,
         });
-
         setTimeout(() => {
           if (this.authStorageService.getUser().roles.includes('ROLE_ADMIN')) {
             this.router.navigate(['/admin/users']);
           } else {
-          this.router.navigate(['/home']);
+            this.router.navigate(['/home']);
           }
         }, 2000);
       },
-      (error) => {
+      error: (error) => {
         this.loading = false;
         this.isLoggedIn = false;
         if (error.status == 403) {
-          this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Identifiant ou mot de passe incorrect' });
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erreur',
+            detail: 'Identifiant ou mot de passe incorrect',
+          });
         } else {
-          this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Une erreur est survenue' });
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erreur',
+            detail: 'Une erreur est survenue',
+          });
         }
-      }
-    );
+      },
+    });
   }
 }

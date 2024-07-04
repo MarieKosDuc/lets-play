@@ -25,18 +25,15 @@ export class AccountVerifyComponent {
     this.token = this.route.snapshot.params['token'];
     console.log(this.token)
 
-    this.authService.verifyAccount(this.token).subscribe(
-      (response) => {
+    this.authService.verifyAccount(this.token).subscribe( {
+      next: (response) => {
         this.loading = false;
         this.isValidationSuccess = true;
       },
-      (error) => {
+      error: (error) => {
         this.loading = false;
         this.isValidationSuccess = false;
       }
-    );
+    });
   }
-
-
-
 }
