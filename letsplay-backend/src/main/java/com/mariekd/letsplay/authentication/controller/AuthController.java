@@ -148,6 +148,8 @@ public class AuthController {
             User connectedUser = userService.getUserFromRequest(request);
             refreshTokenService.deleteByUserId(connectedUser.getId());
 
+            LOGGER.info("User {} logged out", connectedUser.getName());
+
             return ResponseEntity.ok()
                     .header(HttpHeaders.SET_COOKIE, cookie.toString())
                     .build();
