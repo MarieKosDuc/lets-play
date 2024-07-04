@@ -192,24 +192,34 @@ export class HeaderComponent implements OnInit {
   }
 
   public logOut() {
-    this.authService.logout().subscribe({
+    let logoutHandled = false;
+    
+    this.authService.logout().subscribe(
+      {
       next: () => {
-        this.userLoggedIn = false;
-        this.userInfos = null;
-        this.authStorageService.clean();
-        this.eventBusService.emit({name: 'logout', value: 'User logged out'});
-        this.router.navigate(['/home']);
-        this.messageService.add({
-          severity: 'info',
-          summary: 'Déconnexion',
-          detail: 'Tu es deconnecté.e',
-        });
+        this.handleLogoutSuccess();
       },
       error: (error) => {
         console.error(error);
-        this.eventBusService.emit({name: 'logout', value: 'User logged out'});
-        this.router.navigate(['/home']);
+        this.handleLogoutSuccess();
       },
+    });
+  }
+  
+  private handleLogoutSuccess() {
+    this.userLoggedIn = false;
+    this.userInfos = null;
+    this.authStorageService.clean();
+    this.eventBusService.emit({name: 'logout', value: 'user-logged-out-home-reload'});
+    this.router.navigate(['/home']);
+    this.showMessage();
+  }
+  
+  private showMessage() {
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Déconnexion',
+      detail: 'Tu es deconnecté.e',
     });
   }
 }

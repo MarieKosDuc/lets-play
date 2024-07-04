@@ -88,6 +88,11 @@ body {
     width: 100%;
   }
 
+  #loading-indicator {
+    width: 10%;
+    margin: auto;
+  }
+
   form {
     z-index: 1;
     width: 90%;
@@ -181,4 +186,3 @@ body {
     cursor: not-allowed;
   }
 }
-

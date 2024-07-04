@@ -1,14 +1,15 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
+import { Subscription } from 'rxjs';
+
 import { Ad } from '../models/ad.model';
 import { AdService } from '../services/ad.service';
 import { AuthStorageService } from 'src/app/shared/services/storage.service';
 import { User } from '../../authentication/models/user.model';
 import { MusicStylesEnum } from '../enums/musicStylesEnum';
 import { LocationsEnum } from '../enums/locationsEnum';
-import { EventBusService } from 'src/app/shared/services/event-bus.service';
-import { Subscription } from 'rxjs';
+import { EventBusService } from '../../shared/services/event-bus.service';
 
 @Component({
   selector: 'app-ads-list',
@@ -22,7 +23,7 @@ export class AdsListComponent implements OnInit {
     private adService: AdService,
     private router: Router,
     private authStorageService: AuthStorageService,
-    private eventBusService: EventBusService
+    private eventBusService: EventBusService,
   ) {}
 
   protected user!: User | undefined;
