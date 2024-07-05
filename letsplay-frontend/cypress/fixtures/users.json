@@ -1,0 +1,23 @@
+[
+    {
+        "id": "3e4bcb7c-ce0f-4fa7-8b1d-31b8af8ad11a",
+        "name": "Toto",
+        "email": "toto@mail.com",
+        "profilePicture": "https://res.cloudinary.com/daotbgmy2/image/upload/v1711275248/profile_pic_default.jpg",
+        "password": null
+    },
+    {
+        "id": "81143029-68d1-4f5a-bda7-3c33bfb59b0f",
+        "name": "Eira",
+        "email": "eira@mail.com",
+        "profilePicture": "https://res.cloudinary.com/daotbgmy2/image/upload/v1711275248/profile_pic_default.jpg",
+        "password": null
+    },
+    {
+        "id": "53ff3128-3272-4283-b207-c626fa277833",
+        "name": "Admin",
+        "email": "admin@example.com",
+        "profilePicture": "https://res.cloudinary.com/daotbgmy2/image/upload/v1711275248/profile_pic_default.jpg",
+        "password": null
+    }
+]

@@ -101,8 +101,12 @@ export class AdRecapComponent implements OnInit {
   protected deleteAd() {
     if (this.isAdmin()) {
       this.deleteAdByAdmin();
+    } else {
+      this.deleteAdByUser();
     }
+  }
 
+  protected deleteAdByUser() {
     this.adService.deleteAd(this.ad.id).subscribe({
       next: () => {
         console.log('service ok');

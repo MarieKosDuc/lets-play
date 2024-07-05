@@ -133,7 +133,7 @@ public class AuthController {
 
             return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwt)
                     .body(new LoginOkResponse(refreshToken.getToken(), connecterUser.getId(), connecterUser.getName(),
-                            connecterUser.getProfilePicture(), connecterUser.getEmail(), roles));
+                            connecterUser.getProfilePicture(), roles));
         } catch (AccessDeniedException e) {
             LOGGER.error("Error authenticating user: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

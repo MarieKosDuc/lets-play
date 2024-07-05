@@ -1,0 +1,7 @@
+{
+    "name": "Test User",
+    "profilePicture": "https://res.cloudinary.com/daotbgmy2/image/upload/v1711275248/profile_pic_default.jpg",
+    "roles": [
+        "ROLE_USER"
+    ]
+}
