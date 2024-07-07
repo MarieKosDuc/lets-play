@@ -20,7 +20,7 @@ describe('Interface administrateur - gestion des annonces', () => {
     cy.get('h1').should('contain', 'BATTEUR RECHERCHE GROUPE');
   });
 
-  it.only('Checks that admin can delete an ad', () => {
+  it('Checks that admin can delete an ad', () => {
     cy.visit('/admin/ads');
     cy.get('[data-cy=ads]').children().should('have.length', 3);
     cy.get('[data-cy=delete]').first().click();

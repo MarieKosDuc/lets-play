@@ -8,7 +8,7 @@
         <a *ngIf="userLoggedIn; else loginLink">
             <div data-cy="connected-nav">
                 <p-menu #menu [model]="items" [popup]="true" />
-                <button (click)="menu.toggle($event)" name="Dérouler le menu de navigation">
+                <button (click)="menu.toggle($event)" name="Dérouler le menu de navigation" data-cy="nav-dropdown">
                     <img id="profile-pic" src="{{userInfos?.profilePicture}}" alt="Photo de profil" >
                 </button>
             </div>
