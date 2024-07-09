@@ -43,7 +43,7 @@
 
     <!-- Connected admin header - large screen -->
     <nav id="header-admin" class="header-large" *ngIf="isAdmin" aria-label="menu de navigation utilisateur non connecté - écran de mobile" data-cy="admin-nav">
-        <a routerLink="home"><img src="assets/images/Logo.png" alt="Logo Let's Play" id="logo" data-cy="logo"></a>
+        <a routerLink="/admin/user"><img src="assets/images/Logo.png" alt="Logo Let's Play" id="logo" data-cy="logo"></a>
         <a routerLink="/admin/users" routerLinkActive="underline" class="link">MEMBRES</a>
         <a routerLink="/admin/ads" routerLinkActive="underline" class="link">ANNONCES</a>
         <a routerLink="/" (click)="logOut()" class="link">DECONNEXION</a>

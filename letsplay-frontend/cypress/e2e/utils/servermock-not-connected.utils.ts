@@ -16,6 +16,11 @@ export class ServerMockNotConnectedUtils {
       fixture: 'ad1.json',
     });
 
+    cy.intercept('GET', '/api/ads/get/0', {
+      statusCode: 404,
+    });
+
+
     cy.intercept('GET', '/api/ads/search*', {
       statusCode: 200,
       fixture: 'searchResponse.json',

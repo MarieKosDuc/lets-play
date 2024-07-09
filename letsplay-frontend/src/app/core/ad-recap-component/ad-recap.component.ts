@@ -83,7 +83,6 @@ export class AdRecapComponent implements OnInit {
   }
 
   protected onConfirm() {
-    console.log('add deletion, clicked on "Oui" for : ', this.ad.id);
     this.deleteAd();
     this.messageService.clear('confirm');
     this.visibleToast = false;
@@ -109,7 +108,6 @@ export class AdRecapComponent implements OnInit {
   protected deleteAdByUser() {
     this.adService.deleteAd(this.ad.id).subscribe({
       next: () => {
-        console.log('service ok');
         this.messageService.add({
           severity: 'success',
           summary: 'Annonce supprimée',
@@ -119,7 +117,6 @@ export class AdRecapComponent implements OnInit {
         this.router.navigate(['/home']);
       },
       error: (error) => {
-        console.log('service error', error);
         this.messageService.add({
           severity: 'error',
           summary: 'Erreur',

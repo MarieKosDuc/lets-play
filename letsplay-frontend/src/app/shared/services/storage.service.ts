@@ -28,7 +28,7 @@ export class AuthStorageService {
 
   clean(): void {
     window.localStorage.clear();
-    this.userSubject.next(null);
+    this.userSubject.next({});
   }
 
   public saveUser(user: any): void {
@@ -42,7 +42,7 @@ export class AuthStorageService {
     if (user) {
       return JSON.parse(user);
     }
-    return {}; //TODO : remplacer par null ?
+    return {};
   }
 
   public getRole(): string {

@@ -23,7 +23,6 @@ export class AccountVerifyComponent {
 
   ngOnInit(): void {
     this.token = this.route.snapshot.params['token'];
-    console.log(this.token)
 
     this.authService.verifyAccount(this.token).subscribe( {
       next: (response) => {

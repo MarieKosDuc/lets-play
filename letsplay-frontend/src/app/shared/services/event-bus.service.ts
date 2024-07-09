@@ -7,6 +7,7 @@ import { EventData } from '../models/event.class';
 })
 export class EventBusService {
   private subject$ = new Subject<EventData>();
+  private eventsQueue: EventData[] = []; // File d'événements en attente
 
   constructor() { }
 
@@ -15,7 +16,6 @@ export class EventBusService {
   }
 
   on(eventName: string, action: any): Subscription {
-    console.log('EventBusService.on', eventName);
     return this.subject$.pipe(
       filter((e: EventData) => e.name === eventName),
       map((e: EventData) => e["value"])).subscribe(action);

@@ -36,4 +36,8 @@ describe('Accès à une annonce', () => {
     cy.get('p-toast').should('be.visible').should('contain', 'Tu dois être connecté pour répondre à une annonce');
   });
 
+  it(('Gets 404 page if ad doesn\'t exist'), () => {
+    cy.visit('/ad/0');
+    cy.get('h1').should('contain', 'La page demandée n\'existe pas !');
+  });
 });
