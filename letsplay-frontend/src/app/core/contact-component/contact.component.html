@@ -19,6 +19,7 @@
         class="button"
         [disabled]="contactForm.invalid"
         name="Envoyer ce message"
+        data-cy="send-message-to-author"
       >
         Envoyer
       </button>
@@ -32,10 +33,10 @@
   </div>
 
   <div class="message-component-form" *ngIf="messageSent">
-    <p id="response-info">
+    <p id="response-info" data-cy="message-sent">
       Ton message a bien été envoyé à l'auteur de l'annonce. Tu devrais recevoir
       une réponse très prochainement !
     </p>
-    <button class="button" (click)="backToAd()" name="Retour à l'annonce">Retour à l'annonce</button>
+    <button class="button" (click)="backToAd()" name="Retour à l'annonce" data-cy="back-homepage">Retour à l'annonce</button>
   </div>
 </div>

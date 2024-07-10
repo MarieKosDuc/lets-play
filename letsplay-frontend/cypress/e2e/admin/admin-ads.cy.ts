@@ -33,7 +33,5 @@ describe('Interface administrateur - gestion des annonces', () => {
     cy.get('p-toast').find('[data-cy=confirm]').first().click({force: true});
     cy.wait(1000);
     cy.get('p-toast').should('contain', 'Annonce supprimée');
-
-    // cy.get('[data-cy=ads]').children().should('have.length', 2);
   });
 });

@@ -57,7 +57,7 @@ describe("Fonction de recherche d'annonce", () => {
       .find('chevrondownicon')
       .click();
     cy.get('.p-dropdown-items').find('li').contains('Un batteur').click();
-    cy.get('[data-cy=music-styles]').find('p-multiselect').click();
+    cy.get('[data-cy=music-styles]').find('p-multiselect').find('chevrondownicon').click();
     cy.get('[data-cy=music-styles]')
       .find('p-multiselect')
       .find('li')
@@ -96,7 +96,7 @@ describe("Fonction de recherche d'annonce", () => {
       .find('chevrondownicon')
       .click();
     cy.get('.p-dropdown-items').find('li').contains('Un batteur').click();
-    cy.get('[data-cy=music-styles]').find('p-multiselect').click();
+    cy.get('[data-cy=music-styles]').find('p-multiselect').find('chevrondown').click();
     cy.get('[data-cy=music-styles]')
       .find('p-multiselect')
       .find('li')

@@ -11,6 +11,9 @@ import { MessageService } from 'primeng/api';
 export class AdminUsersListComponent {
   @Input() users: User[] = [];
 
+  protected visibleSuppressToast: boolean = false;
+  protected userIdToDelete: string = '';
+
   constructor(
     private adminService: AdminService,
     private messageService: MessageService
@@ -26,6 +29,32 @@ export class AdminUsersListComponent {
       },
     });
   }
+
+  protected showConfirmSuppressAccount(userid: string) {
+    if (!this.visibleSuppressToast) {
+      this.messageService.add({
+        key: 'confirm-account-deletion',
+        sticky: true,
+        severity: 'info',
+        summary:
+          'Es-tu sûr.e de vouloir supprimer cet utilisateur ? Cette suppression est irréversible.',
+      });
+      this.visibleSuppressToast = true;
+      this.userIdToDelete = userid;
+    }
+  }
+
+  protected onConfirm() {
+    this.deleteUser(this.userIdToDelete);
+    this.messageService.clear('confirm-account-deletion');
+    this.visibleSuppressToast = false;
+  }
+
+  protected onReject() {
+    this.messageService.clear('confirm-account-deletion');
+    this.visibleSuppressToast = false;
+  }
+
 
   protected deleteUser(id: string): void {
     this.adminService.deleteUser(id).subscribe({

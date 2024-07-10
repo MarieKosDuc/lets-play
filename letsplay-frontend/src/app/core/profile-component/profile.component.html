@@ -2,37 +2,59 @@
   <div class="profile-card">
     <div id="side-profile">
       <h1>{{ profileUser?.name }}</h1>
-      <img id="profile-pic" src="{{ profileUser?.profilePicture }}" alt="Photo de profil" />
-      <button id="upload_widget" (click)="openWidget()" class="button" *ngIf="isConnectedUser"name="Changer ma photo de profil">
+      <img
+        id="profile-pic"
+        src="{{ profileUser?.profilePicture }}"
+        alt="Photo de profil"
+      />
+      <button
+        id="upload_widget"
+        (click)="openWidget()"
+        class="button"
+        *ngIf="isConnectedUser"
+        name="Changer ma photo de profil"
+      >
         Changer ma photo de profil
       </button>
 
       <div class="profile-infos" *ngIf="isConnectedUser">
-        <div style="margin-top: 1rem;">Modifier mon mot de passe :</div>
-        <p style="font-size: small;">(minimum 8 caractères, un chiffre, un caractère
-          spécial):</p>
+        <div style="margin-top: 1rem">Modifier mon mot de passe :</div>
+        <p style="font-size: small">
+          (minimum 8 caractères, un chiffre, un caractère spécial):
+        </p>
         <form #signupForm="ngForm" (ngSubmit)="onSubmit(signupForm)">
-        <input
-          type="password"
-          id="newPassword"
-          [(ngModel)]="newPassword"
-          name="newPassword"
-          class="field"
-          placeholder="Nouveau mot de passe"
-        />
-        <input
-          type="password"
-          id="confirmNewPassword"
-          [(ngModel)]="confirmNewPassword"
-          name="confirmNewPassword"
-          class="field"
-          placeholder="Confirmer le nouveau mot de passe"
-        />
-        <button type="submit" [disabled]="signupForm.form.invalid" class="button" name="Enregistrer mon nouveau mot de passe">
-          Enregistrer
+          <input
+            type="password"
+            id="newPassword"
+            [(ngModel)]="newPassword"
+            name="newPassword"
+            class="field"
+            placeholder="Nouveau mot de passe"
+          />
+          <input
+            type="password"
+            id="confirmNewPassword"
+            [(ngModel)]="confirmNewPassword"
+            name="confirmNewPassword"
+            class="field"
+            placeholder="Confirmer le nouveau mot de passe"
+          />
+          <button
+            type="submit"
+            [disabled]="signupForm.form.invalid"
+            class="button"
+            name="Enregistrer mon nouveau mot de passe"
+          >
+            Enregistrer
+          </button>
+        </form>
+        <button
+          class="button"
+          (click)="showConfirmSuppressAccount()"
+          name="Supprimer mon compte"
+        >
+          Supprimer mon compte
         </button>
-      </form>
-      <button class="button" (click)="showConfirmSuppressAccount()" name="Supprimer mon compte">Supprimer mon compte</button>
       </div>
     </div>
 
@@ -43,26 +65,27 @@
 
       <div *ngIf="noAdsForUser && isConnectedUser">
         <h1>On dirait que tu n'as publié aucune annonce...</h1>
-        <a routerLink="/create-ad" class="button" name="Publier une annonce">Publie ta première annonce</a>
+        <a routerLink="/create-ad" class="button" name="Publier une annonce"
+          >Publie ta première annonce</a
+        >
       </div>
 
       <div *ngIf="noAdsForUser && !isConnectedUser">
         <h1>Cet utilisateur n'a publié aucune annonce...</h1>
-        <a routerLink="/home" class="button" name="Retour à l'accueil">Retour à l'accueil</a>
+        <a routerLink="/home" class="button" name="Retour à l'accueil"
+          >Retour à l'accueil</a
+        >
       </div>
     </div>
   </div>
 
-  <p-toast 
-    position="center" 
-    key="confirm-account-deletion"
-    [baseZIndex]="5000">
-        <ng-template let-message pTemplate="message">
-                <div>
-                    {{ message.summary }}
-                </div>
-                <button class="button" (click)="onConfirm()" name="Oui"> Oui </button>
-                <button class="button" (click)="onReject()" name="Non"> Non </button>
-        </ng-template>
-</p-toast>
+  <p-toast position="center" key="confirm-account-deletion" [baseZIndex]="5000">
+    <ng-template let-message pTemplate="message">
+      <div>
+        {{ message.summary }}
+      </div>
+      <button class="button" (click)="onConfirm()" name="Oui">Oui</button>
+      <button class="button" (click)="onReject()" name="Non">Non</button>
+    </ng-template>
+  </p-toast>
 </div>
