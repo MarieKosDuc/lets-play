@@ -23,7 +23,7 @@
         {{ ad.styles }}
       </div>
       <div id="posted-by" data-cy="posted-by">
-        <div style="cursor: pointer" (click)="onProfileClick($event)">
+        <div style="cursor: pointer" (click)="onProfileClick($event)" data-cy="see-profile">
           Par {{ ad.postedByName }}
         </div>
       </div>
@@ -49,7 +49,7 @@
       *ngIf="isSingleAd && !isAuthorUser() && !isAdmin()"
       (click)="contact()"
       name="Contacter l'auteur de l'annonce"
-      data-cy="contact"
+      data-cy="contact-author"
     >
       CONTACT
     </button>

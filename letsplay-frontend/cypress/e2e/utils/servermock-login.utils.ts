@@ -13,7 +13,7 @@ export class ServerMockLoginUtils {
     private static mockApiCalls() {
       cy.intercept('GET', '/api/ads/get/3', {
         statusCode: 200,
-        fixture: 'ad1.json',
+        fixture: 'ad3.json',
       });
   
       cy.intercept('GET', '/api/ads/search*', {

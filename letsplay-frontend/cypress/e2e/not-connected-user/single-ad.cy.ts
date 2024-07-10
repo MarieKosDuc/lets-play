@@ -31,7 +31,7 @@ describe('Accès à une annonce', () => {
   });
 
   it(('Tries to contact the author'), () => {
-    cy.get('[data-cy=contact]').first().should('be.visible').click();
+    cy.get('[data-cy=contact-author]').should('be.visible').click();
     cy.wait(1000)
     cy.get('p-toast').should('be.visible').should('contain', 'Tu dois être connecté pour répondre à une annonce');
   });

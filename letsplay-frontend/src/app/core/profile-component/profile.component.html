@@ -13,6 +13,7 @@
         class="button"
         *ngIf="isConnectedUser"
         name="Changer ma photo de profil"
+        data-cy="upload-image"
       >
         Changer ma photo de profil
       </button>
@@ -23,6 +24,7 @@
           (minimum 8 caractères, un chiffre, un caractère spécial):
         </p>
         <form #signupForm="ngForm" (ngSubmit)="onSubmit(signupForm)">
+          <label for="password">Nouveau mot de passe :</label>
           <input
             type="password"
             id="newPassword"
@@ -30,7 +32,9 @@
             name="newPassword"
             class="field"
             placeholder="Nouveau mot de passe"
+            data-cy="new-password"
           />
+          <label for="confirmNewPassword">Confirmer le  mot de passe :</label>
           <input
             type="password"
             id="confirmNewPassword"
@@ -38,12 +42,13 @@
             name="confirmNewPassword"
             class="field"
             placeholder="Confirmer le nouveau mot de passe"
+            data-cy="confirm-new-password"
           />
           <button
             type="submit"
-            [disabled]="signupForm.form.invalid"
             class="button"
             name="Enregistrer mon nouveau mot de passe"
+            data-cy="submit-password"
           >
             Enregistrer
           </button>
@@ -52,13 +57,14 @@
           class="button"
           (click)="showConfirmSuppressAccount()"
           name="Supprimer mon compte"
+          data-cy="delete-account"
         >
           Supprimer mon compte
         </button>
       </div>
     </div>
 
-    <div id="ads-list">
+    <div id="ads-list" data-cy="ads-list">
       <ng-container *ngIf="!noAdsForUser">
         <app-ad-recap *ngFor="let ad of ads" [ad]="ad"> </app-ad-recap>
       </ng-container>

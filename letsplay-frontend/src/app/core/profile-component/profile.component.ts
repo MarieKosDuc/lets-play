@@ -57,7 +57,7 @@ export class ProfileComponent {
       .isLoggedIn()
       .subscribe((loggedIn: boolean) => {
         if (!loggedIn) {
-          // Handle logic when user is not logged in (e.g., redirect or clear profile data)
+          this.currentUser = undefined;
         }
       });
 
@@ -65,7 +65,7 @@ export class ProfileComponent {
       .getCurrentUser()
       .subscribe((user) => {
         if (!user) {
-          // Handle logic when current user is null (e.g., clear profile data)
+          this.currentUser = undefined;
         }
       });
 

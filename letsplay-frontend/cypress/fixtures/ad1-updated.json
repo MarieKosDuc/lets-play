@@ -3,13 +3,15 @@
     "createdAt": "2024-06-28T15:27:03.374Z",
     "postedByName": "Test User",
     "postedById": "3e4bcb7c-ce0f-4fa7-8b1d-31b8af8ad11a",
-    "title": "Chanteur cherche groupe",
+    "title": "Nouveau titre",
     "from": "vocalist",
     "searching": "band",
     "image": "https://res.cloudinary.com/daotbgmy2/image/upload/v1711275248/vocalist.jpg",
     "styles": [
-        "thrash"
+        "heavy",
+        "thrash",
+        "death"
     ],
     "location": "cvl",
-    "description": "Je suis un vocaliste à la recherche d'un groupe de thrash metal."
+    "description": "Nouvelle description."
 }

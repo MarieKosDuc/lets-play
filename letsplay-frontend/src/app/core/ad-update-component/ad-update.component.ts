@@ -154,6 +154,7 @@ export class AdUpdateComponent {
 
     this.adService.updateAd(this.adData, this.ad.id).subscribe({
       next: (response) => {
+        console.log('response', response)
         this.loading = false;
         this.submitted = true;
         this.messageService.add({
@@ -162,8 +163,8 @@ export class AdUpdateComponent {
           detail: 'Annonce modifiée avec succès',
         });
         setTimeout(() => {
-          this.router.navigate(['/home']);
-        }, 2000);
+          this.router.navigateByUrl(`ad/${this.ad.id}`);
+        }, 1000);
       },
       error: (error) => {
         this.submitted = false;

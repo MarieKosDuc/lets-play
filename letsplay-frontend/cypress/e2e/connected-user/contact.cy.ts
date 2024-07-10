@@ -21,7 +21,7 @@ describe("Contacter l'auteur d'une annonce", () => {
   })
 
   it(('Visits contact form, gets back to ad'), () => {
-    cy.get('[data-cy=contact]').first().should('be.visible').click();
+    cy.get('[data-cy=contact-author]').should('be.visible').click();
     cy.url().should('include', '/contact');
     cy.get('h1').should('contain', 'Envoie un message concernant cette annonce : ');
     cy.get('[data-cy="send-message-to-author"]').should('be.visible').should('contain', 'Envoyer').should('not.be.enabled');
@@ -30,7 +30,7 @@ describe("Contacter l'auteur d'une annonce", () => {
   });
 
   it(('Fills in the form and submits it'), () => {
-    cy.get('[data-cy=contact]').first().should('be.visible').click();
+    cy.get('[data-cy=contact-author]').should('be.visible').click();
     cy.get('textarea').type('Bonjour, je suis intéressé par votre annonce');
     cy.get('[data-cy="send-message-to-author"]').should('be.visible').should('contain', 'Envoyer').should('be.enabled');
     cy.get('[data-cy="send-message-to-author"]').click();

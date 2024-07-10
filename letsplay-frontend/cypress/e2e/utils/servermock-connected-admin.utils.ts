@@ -26,7 +26,7 @@ export class ServerMockAdminUtils {
 
     cy.intercept('GET', '/api/ads/get/3', {
       statusCode: 200,
-      fixture: 'ad1.json',
+      fixture: 'ad3.json',
     });
 
     cy.intercept('DELETE', '/api/admin/ads/*', {

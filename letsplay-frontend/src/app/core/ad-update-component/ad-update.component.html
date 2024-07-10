@@ -11,6 +11,7 @@
         class="field"
         formControlName="title"
         required
+        data-cy="title"
       />
 
       <div id="image-container" *ngIf="imageSrc !== ''">
@@ -26,6 +27,7 @@
           id="upload-image"
           (click)="openWidget()"
           name="Choisir une autre image pour l'annonce"
+          data-cy="upload-image"
         >
           Choisir une autre image
         </button>
@@ -35,7 +37,7 @@
 
       <div>En région : {{ location }}</div>
 
-      <div id="style-selection" class="select-options">
+      <div id="style-selection" class="select-options" data-cy="music-styles">
       <label for="selectYourMusicStyles">Styles recherchés : *</label> 
       <p-multiSelect 
       name="selectYourMusicStyles"
@@ -53,6 +55,7 @@
         class="field"
         formControlName="description"
         required
+        data-cy="description"
       ></textarea>
 
       <button
@@ -61,6 +64,7 @@
         class="button"
         *ngIf="!loading && !submitted"
         name="Mettre à jour mon annonce"
+        data-cy="update-ad"
       >
         Mettre à jour mon annonce
       </button>

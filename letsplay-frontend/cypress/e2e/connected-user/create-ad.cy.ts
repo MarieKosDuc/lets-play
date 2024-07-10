@@ -75,7 +75,20 @@ describe("Créer une annonce", () => {
       cy.get('[data-cy="selected-image"]').should('have.attr', 'src').should('include', 'drums');
   });
 
-  it.only('Fills in the form and submits it', () => {
+  it('Checks that user can open the upload image widget', () => {
+    cy.get('[data-cy=musician-type-from]')
+      .find('p-dropdown')
+      .find('chevrondownicon')
+      .click();
+    cy.get('.p-dropdown-items')
+      .find('li')
+      .contains('Un groupe qui recherche un musicien')
+      .click();
+    cy.get('[data-cy=upload-image]').click();
+    cy.get('iframe').should('be.visible');
+  });
+
+  it('Fills in the form and submits it', () => {
     cy.get('[data-cy="title"]').type('Groupe recherche batteur');
     cy.get('[data-cy=musician-type-from]')
       .find('p-dropdown')
