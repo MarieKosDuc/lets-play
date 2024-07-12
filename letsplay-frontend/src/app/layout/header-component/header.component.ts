@@ -8,8 +8,9 @@ import { MenuItem, MessageService } from 'primeng/api';
 import { AuthenticationService } from '../../authentication/services/authentication.service';
 import { User } from '../../authentication/models/user.model';
 import { AuthStorageService } from '../../shared/services/auth.storage.service';
-import { EventBusService } from 'src/app/shared/services/event-bus.service';
-import { EventData } from 'src/app/shared/models/event.class';
+import { EventBusService } from '../../shared/services/event-bus.service';
+import { EventData } from '../../shared/models/event.class';
+import { RolesEnum } from '../../shared/enums/rolesEnum';
 
 @Component({
   selector: 'app-header',
@@ -44,7 +45,7 @@ export class HeaderComponent implements OnInit {
         this.userInfos = user;
         this.userLoggedIn = Object.keys(user).length > 0;
         if (user) {
-          this.isAdmin = user?.roles?.includes('ROLE_ADMIN') ?? false;
+          this.isAdmin = user?.roles?.includes(RolesEnum.ADMIN) ?? false;
         }
       },
     });

@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Router, ActivatedRouteSnapshot, RouterStateSnapshot, CanActivateFn } from '@angular/router';
 
 import { AuthStorageService } from '../services/auth.storage.service';
+import { RolesEnum } from '../enums/rolesEnum';
 
 @Injectable({
     providedIn: 'root'
@@ -18,7 +19,7 @@ import { AuthStorageService } from '../services/auth.storage.service';
     }
 
     canActivateAdmin(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-        if (this.authStorageService.isLoggedIn() && this.authStorageService.getRole().includes('ROLE_ADMIN')) {
+        if (this.authStorageService.isLoggedIn() && this.authStorageService.getRole().includes(RolesEnum.ADMIN)) {
             return true;
         }
         return false;

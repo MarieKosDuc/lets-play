@@ -5,9 +5,10 @@ import { AdService } from '../services/ad.service';
 import { AuthStorageService } from 'src/app/shared/services/auth.storage.service';
 import { Ad } from '../models/ad.model';
 import { User } from 'src/app/authentication/models/user.model';
+import { RolesEnum } from 'src/app/shared/enums/rolesEnum';
+import { AdminService } from '../services/admin.service';
 
 import { MessageService } from 'primeng/api';
-import { AdminService } from '../services/admin.service';
 
 @Component({
   selector: 'app-ad-recap',
@@ -37,7 +38,7 @@ export class AdRecapComponent implements OnInit {
   }
 
   protected isAdmin(): boolean {
-    return this.user?.roles?.includes('ROLE_ADMIN') ?? false;
+    return this.user?.roles?.includes(RolesEnum.ADMIN) ?? false;
   }
 
   protected onFavoriteClick(event: Event): void {

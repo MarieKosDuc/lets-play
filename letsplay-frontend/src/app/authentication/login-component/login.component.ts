@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 
 import { AuthenticationService } from '../services/authentication.service';
 import { AuthStorageService } from 'src/app/shared/services/auth.storage.service';
+import { RolesEnum } from 'src/app/shared/enums/rolesEnum';
 
 import { MessageService } from 'primeng/api';
 
@@ -49,7 +50,7 @@ export class LoginComponent {
           detail: `Te voila connecté.e, ${response.name}. Bonne recherche !`,
         });
         setTimeout(() => {
-          if (this.authStorageService.getUser().roles.includes('ROLE_ADMIN')) {
+          if (this.authStorageService.getUser().roles.includes(RolesEnum.ADMIN)) {
             this.router.navigate(['/admin/users']);
           } else {
             this.router.navigate(['/home']);
