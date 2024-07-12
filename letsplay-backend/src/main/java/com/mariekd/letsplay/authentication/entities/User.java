@@ -130,6 +130,10 @@ public class User {
 
     public void setLikedAds(Set<Ad> likedAds) { this.likedAds = likedAds; }
 
+    public int[] getLikedAdsIds() {
+        return likedAds.stream().mapToInt(Ad::getId).toArray();
+    }
+
     // Methods to add or remove liked ads
     public void addLikedAd(Ad ad) {
         this.likedAds.add(ad);

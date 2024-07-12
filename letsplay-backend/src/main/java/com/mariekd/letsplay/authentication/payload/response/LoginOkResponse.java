@@ -10,13 +10,15 @@ public class LoginOkResponse {
     private String name;
     private String profilePicture;
     private List<String> roles;
+    private int[] likedAds;
 
-    public LoginOkResponse(String refreshToken, UUID id, String name, String profilePicture, List<String> roles) {
+    public LoginOkResponse(String refreshToken, UUID id, String name, String profilePicture, List<String> roles, int[] likedAds) {
         this.refreshToken = refreshToken;
         this.id = id;
         this.name = name;
         this.profilePicture = profilePicture;
         this.roles = roles;
+        this.likedAds = likedAds;
     }
 
     public String getRefreshToken() {
@@ -66,4 +68,8 @@ public class LoginOkResponse {
     public void setRoles(List<String> roles) {
         this.roles = roles;
     }
+
+    public int[] getLikedAds() { return likedAds; }
+
+    public void setLikedAds(int[] likedAds) { this.likedAds = likedAds; }
 }

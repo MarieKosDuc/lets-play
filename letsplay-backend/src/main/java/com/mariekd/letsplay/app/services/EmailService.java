@@ -12,7 +12,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 public class EmailService {
     private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(EmailService.class);
 
-    private JavaMailSender javaMailSender;
+    private final JavaMailSender javaMailSender;
 
     public EmailService(JavaMailSender javaMailSender) {
         this.javaMailSender = javaMailSender;

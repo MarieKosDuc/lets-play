@@ -6,7 +6,7 @@ import { Ad } from '../../core/models/ad.model';
 import { User } from 'src/app/authentication/models/user.model';
 import { contactEmail } from '../../core/models/contactEmail.model';
 
-import { AuthStorageService } from 'src/app/shared/services/storage.service';
+import { AuthStorageService } from 'src/app/shared/services/auth.storage.service';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' }),

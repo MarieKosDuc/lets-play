@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { User } from 'src/app/authentication/models/user.model';
 import { Ad } from '../models/ad.model';
 import { AdService } from '../services/ad.service';
-import { AuthStorageService } from 'src/app/shared/services/storage.service';
+import { AuthStorageService } from 'src/app/shared/services/auth.storage.service';
 
 @Component({
   selector: 'app-liked-ads',

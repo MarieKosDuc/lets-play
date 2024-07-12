@@ -3,7 +3,7 @@ import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { AuthenticationService } from '../services/authentication.service';
-import { AuthStorageService } from 'src/app/shared/services/storage.service';
+import { AuthStorageService } from 'src/app/shared/services/auth.storage.service';
 
 import { MessageService } from 'primeng/api';
 

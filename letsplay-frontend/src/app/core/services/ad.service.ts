@@ -8,7 +8,7 @@ import { Ad } from '../models/ad.model';
 import { AdCreation } from '../models/adCreation.model';
 import { User } from '../../authentication/models/user.model';
 
-import { AuthStorageService } from 'src/app/shared/services/storage.service';
+import { AuthStorageService } from 'src/app/shared/services/auth.storage.service';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
@@ -102,6 +102,7 @@ export class AdService {
   }
 
   adOrRemoveFavorite(userId: string, adId: number) {
+    console.log('adOrRemoveFavorite', userId, adId)
     return this.http.post(
       ADS_API + `/favorites/${userId}/${adId}`,
       httpOptions

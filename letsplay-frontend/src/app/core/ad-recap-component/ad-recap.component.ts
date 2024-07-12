@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { AdService } from '../services/ad.service';
-import { AuthStorageService } from 'src/app/shared/services/storage.service';
+import { AuthStorageService } from 'src/app/shared/services/auth.storage.service';
 import { Ad } from '../models/ad.model';
 import { User } from 'src/app/authentication/models/user.model';
 
@@ -44,6 +44,8 @@ export class AdRecapComponent implements OnInit {
     if (this.user) {
       this.adService.adOrRemoveFavorite(this.user.id, this.ad.id).subscribe({
         next: (response) => {
+          this.authStorageService.toggleFavoriteInStorage(this.ad.id);
+
           this.starIcon =
             this.starIcon === 'pi pi-star-fill'
               ? 'pi pi-star'

@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CloudinaryService } from 'src/app/layout/cloudinary/cloudinary.service';
 import { MessageService } from 'primeng/api';
 
-import { AuthStorageService } from 'src/app/shared/services/storage.service';
+import { AuthStorageService } from 'src/app/shared/services/auth.storage.service';
 import { AuthenticationService } from '../../authentication/services/authentication.service';
 import { AdService } from '../services/ad.service';
 

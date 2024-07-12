@@ -3,7 +3,7 @@ import { FormControl, FormGroup, ValidationErrors } from '@angular/forms';
 import { Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { AuthStorageService } from 'src/app/shared/services/storage.service';
+import { AuthStorageService } from 'src/app/shared/services/auth.storage.service';
 import { User } from 'src/app/authentication/models/user.model';
 import { AdCreation } from '../models/adCreation.model';
 
