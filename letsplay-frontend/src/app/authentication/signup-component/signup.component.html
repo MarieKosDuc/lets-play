@@ -10,6 +10,7 @@
         placeholder="Ton nom"
         formControlName="name"
         class="field"
+        autocomplete="name"
       />
 
       <label for="email">Adresse e-mail : *</label>
@@ -53,7 +54,7 @@
         </label>
       </div>
 
-      <button type="submit" [disabled]="signupForm.invalid" class="button" name="S'inscrire">
+      <button type="submit" [disabled]="signupForm.invalid" class="button" name="S'inscrire" *ngIf="!loading && !registerOk">
         S'inscrire
       </button>
       <div>* Ces champs sont obligatoires</div>

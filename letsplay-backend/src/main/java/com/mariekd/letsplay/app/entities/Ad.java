@@ -18,7 +18,7 @@ public class Ad {
     private Instant createdAt;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "posted_by", nullable = false, referencedColumnName = "user_id")
+    @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "user_id")
     private User postedBy;
 
     @Column(nullable = false, name="title")
@@ -36,7 +36,7 @@ public class Ad {
     private String image;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "ads_styles",
+    @JoinTable(name = "ad_style",
             joinColumns = @JoinColumn(name = "ad_id"),
             inverseJoinColumns = @JoinColumn(name = "style_id"))
     private Set<Style> styles = new HashSet<>();
@@ -49,7 +49,7 @@ public class Ad {
     private String description;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "users_liked_ads",
+    @JoinTable(name = "user_liked_ad",
             joinColumns = @JoinColumn(name = "ad_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> likedByUsers = new HashSet<>();

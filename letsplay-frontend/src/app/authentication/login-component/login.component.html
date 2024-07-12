@@ -1,27 +1,51 @@
 <div class="card">
-    <h1>
-        Connecte-toi pour accéder à ton espace personnel !
-    </h1>
+  <h1>Connecte-toi pour accéder à ton espace personnel !</h1>
 
-    <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)">
-       
-        <label for="email">E-mail : *</label>
-        <input type="email" name="email" placeholder="e-mail" ngModel required class="field">
-        <label for="password">Mot de passe : *</label>
-        <input type="password" name="password" placeholder="mot de passe" ngModel required class="field">
-        <button type="submit" [disabled]="!loginForm.form.valid" class="button" *ngIf="!loading && !isLoggedIn" name="Se connecter">Envoyer</button>
-        <div>* Ces champs sont obligatoires</div>
-        <div id="loading-indicator" *ngIf="loading">
-            <p-progressSpinner ariaLabel="loading"></p-progressSpinner>
-        </div>
-    </form>
-
-    <div id="regeneration-password">
-        <a routerLink="/resetpassword" class="login-links">Mot de passe oublié ?</a>
+  <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)">
+    <label for="email">E-mail : *</label>
+    <input
+      type="email"
+      name="email"
+      placeholder="e-mail"
+      ngModel
+      required
+      class="field"
+      autocomplete="email"
+    />
+    <label for="password">Mot de passe : *</label>
+    <input
+      type="password"
+      name="password"
+      placeholder="mot de passe"
+      ngModel
+      required
+      class="field"
+    />
+    <button
+      type="submit"
+      [disabled]="!loginForm.form.valid"
+      class="button"
+      *ngIf="!loading && !isLoggedIn"
+      name="Se connecter"
+    >
+      Envoyer
+    </button>
+    <div>* Ces champs sont obligatoires</div>
+    <div id="loading-indicator" *ngIf="loading">
+      <p-progressSpinner ariaLabel="loading"></p-progressSpinner>
     </div>
+  </form>
 
-    <div id="lien-inscription" class="login-links">
-        <p>Pas encore de compte ? <a routerLink="/register" class="login-links" data-cy="register">Inscris-toi</a></p>
-    </div>
+  <div id="regeneration-password">
+    <a routerLink="/resetpassword" class="login-links">Mot de passe oublié ?</a>
+  </div>
 
+  <div id="lien-inscription" class="login-links">
+    <p>
+      Pas encore de compte ?
+      <a routerLink="/register" class="login-links" data-cy="register"
+        >Inscris-toi</a
+      >
+    </p>
+  </div>
 </div>

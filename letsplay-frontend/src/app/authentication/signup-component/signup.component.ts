@@ -30,11 +30,9 @@ export class SignupComponent {
     this.signupForm = this.fb.group({
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [
-        Validators.required,
-      ]],
+      password: ['', [Validators.required]],
       confirmPassword: ['', Validators.required],
-      terms: [false, Validators.requiredTrue]
+      terms: [false, Validators.requiredTrue],
     });
   }
 
@@ -55,10 +53,18 @@ export class SignupComponent {
 
     if (password !== this.signupForm.value.confirmPassword) {
       console.error('Invalid password');
-      this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Les mots de passe ne correspondent pas' });
-      return;
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erreur',
+        detail: 'Les mots de passe ne correspondent pas',
+      });
+      this.loading = false;
+    } else {
+      this.createAccount();
     }
+  }
 
+  protected createAccount() {
     this.authService
       .register(
         this.signupForm.value.email,
@@ -75,16 +81,23 @@ export class SignupComponent {
           this.loading = false;
           this.registerOk = false;
           if (error.status == 409) {
-            this.messageService.add ({ severity: 'error', summary: 'Erreur', detail: 'Cet email ou ce nom d\'utilisateur est déjà utilisé !' });
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Erreur',
+              detail: "Cet email ou ce nom d'utilisateur est déjà utilisé !",
+            });
           } else {
-            this.messageService.add ({ severity: 'error', summary: 'Erreur', detail: 'Erreur lors de la création du compte' });
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Erreur',
+              detail: 'Erreur lors de la création du compte',
+            });
           }
-        }
+        },
       });
-    }
+  }
 
-    protected backToHome() {
-      this.router.navigate(['/home']);
-    }
-
+  protected backToHome() {
+    this.router.navigate(['/home']);
+  }
 }
