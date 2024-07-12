@@ -7,7 +7,7 @@ import { MenuItem, MessageService } from 'primeng/api';
 
 import { AuthenticationService } from '../../authentication/services/authentication.service';
 import { User } from '../../authentication/models/user.model';
-import { AuthStorageService } from '../../shared/services/storage.service';
+import { AuthStorageService } from '../../shared/services/auth.storage.service';
 import { EventBusService } from 'src/app/shared/services/event-bus.service';
 import { EventData } from 'src/app/shared/models/event.class';
 

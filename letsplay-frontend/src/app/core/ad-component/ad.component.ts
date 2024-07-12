@@ -5,7 +5,7 @@ import { MessageService } from 'primeng/api';
 
 import { Ad } from '../models/ad.model';
 import { AdService } from '../services/ad.service';
-import { AuthStorageService } from '../../shared/services/storage.service';
+import { AuthStorageService } from '../../shared/services/auth.storage.service';
 
 import { User } from 'src/app/authentication/models/user.model';
 import { MusicStylesEnum } from '../enums/musicStylesEnum';
@@ -44,6 +44,9 @@ export class AdComponent implements OnInit {
         this.connectedUser = user;
         if (Object.keys(this.connectedUser).length !== 0) {
           this.isUserConnected = true;
+          this.isFavorite =
+            this.connectedUser.likedAds?.includes(this.ad.id) ?? false;
+          this.starIcon = this.isFavorite ? 'pi pi-star-fill' : 'pi pi-star';
         }
       },
     });
@@ -84,6 +87,7 @@ export class AdComponent implements OnInit {
         next: (response) => {
           this.starIcon =
             this.starIcon === 'pi pi-star' ? 'pi pi-star-fill' : 'pi pi-star';
+          this.authStorageService.toggleFavoriteInStorage(this.ad.id);
           this.messageService.add({
             severity: 'success',
             summary: 'Favoris',

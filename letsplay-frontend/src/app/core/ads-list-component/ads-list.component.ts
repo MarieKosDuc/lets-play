@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 
 import { Ad } from '../models/ad.model';
 import { AdService } from '../services/ad.service';
-import { AuthStorageService } from 'src/app/shared/services/storage.service';
+import { AuthStorageService } from 'src/app/shared/services/auth.storage.service';
 import { User } from '../../authentication/models/user.model';
 import { MusicStylesEnum } from '../enums/musicStylesEnum';
 import { LocationsEnum } from '../enums/locationsEnum';

@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { AuthStorageService } from './storage.service';
+import { AuthStorageService } from './auth.storage.service';
 
 describe('StorageServiceService', () => {
   let authStorageService: AuthStorageService;

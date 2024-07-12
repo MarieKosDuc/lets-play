@@ -131,9 +131,11 @@ public class AuthController {
 
             LOGGER.info("User {} / {} logged in", userDetails.getUsername(), connecterUser.getName());
 
+            int[] likedAds = connecterUser.getLikedAdsIds();
+
             return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwt)
                     .body(new LoginOkResponse(refreshToken.getToken(), connecterUser.getId(), connecterUser.getName(),
-                            connecterUser.getProfilePicture(), roles));
+                            connecterUser.getProfilePicture(), roles, likedAds));
         } catch (AccessDeniedException e) {
             LOGGER.error("Error authenticating user: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
