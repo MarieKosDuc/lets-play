@@ -220,6 +220,7 @@ export class AdCreateComponent {
         }, 2000);
       },
       error: (error) => {
+        this.loading = false;
         this.submitted = false;
         if (error.error.message === 'Ad with this title already exists') {
           this.messageService.add({

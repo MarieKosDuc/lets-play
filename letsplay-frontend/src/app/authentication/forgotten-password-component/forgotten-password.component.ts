@@ -56,8 +56,6 @@ export class ForgottenPasswordComponent {
 
   onSubmitNewPassword(form: NgForm) {
     const password = form.value.password;
-    console.log(password)
-    console.log(!this.passwordRegex.test(password))
 
     if (!this.passwordRegex.test(password)) {
       console.error('Invalid password');

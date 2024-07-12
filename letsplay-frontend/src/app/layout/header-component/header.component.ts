@@ -9,6 +9,7 @@ import { AuthenticationService } from '../../authentication/services/authenticat
 import { User } from '../../authentication/models/user.model';
 import { AuthStorageService } from '../../shared/services/storage.service';
 import { EventBusService } from 'src/app/shared/services/event-bus.service';
+import { EventData } from 'src/app/shared/models/event.class';
 
 @Component({
   selector: 'app-header',
@@ -41,7 +42,7 @@ export class HeaderComponent implements OnInit {
     this.userSubscription = this.authStorageService.user$.subscribe({
       next: (user) => {
         this.userInfos = user;
-        this.userLoggedIn = !!user;
+        this.userLoggedIn = Object.keys(user).length > 0;
         if (user) {
           this.isAdmin = user?.roles?.includes('ROLE_ADMIN') ?? false;
         }
@@ -198,10 +199,12 @@ export class HeaderComponent implements OnInit {
       {
       next: () => {
         this.handleLogoutSuccess();
+        logoutHandled = true;
       },
       error: (error) => {
         console.error(error);
         this.handleLogoutSuccess();
+        logoutHandled = true;
       },
     });
   }
@@ -210,7 +213,7 @@ export class HeaderComponent implements OnInit {
     this.userLoggedIn = false;
     this.userInfos = null;
     this.authStorageService.clean();
-    this.eventBusService.emit({name: 'logout', value: 'user-logged-out-home-reload'});
+    this.eventBusService.emit(new EventData('logout-user', 'user logged out'))
     this.router.navigate(['/home']);
     this.showMessage();
   }

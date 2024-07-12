@@ -1,11 +1,21 @@
 <div class="card">
     <h1>Liste de tous les utilisateurs du site :</h1>
 
-    <div *ngFor="let user of users" id="users-list">
+    <div *ngFor="let user of users" id="users-list" data-cy="users">
         <div class="card">
             <img [src]="user.profilePicture" alt="Avatar de {{ user.name }}">
             <h2>{{ user.name }}</h2>
-            <button class="button" (click)="deleteUser(user.id)" name="Supprimer cet utilisateur">Supprimer l'utilisateur</button>
+            <button class="button" (click)="showConfirmSuppressAccount(user.id)" name="Supprimer cet utilisateur" data-cy="delete">Supprimer l'utilisateur</button>
         </div>
     </div>
 </div>
+
+<p-toast position="center" key="confirm-account-deletion" [baseZIndex]="5000">
+    <ng-template let-message pTemplate="message">
+      <div>
+        {{ message.summary }}
+      </div>
+      <button class="button" (click)="onConfirm()" name="Oui" data-cy="reject">Oui</button>
+      <button class="button" (click)="onReject()" name="Non" data-cy="confirm">Non</button>
+    </ng-template>
+  </p-toast> 

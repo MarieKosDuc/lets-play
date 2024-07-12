@@ -86,7 +86,7 @@ export class HttpRequestInterceptor implements HttpInterceptor {
     return next.handle(request);
   }
 
-  private handle403Error(request: HttpRequest<any>, next: HttpHandler) { // TO DO : redirection vers page 403 avec possibilité de reconnexion ?
+  private handle403Error(request: HttpRequest<any>, next: HttpHandler) {
     console.log('Handling 403 error')
     if (this.authStorageService.isLoggedIn()) {
       this.eventBusService.emit(new EventData('logout', null));

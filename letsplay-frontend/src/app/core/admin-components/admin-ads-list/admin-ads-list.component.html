@@ -1,9 +1,9 @@
 <div class="card">
   <h1>Toutes les annonces postées sur le site :</h1>
 
-  <div id="ads-list">
+  <div id="ads-list" data-cy="ads">
     <ng-container>
-      <app-ad-recap *ngFor="let ad of ads" [ad]="ad"> </app-ad-recap>
+      <app-ad-recap *ngFor="let ad of ads" [ad]="ad" data-cy="ad"> </app-ad-recap>
     </ng-container>
   </div>
 </div>

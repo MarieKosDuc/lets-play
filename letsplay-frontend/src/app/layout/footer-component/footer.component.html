@@ -1,17 +1,16 @@
-<footer>
+<footer data-cy="footer">
   <span
-    >© 2023 <a routerLink="home" class="link">Let's Play</a>. All
-    Rights Reserved.
+    >© 2023 <a routerLink="home" class="link">Let's Play</a>. Tous droits réservés.
   </span>
   <ul  >
     <li>
-      <a routerLink="/about" class="link link-right">A propos</a>
+      <a routerLink="/about" class="link link-right" data-cy="about">A propos</a>
     </li>
     <li>
-      <a routerLink="/cgu" class="link link-right">CGU</a>
+      <a routerLink="/cgu" class="link link-right" data-cy="cgu">CGU</a>
     </li>
     <li>
-      <a href="mailto:{{contactEmail}}" class="link link-right">Contact</a>
+      <a href="mailto:{{contactEmail}}" class="link link-right" data-cy="contact">Contact</a>
     </li>
   </ul>
 </footer>

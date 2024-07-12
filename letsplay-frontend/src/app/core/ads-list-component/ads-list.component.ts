@@ -23,22 +23,26 @@ export class AdsListComponent implements OnInit {
     private adService: AdService,
     private router: Router,
     private authStorageService: AuthStorageService,
-    private eventBusService: EventBusService,
+    private eventBusService: EventBusService
   ) {}
 
-  protected user!: User | undefined;
+  protected user!: User | null;
   protected isRecap: boolean = false;
-  protected isLoading: boolean = true;
+  protected loading: boolean = true;
   protected noAdsForUser: boolean = false;
 
   private eventBusSubscription?: Subscription;
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.user = this.authStorageService.getUser();
 
-    this.eventBusSubscription = this.eventBusService.on('logout', () => {
-      this.getAllAds();
-    });
+    this.eventBusSubscription = this.eventBusService.on(
+      'logout-user',
+      () => {
+        this.loading = true;
+        this.getAllAds();
+      }
+    );
 
     if (this.router.url === '/home') {
       this.getAllAds();
@@ -52,48 +56,54 @@ export class AdsListComponent implements OnInit {
     this.transformAds(this.ads);
   }
 
-  getAllAds() {
+  public ngOnDestroy():void {
+    if (this.eventBusSubscription) {
+      this.eventBusSubscription.unsubscribe();
+    }
+  }
+
+  protected getAllAds() {
     this.adService.getAllAds().subscribe({
       next: (ads) => {
         this.ads = ads;
         this.transformAds(ads);
-        this.isLoading = false;
+        this.loading = false;
       },
       error: (error) => {
         console.error('Erreur lors de la récupération des annonces', error);
-        this.isLoading = false;
+        this.loading = false;
       },
     });
   }
 
-  getUserAds() {
+  protected getUserAds() {
     this.adService.getUserAds(this.user?.id ?? '').subscribe({
       next: (ads) => {
         this.ads = ads;
         this.transformAds(ads);
-        this.isLoading = false;
+        this.loading = false;
       },
       error: (error) => {
         console.error(
           'Erreur lors de la récupération des annonces de l’utilisateur',
           error
         );
-        this.isLoading = false; 
+        this.loading = false;
       },
     });
   }
 
-  transformStyles(styles: string[]): string[] {
+  private transformStyles(styles: string[]): string[] {
     return styles.map(
       (style) => MusicStylesEnum[style as keyof typeof MusicStylesEnum] || style
     );
   }
 
-  transformLocation(location: string): string {
+  private transformLocation(location: string): string {
     return LocationsEnum[location as keyof typeof LocationsEnum] || location;
   }
 
-  transformAds(ads: Ad[]) {
+  private transformAds(ads: Ad[]) {
     for (const ad of ads) {
       ad.styles = this.transformStyles(ad.styles);
       ad.location = this.transformLocation(ad.location);

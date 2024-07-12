@@ -9,15 +9,13 @@ public class LoginOkResponse {
     private UUID id;
     private String name;
     private String profilePicture;
-    private String email;
     private List<String> roles;
 
-    public LoginOkResponse(String refreshToken, UUID id, String name, String profilePicture, String email, List<String> roles) {
+    public LoginOkResponse(String refreshToken, UUID id, String name, String profilePicture, List<String> roles) {
         this.refreshToken = refreshToken;
         this.id = id;
         this.name = name;
         this.profilePicture = profilePicture;
-        this.email = email;
         this.roles = roles;
     }
 
@@ -59,14 +57,6 @@ public class LoginOkResponse {
 
     public void setProfilePicture(String profilePicture) {
         this.profilePicture = profilePicture;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public List<String> getRoles() {

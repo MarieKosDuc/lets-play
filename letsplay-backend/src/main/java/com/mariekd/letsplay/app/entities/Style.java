@@ -18,7 +18,7 @@ public class Style {
     private String name;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "ads_styles",
+    @JoinTable(name = "ad_style",
             joinColumns = @JoinColumn(name = "style_id"),
             inverseJoinColumns = @JoinColumn(name = "ad_id"))
     private Set<Ad> ads = new HashSet<>();

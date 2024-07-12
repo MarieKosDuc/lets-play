@@ -1,5 +1,9 @@
+<!-- <div class="card" *ngIf="loading" >
+  <p-progressSpinner [style]="{width: '50px', height: '50px'}"></p-progressSpinner>
+</div> -->
+
 <ng-container *ngIf="!isRecap">
-  <app-ad *ngFor="let ad of ads" [ad]="ad"> </app-ad>
+  <app-ad *ngFor="let ad of ads" [ad]="ad" data-cy="ads"> </app-ad>
 </ng-container>
 
 <ng-container *ngIf="isRecap">

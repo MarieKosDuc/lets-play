@@ -10,20 +10,20 @@
 
         <div id="add-buttons">
             <div id="see-add-button">
-                <button class="button" (click)="goToAd()" name="Voir l'annonce">Voir l'annonce</button>
+                <button class="button" (click)="goToAd()" name="Voir l'annonce" data-cy="view">Voir l'annonce</button>
             </div>
     
             <div id="delete-add-button" *ngIf="isUserAuthor() || isAdmin()">
-                <button class="button" (click)="showConfirm()" name="Supprimer mon annonce">Supprimer</button>
+                <button class="button" (click)="showConfirm()" name="Supprimer mon annonce" data-cy="delete">Supprimer</button>
             </div>
 
             <div id="update-add-button" *ngIf="isUserAuthor() && !isAdmin()">
-                <button class="button" (click)="updateAd()" name="Modifier mon annonce">Modifier</button>
+                <button class="button" (click)="updateAd()" name="Modifier mon annonce" data-cy="modify">Modifier</button>
             </div>
         </div>
 
         <div><i class="{{starIcon}}" style="font-size: 2rem; cursor: pointer" (click)="onFavoriteClick($event)" *ngIf="!isUserAuthor() && !isAdmin()"
-            alt="Mettre l'annonce en favori ou l'en retirer"></i>
+            alt="Mettre l'annonce en favori ou l'en retirer" data-cy="like-ad"></i>
         </div>
     </div>
 
@@ -35,8 +35,8 @@
                 <div>
                     {{ message.summary }}
                 </div>
-                <button class="button" (click)="onConfirm()" name="Oui"> Oui </button>
-                <button class="button" (click)="onReject()" name="Non"> Non </button>
+                <button class="button" (click)="onConfirm()" name="Oui" data-cy="confirm"> Oui </button>
+                <button class="button" (click)="onReject()" name="Non" data-cy="reject"> Non </button>
         </ng-template>
     </p-toast>
 </div>

@@ -22,18 +22,14 @@ export class EmailingService {
 
   constructor(private http: HttpClient, private authStorageService: AuthStorageService) {
     this.fromUser = this.authStorageService.getUser();
-    console.log('User:', this.fromUser)
    }
 
   sendEmail(ad: Ad, message: string) {
-    console.log('Ad to send email:', ad)
-    console.log("User sending email:", this.fromUser?.id, this.fromUser?.name)
     const emailData: contactEmail = {
       adId: ad.id,
       fromUser: this.fromUser!.id,
       messageContent: message
     };
-    console.log('Email data:', emailData)
     return this.http.post(environment.apiUrl + '/contact', emailData, httpOptions);
   }
 }

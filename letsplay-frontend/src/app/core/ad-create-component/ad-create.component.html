@@ -1,90 +1,114 @@
-<div class="card">
+<div class="card form-card">
   <h1>Crée ton annonce !</h1>
 
   <div id="form-container">
-    <form [formGroup]="adForm" (ngSubmit)="onSubmit()">
-        <label for="title">Titre :</label>
-        <input
-          type="text"
-          id="title"
-          name="title"
-          class="field"
-          formControlName="title"
-          required
+    <form [formGroup]="adForm" (ngSubmit)="onSubmit()" data-cy="create-form">
+      <label for="title">Titre : *</label>
+      <input
+        type="text"
+        id="title"
+        name="title"
+        class="field"
+        formControlName="title"
+        required
+        data-cy="title"
+      />
+
+      <div class="select-options" data-cy="musician-type-from">
+        <label for="selectYourInstrument">Je suis : *</label>
+        <p-dropdown
+          ariaLabel="Choisis si tu es un groupe ou un musicien solo"
+          name="selectYourInstrument"
+          formControlName="selectedMusicianTypeFrom"
+          [options]="fromMusicianTypes"
+          optionLabel="name"
+          placeholder="Ton instrument"
+          (onChange)="setDefaultImage($event)"
+          data-cy="from-select"
+        />
+      </div>
+
+      <div id="image-container" *ngIf="imageSrc !== ''">
+        <img
+          id="selected-image"
+          src="{{ imageSrc }}"
+          alt="Image de l'annonce par défaut"
+          data-cy="selected-image"
         />
 
-      <div class="select-options"><p>Je suis :</p> 
-
-        <p-dropdown 
-          ariaLabel="Choisis si tu es un groupe ou un musicien solo"
-          formControlName="selectedMusicianTypeFrom"
-          [options]="fromMusicianTypes" 
-          optionLabel="name" 
-          placeholder="Ton instrument"
-          (onChange)="setDefaultImage($event)" />
+        <button
+          class="button"
+          type="button"
+          id="upload-image"
+          (click)="openWidget()"
+          name="Choisir une autre image pour l'annonce"
+          data-cy="upload-image"
+        >
+          Choisir une autre image
+        </button>
       </div>
-    
-        <div id="image-container" *ngIf="imageSrc !== ''">
-          <img
-            id="selected-image"
-          
-            src="{{ imageSrc }}"
-            alt="Image de l'annonce par défaut"
-          />
-    
-          <button
-            class="button"
-            type="button"
-            id="upload-image"
-            (click)="openWidget()"
-            name="Choisir une autre image pour l'annonce"
-          >
-            Choisir une autre image
-          </button>
-        </div>
 
-        <div class="select-options" *ngIf='isBandSearching'><p>Je recherche : </p>
-          <p-dropdown 
-            ariaLabel="Choisis le type de musicien recherché"
-            formControlName="selectedSearchingMusicianType"
-            [options]="searchingMusicianTypes" 
-            optionLabel="name"/>
-        </div>
-    
-        <div id="style-selection" class="select-options"><p>Styles recherchés :</p>
+      <div class="select-options" *ngIf="isBandSearching" data-cy="musician-type-searching">
+        <label for="selectYourSearchedMusician">Je recherche : *</label>
+        <p-dropdown
+          name="selectYourSearchedMusician"
+          ariaLabel="Choisis le type de musicien recherché"
+          formControlName="selectedSearchingMusicianType"
+          [options]="searchingMusicianTypes"
+          optionLabel="name"
+        />
+      </div>
 
-          <p-multiSelect 
+      <div id="style-selection" class="select-options" data-cy="music-styles">
+        <label for="selectYourMusicStyles">Styles recherchés : *</label>
+        <p-multiSelect
+          name="selectYourMusicStyles"
           ariaLabel="Choisis les styles de musique recherchés"
-          formControlName="selectedMusicStyles" 
-          [options]="musicStyles" 
-          optionLabel="name" 
-          placeholder="Sélectionne les styles de ton choix"/>
-        </div>
+          formControlName="selectedMusicStyles"
+          [options]="musicStyles"
+          optionLabel="name"
+          placeholder="Sélectionne les styles de ton choix"
+        />
+      </div>
 
-        <div id="location" class="select-options">
-          <p>Dans la région suivante : </p>
-          <p-dropdown 
-            ariaLabel="Sélectionne une région pour ton annonce"
-            formControlName="selectedLocation"
-            [options]="locations" 
-            optionLabel="name" 
-            placeholder="Choisis une région"/>
-        </div>
-    
-        <label for="description">Ton annonce :</label>
-        <textarea
-          id="description"
-          name="description"
-          class="field"
-          formControlName="description"
-          required
-        ></textarea>
+      <div id="location" class="select-options" data-cy="location">
+        <label for="selectYourLocation">Dans la région suivante : *</label>
+        <p-dropdown
+          name="selectYourLocation"
+          ariaLabel="Sélectionne une région pour ton annonce"
+          formControlName="selectedLocation"
+          [options]="locations"
+          optionLabel="name"
+          placeholder="Choisis une région"
+        />
+      </div>
 
-          <button type="submit" [disabled]="adForm.invalid" class="button" *ngIf="!loading && !submitted" name="Poster mon annonce">
-            Poster mon annonce
-          </button>
+      <label for="description">Ton annonce : *</label>
+      <textarea
+        id="description"
+        name="description"
+        class="field"
+        formControlName="description"
+        required
+        data-cy="description"
+      ></textarea>
 
-          <p-progressSpinner *ngIf="loading" class="spinner" mode="indeterminate"></p-progressSpinner>
-      </form>
+      <button
+        type="submit"
+        [disabled]="adForm.invalid"
+        class="button"
+        *ngIf="!loading && !submitted"
+        name="Poster mon annonce"
+      >
+        Poster mon annonce
+      </button>
+      <div>* Ces champs sont obligatoires</div>
+
+      <p-progressSpinner
+        *ngIf="loading"
+        class="spinner"
+        mode="indeterminate"
+      ></p-progressSpinner>
+    </form>
   </div>
 </div>

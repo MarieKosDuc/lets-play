@@ -57,7 +57,7 @@ export class ProfileComponent {
       .isLoggedIn()
       .subscribe((loggedIn: boolean) => {
         if (!loggedIn) {
-          // Handle logic when user is not logged in (e.g., redirect or clear profile data)
+          this.currentUser = undefined;
         }
       });
 
@@ -65,7 +65,7 @@ export class ProfileComponent {
       .getCurrentUser()
       .subscribe((user) => {
         if (!user) {
-          // Handle logic when current user is null (e.g., clear profile data)
+          this.currentUser = undefined;
         }
       });
 
@@ -212,8 +212,6 @@ export class ProfileComponent {
   }
 
   protected showConfirmSuppressAccount() {
-    console.log('showConfirmSuppressAccount');
-    console.log('this.visibleSuppressToast:', this.visibleSuppressToast);
     if (!this.visibleSuppressToast) {
       this.messageService.add({
         key: 'confirm-account-deletion',
@@ -222,7 +220,6 @@ export class ProfileComponent {
         summary:
           'Es-tu sûr.e de vouloir supprimer ton compte ? Cette suppression est irréversible.',
       });
-      console.log(this.messageService.messageObserver);
       this.visibleSuppressToast = true;
     }
   }
@@ -239,7 +236,6 @@ export class ProfileComponent {
   }
 
   protected deleteUser() {
-    console.log('delete user');
     this.authService.deleteUser(this.currentUser?.id || '').subscribe({
       next: (data) => {
         this.authStorageService.clean();
@@ -276,7 +272,6 @@ export class ProfileComponent {
       const userFetched = await this.authService
         .getUserById(userId)
         .toPromise();
-      console.log('User fetched:', userFetched);
       this.profileUser = userFetched;
       this.getUserAds(this.profileUser?.id || '');
     } catch (error) {
