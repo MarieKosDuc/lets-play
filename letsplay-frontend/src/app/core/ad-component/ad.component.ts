@@ -10,6 +10,7 @@ import { AuthStorageService } from '../../shared/services/auth.storage.service';
 import { User } from 'src/app/authentication/models/user.model';
 import { MusicStylesEnum } from '../enums/musicStylesEnum';
 import { LocationsEnum } from '../enums/locationsEnum';
+import { RolesEnum } from 'src/app/shared/enums/rolesEnum';
 
 @Component({
   selector: 'app-ad',
@@ -77,7 +78,7 @@ export class AdComponent implements OnInit {
   }
 
   protected isAdmin(): boolean {
-    return this.connectedUser.roles?.includes('ROLE_ADMIN') ?? false;
+    return this.connectedUser.roles?.includes(RolesEnum.ADMIN) ?? false;
   }
 
   protected onFavoriteClick(event: Event): void {

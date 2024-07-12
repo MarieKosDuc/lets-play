@@ -3,6 +3,7 @@ package com.mariekd.letsplay.authentication.controllers;
 
 import com.mariekd.letsplay.authentication.entities.Role;
 import com.mariekd.letsplay.authentication.entities.User;
+import com.mariekd.letsplay.authentication.enums.RolesEnum;
 import com.mariekd.letsplay.authentication.services.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +51,7 @@ public class AdminControllerTest {
         user.setEmail("test@example.com");
         user.setProfilePicture("test.jpg");
 
-        Role adminRole = new Role("ROLE_ADMIN");
+        Role adminRole = new Role(RolesEnum.ADMIN.name());
         Set<Role> roles = new HashSet<>();
         roles.add(adminRole);
         user.setRoles(roles);

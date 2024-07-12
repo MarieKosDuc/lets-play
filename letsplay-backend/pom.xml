@@ -11,7 +11,7 @@
 
 	<groupId>com.mariekd</groupId>
 	<artifactId>letsplay-backend</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>letsplay</name>
 	<description>Let&apos;s Play Project</description>
 	<properties>

@@ -1,5 +1,6 @@
 package com.mariekd.letsplay.authentication.config;
 
+import com.mariekd.letsplay.authentication.enums.RolesEnum;
 import com.mariekd.letsplay.authentication.jwt.JwtAuthenticationFilter;
 import com.mariekd.letsplay.authentication.services.implementations.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,7 +82,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/users/logout").permitAll()
                         .requestMatchers("/api/ads/get/**").permitAll()
                         .requestMatchers("/api/ads/search").permitAll()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN") //TODO : créer constante pour les rôles
+                        .requestMatchers("/api/admin/**").hasRole(RolesEnum.ADMIN.name())
                         .anyRequest().authenticated()
                 )
                 .csrf(AbstractHttpConfigurer::disable);
