@@ -7,6 +7,7 @@ import { EventData } from '../models/event.class';
 })
 export class EventBusService {
   private subject$ = new Subject<EventData>();
+  private eventsQueue: EventData[] = []; // File d'événements en attente
 
   constructor() { }
 

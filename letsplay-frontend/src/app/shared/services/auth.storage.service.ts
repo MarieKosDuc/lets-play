@@ -5,7 +5,7 @@ import { User } from 'src/app/authentication/models/user.model';
 const USER_KEY = 'auth-user';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthStorageService {
   public user$: Observable<User>;
@@ -28,7 +28,7 @@ export class AuthStorageService {
 
   clean(): void {
     window.localStorage.clear();
-    this.userSubject.next(null);
+    this.userSubject.next({});
   }
 
   public saveUser(user: any): void {
@@ -42,7 +42,7 @@ export class AuthStorageService {
     if (user) {
       return JSON.parse(user);
     }
-    return {}; //TODO : remplacer par null ?
+    return {};
   }
 
   public getRole(): string {
@@ -59,8 +59,29 @@ export class AuthStorageService {
     return false;
   }
 
-  getStorageEventObservable() {
-    return this.storageEventSubject.asObservable();
+
+  public toggleFavoriteInStorage(adId: number): void {
+    let currentUser = this.getUser();
+
+    if (!currentUser) {
+      return;
+    }
+
+    const index = currentUser.likedAds.indexOf(adId);
+
+    if (index === -1) {
+      // Ajouter l'annonce aux favoris si elle n'est pas déjà présente
+      currentUser.likedAds.push(adId);
+    } else {
+      // Retirer l'annonce des favoris si elle est déjà présente
+      currentUser.likedAds.splice(index, 1);
+    }
+
+    // Enregistrer l'objet utilisateur mis à jour dans le localStorage
+    this.saveUser(currentUser);
   }
 
+  public getStorageEventObservable() {
+    return this.storageEventSubject.asObservable();
+  }
 }

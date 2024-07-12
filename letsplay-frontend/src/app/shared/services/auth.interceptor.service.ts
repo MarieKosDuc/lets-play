@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest, HTTP_INTERCEPTORS, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 
-import { AuthStorageService } from './storage.service';
+import { AuthStorageService } from './auth.storage.service';
 import { AuthenticationService } from '../../authentication/services/authentication.service';
 
 import { Observable, throwError } from 'rxjs';
@@ -86,7 +86,7 @@ export class HttpRequestInterceptor implements HttpInterceptor {
     return next.handle(request);
   }
 
-  private handle403Error(request: HttpRequest<any>, next: HttpHandler) { // TO DO : redirection vers page 403 avec possibilité de reconnexion ?
+  private handle403Error(request: HttpRequest<any>, next: HttpHandler) {
     console.log('Handling 403 error')
     if (this.authStorageService.isLoggedIn()) {
       this.eventBusService.emit(new EventData('logout', null));

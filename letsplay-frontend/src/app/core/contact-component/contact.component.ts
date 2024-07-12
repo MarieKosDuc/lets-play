@@ -18,15 +18,19 @@ export class ContactComponent {
   protected contactForm!: FormGroup;
   protected messageSent: boolean = false;
 
-  constructor(private adService: AdService, private route: ActivatedRoute, private emailService: EmailingService, private messageService: MessageService) {}
+  constructor(
+    private adService: AdService,
+    private route: ActivatedRoute,
+    private emailService: EmailingService,
+    private messageService: MessageService
+  ) {}
 
   ngOnInit(): void {
-    this.adService
-      .getAdById(this.route.snapshot.params['id'])
-      .subscribe((ad: Ad) => {
+    this.adService.getAdById(this.route.snapshot.params['id']).subscribe({
+      next: (ad: Ad) => {
         this.ad = ad;
-        console.log('Ad:', this.ad)
-      });
+      },
+    });
 
     this.contactForm = new FormGroup({
       textMessage: new FormControl('', [Validators.required]),
@@ -35,17 +39,22 @@ export class ContactComponent {
 
   onSubmit(): void {
     if (this.contactForm.valid) {
-      this.emailService.sendEmail(this.ad!, this.contactForm.value.textMessage).subscribe(
-        (response) => {
-          console.log('Email sent successfully:', response);
-          this.messageSent = true;
-        },
-        (error) => {
-          console.error('Error sending email:', error);
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Erreur lors de l\'envoi du mail' });
-        }
-      );
-
+      this.emailService
+        .sendEmail(this.ad!, this.contactForm.value.textMessage)
+        .subscribe({
+          next: (response) => {
+            console.log('Email sent successfully:', response);
+            this.messageSent = true;
+          },
+          error: (error) => {
+            console.error('Error sending email:', error);
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: "Erreur lors de l'envoi du mail",
+            });
+          },
+        });
     }
   }
 

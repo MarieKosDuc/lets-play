@@ -5,16 +5,17 @@ import { MessageService } from 'primeng/api';
 
 import { Ad } from '../models/ad.model';
 import { AdService } from '../services/ad.service';
-import { AuthStorageService } from '../../shared/services/storage.service';
+import { AuthStorageService } from '../../shared/services/auth.storage.service';
 
 import { User } from 'src/app/authentication/models/user.model';
 import { MusicStylesEnum } from '../enums/musicStylesEnum';
 import { LocationsEnum } from '../enums/locationsEnum';
+import { RolesEnum } from 'src/app/shared/enums/rolesEnum';
 
 @Component({
   selector: 'app-ad',
   templateUrl: './ad.component.html',
-  styleUrls: ['./ad.component.css']
+  styleUrls: ['./ad.component.css'],
 })
 export class AdComponent implements OnInit {
   @Input()
@@ -23,7 +24,7 @@ export class AdComponent implements OnInit {
   @Input()
   protected truncated = true;
 
-  protected connectedUser!: User
+  protected connectedUser!: User;
   protected isUserConnected: boolean = false;
   protected isSingleAd!: boolean;
   protected isFavorite!: boolean;
@@ -39,11 +40,16 @@ export class AdComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.authStorageService.user$.subscribe((user) => {
-      this.connectedUser = user;
-      if(Object.keys(this.connectedUser).length !== 0) {
-        this.isUserConnected = true;
-      }
+    this.authStorageService.user$.subscribe({
+      next: (user) => {
+        this.connectedUser = user;
+        if (Object.keys(this.connectedUser).length !== 0) {
+          this.isUserConnected = true;
+          this.isFavorite =
+            this.connectedUser.likedAds?.includes(this.ad.id) ?? false;
+          this.starIcon = this.isFavorite ? 'pi pi-star-fill' : 'pi pi-star';
+        }
+      },
     });
 
     const currentRoute = this.route.snapshot.routeConfig?.path;
@@ -55,33 +61,51 @@ export class AdComponent implements OnInit {
     if (currentRoute === 'ad/:id') {
       this.isSingleAd = true;
       const adId = this.route.snapshot.params['id'];
-      this.adService.getAdById(adId).subscribe((ad: Ad) => {
-        this.ad = ad;
-        this.transformAd(this.ad);
+      this.adService.getAdById(adId).subscribe({
+        next: (ad: Ad) => {
+          this.ad = ad;
+          this.transformAd(this.ad);
+        },
+        error: (error) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erreur',
+            detail: 'Une erreur est survenue',
+          });
+        },
       });
     }
   }
 
   protected isAdmin(): boolean {
-    return this.connectedUser.roles?.includes('ROLE_ADMIN') ?? false;
+    return this.connectedUser.roles?.includes(RolesEnum.ADMIN) ?? false;
   }
 
   protected onFavoriteClick(event: Event): void {
-    this.adService.adOrRemoveFavorite(this.connectedUser.id, this.ad.id).subscribe(() => {
-      this.starIcon = this.starIcon === 'pi pi-star' ? 'pi pi-star-fill' : 'pi pi-star';
-
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Favoris',
-        detail: this.starIcon === 'pi pi-star-fill' ? 'Annonce ajoutée aux favoris' : 'Annonce retirée des favoris',
+    this.adService
+      .adOrRemoveFavorite(this.connectedUser.id, this.ad.id)
+      .subscribe({
+        next: (response) => {
+          this.starIcon =
+            this.starIcon === 'pi pi-star' ? 'pi pi-star-fill' : 'pi pi-star';
+          this.authStorageService.toggleFavoriteInStorage(this.ad.id);
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Favoris',
+            detail:
+              this.starIcon === 'pi pi-star-fill'
+                ? 'Annonce ajoutée aux favoris'
+                : 'Annonce retirée des favoris',
+          });
+        },
+        error: (error) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erreur',
+            detail: 'Une erreur est survenue',
+          });
+        },
       });
-    }, (error) => {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Erreur',
-        detail: 'Une erreur est survenue',
-      });
-    });
   }
 
   protected truncateText(text: string): string {
@@ -93,7 +117,6 @@ export class AdComponent implements OnInit {
     return truncatedText.join(' ') + '...';
   }
 
-
   protected goToAd(): void {
     this.router.navigateByUrl(`ad/${this.ad.id}`);
   }
@@ -103,7 +126,7 @@ export class AdComponent implements OnInit {
   }
 
   protected onProfileClick(event: Event): void {
-    if(Object.keys(this.connectedUser).length !== 0) {
+    if (Object.keys(this.connectedUser).length !== 0) {
       this.router.navigateByUrl(`profile/${this.ad.postedById}`);
     } else {
       this.messageService.add({
@@ -131,7 +154,9 @@ export class AdComponent implements OnInit {
   }
 
   private transformStyles(styles: string[]): string[] {
-    return styles.map(style => MusicStylesEnum[style as keyof typeof MusicStylesEnum] || style);
+    return styles.map(
+      (style) => MusicStylesEnum[style as keyof typeof MusicStylesEnum] || style
+    );
   }
 
   private transformLocation(location: string): string {
@@ -139,7 +164,7 @@ export class AdComponent implements OnInit {
   }
 
   private transformAd(ad: Ad): void {
-      ad.styles = this.transformStyles(ad.styles);
-      ad.location = this.transformLocation(ad.location);
+    ad.styles = this.transformStyles(ad.styles);
+    ad.location = this.transformLocation(ad.location);
   }
 }

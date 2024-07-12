@@ -2,12 +2,13 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { AdService } from '../services/ad.service';
-import { AuthStorageService } from 'src/app/shared/services/storage.service';
+import { AuthStorageService } from 'src/app/shared/services/auth.storage.service';
 import { Ad } from '../models/ad.model';
 import { User } from 'src/app/authentication/models/user.model';
+import { RolesEnum } from 'src/app/shared/enums/rolesEnum';
+import { AdminService } from '../services/admin.service';
 
 import { MessageService } from 'primeng/api';
-import { AdminService } from '../services/admin.service';
 
 @Component({
   selector: 'app-ad-recap',
@@ -37,28 +38,39 @@ export class AdRecapComponent implements OnInit {
   }
 
   protected isAdmin(): boolean {
-    return this.user?.roles?.includes('ROLE_ADMIN') ?? false;
+    return this.user?.roles?.includes(RolesEnum.ADMIN) ?? false;
   }
 
   protected onFavoriteClick(event: Event): void {
     if (this.user) {
-    this.adService.adOrRemoveFavorite(this.user.id, this.ad.id).subscribe(() => {
-      this.starIcon = this.starIcon === 'pi pi-star-fill' ? 'pi pi-star' : 'pi pi-star-fill';
+      this.adService.adOrRemoveFavorite(this.user.id, this.ad.id).subscribe({
+        next: (response) => {
+          this.authStorageService.toggleFavoriteInStorage(this.ad.id);
 
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Favoris',
-        detail: this.starIcon === 'pi pi-star-fill' ? 'Annonce ajoutée aux favoris' : 'Annonce retirée des favoris',
+          this.starIcon =
+            this.starIcon === 'pi pi-star-fill'
+              ? 'pi pi-star'
+              : 'pi pi-star-fill';
+
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Favoris',
+            detail:
+              this.starIcon === 'pi pi-star-fill'
+                ? 'Annonce ajoutée aux favoris'
+                : 'Annonce retirée des favoris',
+          });
+          window.location.reload();
+        },
+        error: (error) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erreur',
+            detail: 'Une erreur est survenue',
+          });
+        },
       });
-      window.location.reload();
-    }, (error) => {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Erreur',
-        detail: 'Une erreur est survenue',
-      });
-    });
-  }
+    }
   }
 
   protected showConfirm() {
@@ -74,7 +86,6 @@ export class AdRecapComponent implements OnInit {
   }
 
   protected onConfirm() {
-    console.log('add deletion, clicked on "Oui" for : ', this.ad.id);
     this.deleteAd();
     this.messageService.clear('confirm');
     this.visibleToast = false;
@@ -92,29 +103,50 @@ export class AdRecapComponent implements OnInit {
   protected deleteAd() {
     if (this.isAdmin()) {
       this.deleteAdByAdmin();
+    } else {
+      this.deleteAdByUser();
     }
+  }
 
-    this.adService.deleteAd(this.ad.id).subscribe(() => {
-      console.log("service ok");
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Annonce supprimée',
-        detail: 'Ton annonce a bien été supprimée',
-      });
+  protected deleteAdByUser() {
+    this.adService.deleteAd(this.ad.id).subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Annonce supprimée',
+          detail: 'Ton annonce a bien été supprimée',
+        });
 
-      this.router.navigate(['/home']);
+        this.router.navigate(['/home']);
+      },
+      error: (error) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erreur',
+          detail: "Une erreur est survenue lors de la suppression de l'annonce",
+        });
+      },
     });
   }
 
   protected deleteAdByAdmin() {
-    this.adminService.deleteAd(this.ad.id).subscribe(() => {
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Annonce supprimée',
-        detail: 'L\'annonce a bien été supprimée',
-      });
-
-      this.router.navigate(['/admin/ads']);
+    this.adminService.deleteAd(this.ad.id).subscribe({
+      next: (response) => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Annonce supprimée',
+          detail: "L'annonce a bien été supprimée",
+        });
+        this.router.navigate(['/admin/ads']);
+      },
+      error: (error) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erreur',
+          detail:
+            "Une erreur est survenue lors de la suppression de l'annonce. Merci de réessayer",
+        });
+      },
     });
   }
 

@@ -70,4 +70,10 @@ testem.log
 Thumbs.db
 
 # Credentials
-letsplay-backend/src/main/resources/application-prodtest.properties
+letsplay-backend/src/main/resources/application-dev.properties
+letsplay-backend/src/main/resources/application.properties
+
+# Cypress
+
+### Cypress ###
+/cypress/screenshots/

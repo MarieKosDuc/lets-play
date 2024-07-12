@@ -3,7 +3,7 @@ import { FormControl, FormGroup, ValidationErrors } from '@angular/forms';
 import { Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { AuthStorageService } from 'src/app/shared/services/storage.service';
+import { AuthStorageService } from 'src/app/shared/services/auth.storage.service';
 import { User } from 'src/app/authentication/models/user.model';
 import { AdCreation } from '../models/adCreation.model';
 
@@ -95,8 +95,10 @@ export class AdCreateComponent {
   ) {}
 
   ngOnInit() {
-    this.authStorageService.user$.subscribe((user) => {
-      this.user = user;
+    this.authStorageService.user$.subscribe({
+      next: (user) => {
+        this.user = user;
+      },
     });
 
     // Form Group creation
@@ -204,8 +206,8 @@ export class AdCreateComponent {
     this.createTempAd();
     this.loading = true;
 
-    this.adService.createAd(this.adData).subscribe(
-      (response) => {
+    this.adService.createAd(this.adData).subscribe({
+      next: (response) => {
         this.loading = false;
         this.submitted = true;
         this.messageService.add({
@@ -217,7 +219,8 @@ export class AdCreateComponent {
           this.router.navigate(['/home']);
         }, 2000);
       },
-      (error) => {
+      error: (error) => {
+        this.loading = false;
         this.submitted = false;
         if (error.error.message === 'Ad with this title already exists') {
           this.messageService.add({
@@ -232,7 +235,7 @@ export class AdCreateComponent {
             detail: "Une erreur est survenue lors de la création de l'annonce",
           });
         }
-      }
-    );
+      },
+    });
   }
 }

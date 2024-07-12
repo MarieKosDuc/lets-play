@@ -8,92 +8,111 @@ import { Ad } from '../models/ad.model';
 import { AdCreation } from '../models/adCreation.model';
 import { User } from '../../authentication/models/user.model';
 
-import { AuthStorageService } from 'src/app/shared/services/storage.service';
+import { AuthStorageService } from 'src/app/shared/services/auth.storage.service';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-  withCredentials: true
+  withCredentials: true,
 };
 
 const httpOptionsWithSkip404 = {
-  headers: httpOptions.headers.set('X-Skip-404', 'true')
-  .set('Content-Type', 'application/json'),
-  withCredentials: true
+  headers: httpOptions.headers
+    .set('X-Skip-404', 'true')
+    .set('Content-Type', 'application/json'),
+  withCredentials: true,
 };
 
 const ADS_API = `${environment.apiUrl}/ads`;
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root',
 })
-
 export class AdService {
+  constructor(
+    private http: HttpClient,
+    private authStorageService: AuthStorageService
+  ) {}
 
-  constructor(private http: HttpClient, private authStorageService: AuthStorageService) { }
-  
   public ads: Ad[] = [];
   public ad!: Ad;
 
   public user?: User;
 
   ngOnInit() {
-    this.authStorageService.user$.subscribe((user) => {
-      this.user = user;
+    this.authStorageService.user$.subscribe({
+      next: (user) => {
+        this.user = user;
+      },
     });
   }
 
-    getAllAds(): Observable<Ad[]> {
-      return this.http.get<Ad[]>(ADS_API + `/get/all`, httpOptions).pipe(
-        tap((ads: Ad[]) => {
-          this.ads = ads;
-          console.log("Fetched by service:", ads)
-        })
-      );
-    }
+  getAllAds(): Observable<Ad[]> {
+    return this.http.get<Ad[]>(ADS_API + `/get/all`, httpOptions).pipe(
+      tap((ads: Ad[]) => {
+        this.ads = ads;
+        console.log('Fetched by service:', ads);
+      })
+    );
+  }
 
-    getAdById(id: number): Observable<Ad> {
-      return this.http.get<Ad>(ADS_API + `/get/${id}`, httpOptions).pipe(
-        tap((ad: Ad) => {
-          this.ad = ad;
-        })
-      );
-    }
+  getAdById(id: number): Observable<Ad> {
+    return this.http.get<Ad>(ADS_API + `/get/${id}`, httpOptions).pipe(
+      tap((ad: Ad) => {
+        this.ad = ad;
+      })
+    );
+  }
 
-    getUserAds(id: string): Observable<Ad[]> {
-      return this.http.get<Ad[]>(ADS_API + `/user/${id}`, httpOptionsWithSkip404).pipe(
-        tap((ads: Ad[]) => {
-          this.ads = ads;
-        })
-      );
-    }
-
-    searchAds(fromMusician: string, searchingMusician: string, styles: string[], location: string): Observable<Ad[]> {
-      const url = ADS_API + `/search?from=${fromMusician}&searching=${searchingMusician}&styles=${styles}&location=${location}`;
-      return this.http.get<Ad[]>(url, httpOptions).pipe(
+  getUserAds(id: string): Observable<Ad[]> {
+    return this.http
+      .get<Ad[]>(ADS_API + `/user/${id}`, httpOptionsWithSkip404)
+      .pipe(
         tap((ads: Ad[]) => {
           this.ads = ads;
         })
       );
-    }
+  }
 
-    createAd(ad: AdCreation) {
-      return this.http.post<AdCreation>(ADS_API + `/create`, ad, httpOptions);
-    }
+  searchAds(
+    fromMusician: string,
+    searchingMusician: string,
+    styles: string[],
+    location: string
+  ): Observable<Ad[]> {
+    const url =
+      ADS_API +
+      `/search?from=${fromMusician}&searching=${searchingMusician}&styles=${styles}&location=${location}`;
+    return this.http.get<Ad[]>(url, httpOptions).pipe(
+      tap((ads: Ad[]) => {
+        this.ads = ads;
+      })
+    );
+  }
 
-    updateAd(ad: AdCreation, id: number) {
-      return this.http.put<AdCreation>(ADS_API + `/${id}`, ad, httpOptions);
-    }
+  createAd(ad: AdCreation) {
+    return this.http.post<AdCreation>(ADS_API + `/create`, ad, httpOptions);
+  }
 
-    deleteAd(id: number) {
-      return this.http.delete(ADS_API + `/${id}`, httpOptions);
-    }
+  updateAd(ad: AdCreation, id: number) {
+    return this.http.put<AdCreation>(ADS_API + `/${id}`, ad, httpOptions);
+  }
 
-    adOrRemoveFavorite(userId: string, adId: number) {
-      return this.http.post(ADS_API + `/favorites/${userId}/${adId}`, httpOptions);
-    }
+  deleteAd(id: number) {
+    return this.http.delete(ADS_API + `/${id}`, httpOptions);
+  }
 
-    getUserFavorites(userId: string): Observable<Ad[]> {
-      return this.http.get<Ad[]>(ADS_API + `/favorites/${userId}`, httpOptionsWithSkip404);
-    }
+  adOrRemoveFavorite(userId: string, adId: number) {
+    console.log('adOrRemoveFavorite', userId, adId)
+    return this.http.post(
+      ADS_API + `/favorites/${userId}/${adId}`,
+      httpOptions
+    );
+  }
 
+  getUserFavorites(userId: string): Observable<Ad[]> {
+    return this.http.get<Ad[]>(
+      ADS_API + `/favorites/${userId}`,
+      httpOptionsWithSkip404
+    );
+  }
 }

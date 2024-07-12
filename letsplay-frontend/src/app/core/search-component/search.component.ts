@@ -19,7 +19,7 @@ interface DropdownItems {
 @Component({
   selector: 'app-search',
   templateUrl: './search.component.html',
-  styleUrls: ['./search.component.css']
+  styleUrls: ['./search.component.css'],
 })
 export class SearchComponent {
   protected loading: boolean = false;
@@ -31,9 +31,14 @@ export class SearchComponent {
   // musician type dropdowns settings
   protected fromMusicianTypes: DropdownItems[] = [
     ...Object.keys(MusicianTypesEnum).map((key) => ({
-      name: key !== 'band' 
-        ? 'Un ' + MusicianTypesEnum[key as keyof typeof MusicianTypesEnum] + ' qui recherche un groupe'
-        : 'Un ' + MusicianTypesEnum[key as keyof typeof MusicianTypesEnum] + ' qui recherche un musicien',
+      name:
+        key !== 'band'
+          ? 'Un ' +
+            MusicianTypesEnum[key as keyof typeof MusicianTypesEnum] +
+            ' qui recherche un groupe'
+          : 'Un ' +
+            MusicianTypesEnum[key as keyof typeof MusicianTypesEnum] +
+            ' qui recherche un musicien',
       code: key,
     })),
   ];
@@ -48,7 +53,6 @@ export class SearchComponent {
       })),
   ];
   protected isBandSearching: boolean = false;
-
 
   // music styles dropdown settings
   protected musicStyles: DropdownItems[] = [
@@ -66,14 +70,18 @@ export class SearchComponent {
     })),
   ];
 
-
-  constructor( private adService: AdService, private messageService: MessageService) { }
+  constructor(
+    private adService: AdService,
+    private messageService: MessageService
+  ) {}
 
   ngOnInit() {
     // Form Group creation
     this.adForm = new FormGroup({
       selectedMusicianTypeFrom: new FormControl<DropdownItems | null>(null),
-      selectedSearchingMusicianType: new FormControl<DropdownItems | null>(null),
+      selectedSearchingMusicianType: new FormControl<DropdownItems | null>(
+        null
+      ),
       selectedMusicStyles: new FormControl([], Validators.required),
       selectedLocation: new FormControl('', [Validators.required]),
     });
@@ -86,7 +94,6 @@ export class SearchComponent {
       this.isBandSearching = false;
     }
   }
-
 
   showToastResults(ads: Ad[]) {
     if (ads.length === 0) {
@@ -105,10 +112,12 @@ export class SearchComponent {
   }
 
   onSubmit() {
-    const searching = this.adForm.get('selectedMusicianTypeFrom')?.value.code === 'band' 
-    ? this.adForm.get('selectedSearchingMusicianType')?.value?.code ?? ''
-    : 'band';
-    const selectedMusicStyles = this.adForm.get('selectedMusicStyles')?.value ?? [];
+    const searching =
+      this.adForm.get('selectedMusicianTypeFrom')?.value.code === 'band'
+        ? this.adForm.get('selectedSearchingMusicianType')?.value?.code ?? ''
+        : 'band';
+    const selectedMusicStyles =
+      this.adForm.get('selectedMusicStyles')?.value ?? [];
 
     this.adService.searchAds
       .call(
@@ -118,9 +127,11 @@ export class SearchComponent {
         selectedMusicStyles.map((style: DropdownItems) => style.code),
         this.adForm.get('selectedLocation')?.value.code ?? ''
       )
-      .subscribe((ads: Ad[]) => {
-        this.ads = ads;
-        this.showToastResults(ads);
+      .subscribe({
+        next: (ads: Ad[]) => {
+          this.ads = ads;
+          this.showToastResults(ads);
+        },
       });
   }
 }

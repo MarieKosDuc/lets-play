@@ -11,29 +11,37 @@
   align-items: center;
   width: 30%;
   box-sizing: border-box;
+
+  .button{
+    margin: auto;
+    margin-top: 1rem;
+  }
 }
 
 #ads-list {
   width: 70%;
   display: flex;
   flex-direction: column;
-  align-items: center;
   padding: 1rem;
   box-sizing: border-box;
 
-  & .card {
+  .card {
     width: 100%;
     background-color: #ffffff;
     border-bottom: 1px solid #d1d5db;
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
     margin: 1rem 0; 
   }
   
 
-  & #button {
+  #button {
     margin: auto;
     display: flex;
     justify-content: flex-end;
     margin-top: 1rem;
+    width: 10px !important;
   }
 }
 
@@ -45,6 +53,10 @@
   #side-profile {
     width: 100%;
     border-right: none;
+  }
+
+  #ads-list {
+    width: 100%;
   }
 }
 

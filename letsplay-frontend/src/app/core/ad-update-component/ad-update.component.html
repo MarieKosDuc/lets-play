@@ -1,9 +1,9 @@
-<div class="card">
+<div class="card form-card">
   <h1>Modifie ton annonce</h1>
 
   <div id="form-container">
     <form [formGroup]="adForm" (ngSubmit)="onSubmit()">
-      <label for="title">Titre :</label>
+      <label for="title">Titre : *</label>
       <input
         type="text"
         id="title"
@@ -11,7 +11,8 @@
         class="field"
         formControlName="title"
         required
-      /><br />
+        data-cy="title"
+      />
 
       <div id="image-container" *ngIf="imageSrc !== ''">
         <img
@@ -25,6 +26,8 @@
           type="button"
           id="upload-image"
           (click)="openWidget()"
+          name="Choisir une autre image pour l'annonce"
+          data-cy="upload-image"
         >
           Choisir une autre image
         </button>
@@ -34,9 +37,10 @@
 
       <div>En région : {{ location }}</div>
 
-      <div id="style-selection" class="select-options">Styles recherchés :
-
+      <div id="style-selection" class="select-options" data-cy="music-styles">
+      <label for="selectYourMusicStyles">Styles recherchés : *</label> 
       <p-multiSelect 
+      name="selectYourMusicStyles"
       ariaLabel="Choisis les styles de musique recherchés"
       formControlName="selectedMusicStyles" 
       [options]="musicStyles" 
@@ -44,13 +48,14 @@
       placeholder="Sélectionne les styles de ton choix"/>
     </div>
 
-      <label for="description">Ton annonce :</label>
+      <label for="description">Ton annonce : *</label>
       <textarea
         id="description"
         name="description"
         class="field"
         formControlName="description"
         required
+        data-cy="description"
       ></textarea>
 
       <button
@@ -58,9 +63,14 @@
         [disabled]="adForm.invalid"
         class="button"
         *ngIf="!loading && !submitted"
+        name="Mettre à jour mon annonce"
+        data-cy="update-ad"
       >
         Mettre à jour mon annonce
       </button>
+
+      <div>* Ces champs sont obligatoires</div>
+
 
       <p-progressSpinner
         *ngIf="loading"

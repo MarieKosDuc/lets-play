@@ -1,8 +1,6 @@
 package com.mariekd.letsplay.app.entities;
 
-import com.mariekd.letsplay.authentication.entities.User;
 import jakarta.persistence.*;
-import lombok.Data;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -10,7 +8,6 @@ import java.util.Set;
 
 @Entity
 @Table(name = "style")
-@Data
 public class Style {
     @Id
     @Column(updatable = false, nullable = false)
@@ -21,7 +18,7 @@ public class Style {
     private String name;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "ads_styles",
+    @JoinTable(name = "ad_style",
             joinColumns = @JoinColumn(name = "style_id"),
             inverseJoinColumns = @JoinColumn(name = "ad_id"))
     private Set<Ad> ads = new HashSet<>();
@@ -39,6 +36,11 @@ public class Style {
     }
 
     public Style() {
+    }
+
+    public Style(int id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
     public int getId() {

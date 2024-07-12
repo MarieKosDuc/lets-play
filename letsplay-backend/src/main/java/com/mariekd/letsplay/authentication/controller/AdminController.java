@@ -5,7 +5,6 @@ import com.mariekd.letsplay.authentication.dto.UserDTO;
 import com.mariekd.letsplay.authentication.entities.User;
 import com.mariekd.letsplay.authentication.services.UserService;
 
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -40,39 +39,34 @@ public class AdminController {
         LOGGER.info("Getting all users for admin");
         LOGGER.info("User is admin: " + userService.getUserByEmail("eira_de_merilme@hotmail.com"));
 
-        try {
-            List<User> usersList = userService.getAllUsers();
-            List<UserDTO> usersDTOList = new ArrayList<>();
-            for (User user : usersList) {
-                usersDTOList.add(new UserDTO(user.getId(), user.getName(), user.getEmail(), user.getProfilePicture()));
-            }
-            return usersDTOList;
-        } catch (final Exception e) {
-            LOGGER.error("Error getting all users for admin: " + e.getMessage());
-            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error getting all users for admin");
+
+        List<User> usersList = userService.getAllUsers();
+        List<UserDTO> usersDTOList = new ArrayList<>();
+        for (User user : usersList) {
+            usersDTOList.add(new UserDTO(user.getId(), user.getName(), user.getEmail(), user.getProfilePicture()));
         }
+        return usersDTOList;
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/users/{id}")
-    public ResponseEntity<Object> deleteUserByAdmin(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteUserByAdmin(@PathVariable UUID id) {
         try {
             userService.deleteUser(id);
-            return new ResponseEntity<>(HttpStatus.OK);
+            return ResponseEntity.status(HttpStatus.OK).build();
         } catch (final Exception e) {
-            LOGGER.error("Error deleting user by admin: " + e.getMessage());
-            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error deleting user by admin");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/ads/{id}")
-    public ResponseEntity<Object> deleteAdByAdmin(@PathVariable("id") int id) throws HttpServerErrorException {
+    public ResponseEntity<Void> deleteAdByAdmin(@PathVariable("id") int id) throws HttpServerErrorException {
         try {
             adService.deleteById(id);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error deleting ad");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }

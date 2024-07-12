@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 
 import { Subscription } from 'rxjs';
@@ -7,8 +7,10 @@ import { MenuItem, MessageService } from 'primeng/api';
 
 import { AuthenticationService } from '../../authentication/services/authentication.service';
 import { User } from '../../authentication/models/user.model';
-import { AuthStorageService } from '../../shared/services/storage.service';
-import { EventBusService } from 'src/app/shared/services/event-bus.service';
+import { AuthStorageService } from '../../shared/services/auth.storage.service';
+import { EventBusService } from '../../shared/services/event-bus.service';
+import { EventData } from '../../shared/models/event.class';
+import { RolesEnum } from '../../shared/enums/rolesEnum';
 
 @Component({
   selector: 'app-header',
@@ -35,14 +37,17 @@ export class HeaderComponent implements OnInit {
     private authStorageService: AuthStorageService,
     private eventBusService: EventBusService,
     private messageService: MessageService,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private cd: ChangeDetectorRef
   ) {
-    this.userSubscription = this.authStorageService.user$.subscribe((user) => {
-      this.userInfos = user;
-      this.userLoggedIn = !!user;
-      if (user) {
-        this.isAdmin = user?.roles?.includes('ROLE_ADMIN') ?? false;
-      }
+    this.userSubscription = this.authStorageService.user$.subscribe({
+      next: (user) => {
+        this.userInfos = user;
+        this.userLoggedIn = Object.keys(user).length > 0;
+        if (user) {
+          this.isAdmin = user?.roles?.includes(RolesEnum.ADMIN) ?? false;
+        }
+      },
     });
   }
 
@@ -56,6 +61,11 @@ export class HeaderComponent implements OnInit {
         const currentRoute = this.router.url;
         this.showDescription = currentRoute === '/home';
       }
+    });
+
+    this.authService.userLoggedIn.subscribe((loggedIn) => {
+      this.userLoggedIn = loggedIn;
+      this.cd.detectChanges();
     });
 
     this.userLoggedIn = this.authStorageService.isLoggedIn();
@@ -141,7 +151,7 @@ export class HeaderComponent implements OnInit {
           },
         ],
       },
-    ]
+    ];
 
     this.itemsSmallConnected = [
       {
@@ -184,22 +194,36 @@ export class HeaderComponent implements OnInit {
   }
 
   public logOut() {
+    let logoutHandled = false;
+    
     this.authService.logout().subscribe(
-      (response) => {
-        this.userLoggedIn = false;
-        this.userInfos = null;
-        this.authStorageService.clean();
-        this.router.navigate(['/home']);
-        this.messageService.add({
-          severity: 'info',
-          summary: 'Déconnexion',
-          detail: 'Tu es deconnecté.e',
-        });
+      {
+      next: () => {
+        this.handleLogoutSuccess();
+        logoutHandled = true;
       },
-      (error) => {
-        console.log(error);
-        this.router.navigate(['/home']);
-      }
-    );
+      error: (error) => {
+        console.error(error);
+        this.handleLogoutSuccess();
+        logoutHandled = true;
+      },
+    });
+  }
+  
+  private handleLogoutSuccess() {
+    this.userLoggedIn = false;
+    this.userInfos = null;
+    this.authStorageService.clean();
+    this.eventBusService.emit(new EventData('logout-user', 'user logged out'))
+    this.router.navigate(['/home']);
+    this.showMessage();
+  }
+  
+  private showMessage() {
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Déconnexion',
+      detail: 'Tu es deconnecté.e',
+    });
   }
 }

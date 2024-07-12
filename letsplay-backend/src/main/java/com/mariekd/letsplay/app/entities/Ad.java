@@ -6,11 +6,8 @@ import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.*;
 
-import lombok.*;
-
 @Entity
 @Table(name = "ad")
-@Data
 public class Ad {
     @Id
     @Column(updatable = false, nullable = false)
@@ -21,7 +18,7 @@ public class Ad {
     private Instant createdAt;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "posted_by", nullable = false, referencedColumnName = "user_id")
+    @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "user_id")
     private User postedBy;
 
     @Column(nullable = false, name="title")
@@ -39,7 +36,7 @@ public class Ad {
     private String image;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "ads_styles",
+    @JoinTable(name = "ad_style",
             joinColumns = @JoinColumn(name = "ad_id"),
             inverseJoinColumns = @JoinColumn(name = "style_id"))
     private Set<Style> styles = new HashSet<>();
@@ -52,17 +49,18 @@ public class Ad {
     private String description;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "users_liked_ads",
+    @JoinTable(name = "user_liked_ad",
             joinColumns = @JoinColumn(name = "ad_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> likedByUsers = new HashSet<>();
 
-    public Ad (int id, Instant createdAt, User postedBy, String title, MusicianType searching, String image,
+    public Ad (int id, Instant createdAt, User postedBy, String title, MusicianType from, MusicianType searching, String image,
                Set<Style> styles, Location location, String description, Set<User> likedByUsers) {
         this.id = id;
         this.createdAt = createdAt;
         this.postedBy = postedBy;
         this.title = title;
+        this.from = from;
         this.searching = searching;
         this.image = image;
         this.styles = styles;
@@ -71,9 +69,7 @@ public class Ad {
         this.likedByUsers = likedByUsers != null ? likedByUsers : new HashSet<>();
     }
 
-    public Ad() {
-
-    }
+    public Ad() { }
 
     public int getId() {
         return id;
@@ -169,6 +165,8 @@ public class Ad {
         this.likedByUsers.remove(user);
         user.getLikedAds().remove(this);
     }
+
+
 
     @Override
     public String toString() {

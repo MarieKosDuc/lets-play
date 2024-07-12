@@ -30,7 +30,7 @@ public class User {
     private boolean valid;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_roles",
+    @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
@@ -39,7 +39,7 @@ public class User {
     private Set<Ad> ads;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "users_liked_ads",
+    @JoinTable(name = "user_liked_ad",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "ad_id"))
     private Set<Ad> likedAds;
@@ -126,7 +126,13 @@ public class User {
 
     public Set<Ad> getLikedAds() { return likedAds; }
 
+    public List<Ad> getLikedAdsList() { return new ArrayList<>(likedAds); }
+
     public void setLikedAds(Set<Ad> likedAds) { this.likedAds = likedAds; }
+
+    public int[] getLikedAdsIds() {
+        return likedAds.stream().mapToInt(Ad::getId).toArray();
+    }
 
     // Methods to add or remove liked ads
     public void addLikedAd(Ad ad) {

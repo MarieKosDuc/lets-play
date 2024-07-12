@@ -1,31 +1,31 @@
-<header>
+<header data-cy="header">
     <!-- Non connected user header - large screen -->
-    <nav id="header-large" class="header-large" *ngIf="!isAdmin">
-        <a routerLink="home"><img src="assets/images/Logo.png" alt="Logo Let's Play" id="logo"></a>
+    <nav id="header-large" class="header-large" *ngIf="!isAdmin" aria-label="menu de navigation utilisateur non connecté - écran large" data-cy="nav">
+        <a routerLink="home"><img src="assets/images/Logo.png" alt="Logo Let's Play" id="logo" data-cy="logo"></a>
         <a routerLink="home" routerLinkActive="underline" class="link">ACCUEIL</a>
         <a routerLink="search" routerLinkActive="underline" class="link">RECHERCHER</a>
     
         <a *ngIf="userLoggedIn; else loginLink">
-            <div>
+            <div data-cy="connected-nav">
                 <p-menu #menu [model]="items" [popup]="true" />
-                <button (click)="menu.toggle($event)">
+                <button (click)="menu.toggle($event)" name="Dérouler le menu de navigation" data-cy="nav-dropdown">
                     <img id="profile-pic" src="{{userInfos?.profilePicture}}" alt="Photo de profil" >
                 </button>
             </div>
         </a>
-        <ng-template #loginLink>
-            <a routerLink="login" routerLinkActive="underline" class="link">CONNEXION / INSCRIPTION</a>
+        <ng-template #loginLink >
+            <a routerLink="login" routerLinkActive="underline" class="link" data-cy="connexion-inscription">CONNEXION / INSCRIPTION</a>
         </ng-template>
     </nav>
 
     <!-- Connected user header - small screen -->
-    <nav id="header-small" class="header-small" *ngIf="!isAdmin">
-        <a routerLink="home"><img src="assets/images/Logo.png" alt="Logo Let's Play" id="logo"></a>
+    <nav id="header-small" class="header-small" *ngIf="!isAdmin" aria-label="menu de navigation utilisateur connecté - écran large">
+        <a routerLink="home"><img src="assets/images/Logo.png" alt="Logo Let's Play" id="logo" data-cy="logo"></a>
 
         <a *ngIf="userLoggedIn; else connectedUserMenu">
             <div>
                 <p-menu #menu [model]="itemsSmallConnected" [popup]="true" />
-                <button (click)="menu.toggle($event)">
+                <button (click)="menu.toggle($event)" name="Dérouler le menu de navigation">
                     <img id="profile-pic" src="{{userInfos?.profilePicture}}" alt="Photo de profil" >
                 </button>
             </div>
@@ -33,7 +33,7 @@
 
         <ng-template #connectedUserMenu>
             <p-menu #menu2 [model]="itemsSmall" [popup]="true" />
-            <button id="burger-menu" (click)="menu2.toggle($event)">
+            <button id="burger-menu" (click)="menu2.toggle($event)" name="Dérouler le menu de navigation">
                 <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
                 </svg> 
@@ -42,26 +42,26 @@
     </nav>
 
     <!-- Connected admin header - large screen -->
-    <nav id="header-admin" class="header-large" *ngIf="isAdmin">
-        <a routerLink="home"><img src="assets/images/Logo.png" alt="Logo Let's Play" id="logo"></a>
+    <nav id="header-admin" class="header-large" *ngIf="isAdmin" aria-label="menu de navigation utilisateur non connecté - écran de mobile" data-cy="admin-nav">
+        <a routerLink="/admin/user"><img src="assets/images/Logo.png" alt="Logo Let's Play" id="logo" data-cy="logo"></a>
         <a routerLink="/admin/users" routerLinkActive="underline" class="link">MEMBRES</a>
         <a routerLink="/admin/ads" routerLinkActive="underline" class="link">ANNONCES</a>
         <a routerLink="/" (click)="logOut()" class="link">DECONNEXION</a>
     </nav>
 
     <!-- Connected admin header - small screen -->
-    <nav id="header-admin-small" class="header-small" *ngIf="isAdmin">
-        <a routerLink="home"><img src="assets/images/Logo.png" alt="Logo Let's Play" id="logo"></a>
+    <nav id="header-admin-small" class="header-small" *ngIf="isAdmin" aria-label="menu de navigation utilisateur connecté - écran de mobile">
+        <a routerLink="home"><img src="assets/images/Logo.png" alt="Logo Let's Play" id="logo" data-cy="logo"></a>
 
             <p-menu #menu2 [model]="itemsAdminSmall" [popup]="true" />
-            <button id="burger-menu" (click)="menu2.toggle($event)">
+            <button id="burger-menu" (click)="menu2.toggle($event)" name="Dérouler le menu de navigation">
                 <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
                 </svg> 
             </button>
     </nav>
 
-    <div id="description" *ngIf="showDescription" >
+    <div id="description" *ngIf="showDescription" data-cy="global-description">
         LET’S PLAY, c’est LA plateforme qui met en relation les musiciens et groupes de metal.<br>
         Parcours nos dernières annonces et trouve tes futurs bandmates !
     </div>

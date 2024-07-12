@@ -1,8 +1,8 @@
 package com.mariekd.letsplay.authentication.config;
 
+import com.mariekd.letsplay.authentication.enums.RolesEnum;
 import com.mariekd.letsplay.authentication.jwt.JwtAuthenticationFilter;
 import com.mariekd.letsplay.authentication.services.implementations.UserDetailsServiceImpl;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -24,7 +24,6 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class WebSecurityConfig {
 
     private final List<AntPathRequestMatcher> excludedMatchers = List.of(
@@ -39,9 +38,12 @@ public class WebSecurityConfig {
             new AntPathRequestMatcher("/api/ads/search")
     );
 
-    @Autowired
     @Qualifier("handlerExceptionResolver")
     private HandlerExceptionResolver resolver;
+    
+    public WebSecurityConfig(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
+        this.resolver = resolver;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder () {
@@ -80,7 +82,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/users/logout").permitAll()
                         .requestMatchers("/api/ads/get/**").permitAll()
                         .requestMatchers("/api/ads/search").permitAll()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/admin/**").hasRole(RolesEnum.ADMIN.name())
                         .anyRequest().authenticated()
                 )
                 .csrf(AbstractHttpConfigurer::disable);
@@ -90,7 +92,4 @@ public class WebSecurityConfig {
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
-
-
 }

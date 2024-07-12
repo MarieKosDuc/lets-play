@@ -1,31 +1,36 @@
-<div class="card">
+<div class="card form-card">
     <h1>Recherche tes futurs musiciens parmi nos annonces !</h1>
   
     <div id="form-container">
-      <form [formGroup]="adForm" (ngSubmit)="onSubmit()">
+      <form [formGroup]="adForm" (ngSubmit)="onSubmit()" data-cy="search-form">
           
-        <div class="select-options"><p>Je suis : </p>
-  
+        <div class="select-options" data-cy="musician-type-from">
+          <label for="selectYourMusicianType">Je suis : *</label>
           <p-dropdown 
+            name="selectYourMusicianType"
             ariaLabel="Choisis si tu es un groupe ou un musicien solo"
             formControlName="selectedMusicianTypeFrom"
-            [options]="fromMusicianTypes" 
+            [options]="fromMusicianTypes"
             optionLabel="name" 
             placeholder="Ton instrument"
-            (onChange)="setBandSearching($event)" />
+            (onChange)="setBandSearching($event)" 
+            data-cy="from-select"/>
         </div>
       
-          <div class="select-options" *ngIf='isBandSearching'><p>Je recherche : </p>
+          <div class="select-options" *ngIf='isBandSearching' data-cy="musician-type-searching">
+            <label for="selectYourSearchedMusician">Je recherche : *</label>
             <p-dropdown 
+              name="selectYourSearchedMusician"
               ariaLabel="Choisis le type de musicien recherché"
               formControlName="selectedSearchingMusicianType"
               [options]="searchingMusicianTypes" 
               optionLabel="name"/>
           </div>
       
-          <div id="style-selection" class="select-options"><p>Styles recherchés :</p>
-  
+          <div id="style-selection" class="select-options" data-cy="music-styles">
+            <label for="selectYourMusicStyles">Styles recherchés : *</label>
             <p-multiSelect 
+            name="selectYourMusicStyles"
             ariaLabel="Choisis les styles de musique recherchés"
             formControlName="selectedMusicStyles" 
             [options]="musicStyles" 
@@ -33,9 +38,10 @@
             placeholder="Sélectionne les styles de ton choix"/>
           </div>
   
-          <div id="location" class="select-options">
-            <p>Dans la région suivante : </p>
+          <div id="location" class="select-options" data-cy="location">
+            <label for="selectYourLocation">Dans la région suivante : *</label>
             <p-dropdown 
+            name="selectYourLocation"
               ariaLabel="Sélectionne une région pour ton annonce"
               formControlName="selectedLocation"
               [options]="locations" 
@@ -43,9 +49,10 @@
               placeholder="Choisis une région"/>
           </div>
   
-            <button type="submit" [disabled]="adForm.invalid" class="button" *ngIf="!loading && !submitted">
+            <button type="submit" [disabled]="adForm.invalid" class="button" *ngIf="!loading && !submitted" name="Lancer la recherche">
               Rechercher
             </button>
+            <div>* Ces champs sont obligatoires</div>
   
             <p-progressSpinner *ngIf="loading" class="spinner" mode="indeterminate"></p-progressSpinner>
         </form>
@@ -53,5 +60,5 @@
   </div>
   
   <div>
-    <app-ads-list *ngFor="let ad of ads" [ads]="ads"></app-ads-list>
+    <app-ads-list *ngFor="let ad of ads" [ads]="ads" data-cy="search-results"></app-ads-list>
 </div>

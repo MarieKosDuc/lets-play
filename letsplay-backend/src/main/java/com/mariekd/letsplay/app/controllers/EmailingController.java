@@ -2,9 +2,11 @@ package com.mariekd.letsplay.app.controllers;
 
 import com.mariekd.letsplay.app.entities.Ad;
 import com.mariekd.letsplay.app.request.ContactEmailRequest;
+import com.mariekd.letsplay.app.services.AdService;
 import com.mariekd.letsplay.app.services.EmailService;
 import com.mariekd.letsplay.app.services.implementation.AdServiceImpl;
 import com.mariekd.letsplay.authentication.entities.User;
+import com.mariekd.letsplay.authentication.services.UserService;
 import com.mariekd.letsplay.authentication.services.implementations.UserServiceImpl;
 import org.slf4j.Logger;
 import org.springframework.http.MediaType;
@@ -21,11 +23,11 @@ import java.util.UUID;
 @CrossOrigin(maxAge = 3600)
 public class EmailingController {
     private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(EmailingController.class);
-    private final UserServiceImpl userService;
-    private final AdServiceImpl adService;
+    private final UserService userService;
+    private final AdService adService;
     private final EmailService emailService;
 
-    public EmailingController(AdServiceImpl adService, UserServiceImpl userService, EmailService emailService) {
+    public EmailingController(AdService adService, UserService userService, EmailService emailService) {
         this.userService = userService;
         this.adService = adService;
         this.emailService = emailService;
@@ -33,7 +35,7 @@ public class EmailingController {
 
     @PreAuthorize("hasRole('USER')")
     @PostMapping
-    public ResponseEntity<Object> sendContactEmail(@RequestBody ContactEmailRequest contactEmailRequest) {
+    public ResponseEntity<Map<String, String>> sendContactEmail(@RequestBody ContactEmailRequest contactEmailRequest) {
         try {
             Ad contactAd = adService.getAdById(Integer.parseInt(contactEmailRequest.adId())).get();
 

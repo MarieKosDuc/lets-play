@@ -9,8 +9,8 @@
         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
         http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
 
-    <changeSet  id="1"  author="Marie-KD">    <!-- Creation of user, roles, user_roles join table -->
-        <createTable  tableName="roles" schemaName="music">
+    <changeSet  id="1"  author="Marie-KD">    <!-- Creation of user, role, user_role join table -->
+        <createTable  tableName="role" schemaName="music">
             <column  name="id"  type="integer">
                 <constraints  primaryKey="true"  nullable="false"/>
             </column>
@@ -24,7 +24,7 @@
                           generationType="ALWAYS"
                           incrementBy="1"
                           schemaName="music"
-                          tableName="roles"/>
+                          tableName="role"/>
 
         <createTable  tableName="app_user" schemaName="music">
             <column  name="user_id"  type="UUID">
@@ -44,7 +44,7 @@
             </column>
         </createTable>
 
-        <createTable  tableName="user_roles" schemaName="music">
+        <createTable  tableName="user_role" schemaName="music">
             <column  name="user_id"  type="UUID">
                 <constraints  nullable="false"
                               foreignKeyName="user_id" references="app_user(user_id)"
@@ -52,7 +52,7 @@
             </column>
             <column  name="role_id"  type="integer">
                 <constraints  nullable="false" foreignKeyName="role_id"
-                              references="roles(id)"/>
+                              references="role(id)"/>
             </column>
         </createTable>
 
@@ -120,10 +120,10 @@
             <column  name="created_at"  type="timestamp">
                 <constraints  nullable="false"/>
             </column>
-            <column  name="posted_by"  type="UUID">
+            <column  name="user_id"  type="UUID">
                 <constraints  nullable="false"/>
             </column>
-            <column  name="title"  type="varchar(50)">
+            <column  name="title"  type="varchar(100)">
                 <constraints  nullable="false"/>
             </column>
             <column  name="from_musician"  type="integer">
@@ -153,7 +153,7 @@
     </changeSet>
 
     <changeSet id="4" author="Marie-KD">  <!-- Creation of ads-styles MtoM table-->
-        <createTable  tableName="ads_styles" schemaName="music">
+        <createTable  tableName="ad_style" schemaName="music">
             <column  name="ad_id"  type="int">
                 <constraints  nullable="false"
                               foreignKeyName="ad_id" references="ad(id)"
@@ -171,7 +171,7 @@
         <addForeignKeyConstraint
                 baseTableSchemaName="music"
                 baseTableName="ad"
-                baseColumnNames="posted_by"
+                baseColumnNames="user_id"
                 referencedTableName="app_user"
                 referencedColumnNames="user_id"
                 constraintName="fk_app_user_id"
@@ -233,10 +233,10 @@
     </changeSet>
 
     <changeSet id="7" author="Marie-KD"> <!-- Insertion of roles -->
-        <insert tableName="roles" schemaName="music">
+        <insert tableName="role" schemaName="music">
             <column name="name" value="ROLE_USER" />
         </insert>
-        <insert tableName="roles" schemaName="music">
+        <insert tableName="role" schemaName="music">
             <column name="name" value="ROLE_ADMIN" />
         </insert>
     </changeSet>
@@ -354,7 +354,7 @@
     </changeSet>
 
     <changeSet id="10" author="Marie-KD"> <!-- Creation of many-to-many tables for ads liking -->
-        <createTable  tableName="users_liked_ads" schemaName="music">
+        <createTable  tableName="user_liked_ad" schemaName="music">
             <column  name="user_id"  type="UUID">
                 <constraints  nullable="false"
                               foreignKeyName="user_id" references="app_user(user_id)"

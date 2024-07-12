@@ -1,35 +1,66 @@
-<div id="ad-card" class="card">
-    <h1 id="ad title">{{ ad.title | uppercase}} </h1>
-    <i class="{{starIcon}}" style="font-size: 2rem; cursor: pointer" (click)="onFavoriteClick($event)" *ngIf="!isAuthorUser() 
-    && isUserConnected &&!isAdmin()"
-    alt="Mettre l'annonce en favori ou l'en retirer"></i>
+<div id="ad-card" class="card" data-cy="ad">
+  <h1 id="ad title" data-cy="ad-title">{{ ad.title | uppercase }}</h1>
+  <i
+    class="{{ starIcon }}"
+    style="font-size: 2rem; cursor: pointer"
+    (click)="onFavoriteClick($event)"
+    *ngIf="!isAuthorUser() && isUserConnected && !isAdmin()"
+    alt="Mettre l'annonce en favori ou l'en retirer"
+    data-cy="favori"
+  ></i>
 
-    <div class="infos-container">
-        <div id="location-posted-at">
-            <div id="location">
-                {{ ad.location }}
-            </div>
-            <div id="posted-at">
-                Mis en ligne le {{ ad.createdAt | date: 'd MMMM yyyy' }}
-            </div>
-        </div>
-        <div id="styles-posted-by">
-            <div id="styles">
-                {{ ad.styles }}
-            </div>
-            <div id="posted-by">
-                <div style="cursor: pointer;" (click)="onProfileClick($event)"> Par {{ad.postedByName }} </div>
-            </div>
-        </div>
+  <div class="infos-container">
+    <div id="location-posted-at">
+      <div id="location" data-cy="location">
+        {{ ad.location }}
+      </div>
+      <div id="posted-at" data-cy="posted-at">
+        Mis en ligne le {{ ad.createdAt | date: "d MMMM yyyy" }}
+      </div>
     </div>
-    <div id="picture">
-        <img [src]="ad.image" alt="image de l'annonce">
+    <div id="styles-posted-by">
+      <div id="styles" data-cy="music-styles">
+        {{ ad.styles }}
+      </div>
+      <div id="posted-by" data-cy="posted-by">
+        <div style="cursor: pointer" (click)="onProfileClick($event)" data-cy="see-profile">
+          Par {{ ad.postedByName }}
+        </div>
+      </div>
     </div>
+  </div>
+  <div id="picture">
+    <img [src]="ad.image" alt="image de l'annonce" />
+  </div>
 
-    <div id="ad-text-container">
-        <p id="ad-text">{{ ad.description }}</p>
-        <button class="button" *ngIf="!isSingleAd" (click)="goToAd()">PLUS</button>
-        <button class="button" *ngIf="isSingleAd && !isAuthorUser() && !isAdmin()" (click)="contact()">CONTACT</button> 
-        <button class="button" *ngIf="isSingleAd && isAuthorUser()" (click)="updateAd()">MODIFIER</button> 
-    </div>
+  <div id="ad-text-container">
+    <p id="ad-text">{{ ad.description }}</p>
+    <button
+      class="button"
+      *ngIf="!isSingleAd"
+      (click)="goToAd()"
+      name="Aller à l'annonce détaillée"
+      data-cy="plus"
+    >
+      PLUS
+    </button>
+    <button
+      class="button"
+      *ngIf="isSingleAd && !isAuthorUser() && !isAdmin()"
+      (click)="contact()"
+      name="Contacter l'auteur de l'annonce"
+      data-cy="contact-author"
+    >
+      CONTACT
+    </button>
+    <button
+      class="button"
+      *ngIf="isSingleAd && isAuthorUser()"
+      (click)="updateAd()"
+      name="Modifier mon annonce"
+      data-cy="update-ad"
+    >
+      MODIFIER
+    </button>
+  </div>
 </div>

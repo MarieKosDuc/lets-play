@@ -20,6 +20,7 @@ const AUTH_API = `${environment.apiUrl}/users`;
 export class AuthenticationService {
 
   private loggedIn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public userLoggedIn = this.loggedIn.asObservable();
   private currentUser: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
 
   constructor(private http: HttpClient) { }

@@ -3,7 +3,8 @@ import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { AuthenticationService } from '../services/authentication.service';
-import { AuthStorageService } from 'src/app/shared/services/storage.service';
+import { AuthStorageService } from 'src/app/shared/services/auth.storage.service';
+import { RolesEnum } from 'src/app/shared/enums/rolesEnum';
 
 import { MessageService } from 'primeng/api';
 
@@ -36,8 +37,8 @@ export class LoginComponent {
     const name = form.value.email;
     const password = form.value.password;
 
-    this.authService.login(name, password).subscribe(
-      (response) => {
+    this.authService.login(name, password).subscribe({
+      next: (response) => {
         this.authStorageService.saveUser(response);
 
         this.isLoggedIn = true;
@@ -48,24 +49,31 @@ export class LoginComponent {
           summary: 'Connexion réussie',
           detail: `Te voila connecté.e, ${response.name}. Bonne recherche !`,
         });
-
         setTimeout(() => {
-          if (this.authStorageService.getUser().roles.includes('ROLE_ADMIN')) {
+          if (this.authStorageService.getUser().roles.includes(RolesEnum.ADMIN)) {
             this.router.navigate(['/admin/users']);
           } else {
-          this.router.navigate(['/home']);
+            this.router.navigate(['/home']);
           }
         }, 2000);
       },
-      (error) => {
+      error: (error) => {
         this.loading = false;
         this.isLoggedIn = false;
         if (error.status == 403) {
-          this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Identifiant ou mot de passe incorrect' });
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erreur',
+            detail: 'Identifiant ou mot de passe incorrect',
+          });
         } else {
-          this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Une erreur est survenue' });
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erreur',
+            detail: 'Une erreur est survenue',
+          });
         }
-      }
-    );
+      },
+    });
   }
 }

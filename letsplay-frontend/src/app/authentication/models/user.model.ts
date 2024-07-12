@@ -3,5 +3,6 @@ export interface User {
     name: string,
     profilePicture: string,
     roles?: string[],
-    refreshToken?: string
+    refreshToken?: string,
+    likedAds?: number[]
 }

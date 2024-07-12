@@ -2,14 +2,11 @@ package com.mariekd.letsplay.app.entities;
 
 import jakarta.persistence.*;
 
-import lombok.*;
-
 import java.util.Objects;
 import java.util.Set;
 
 @Entity
 @Table(name = "musician_type")
-@Data
 public class MusicianType {
     @Id
     @Column(updatable = false, nullable = false)

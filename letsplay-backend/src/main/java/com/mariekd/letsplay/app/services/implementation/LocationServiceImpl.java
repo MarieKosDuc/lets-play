@@ -2,10 +2,11 @@ package com.mariekd.letsplay.app.services.implementation;
 
 import com.mariekd.letsplay.app.entities.Location;
 import com.mariekd.letsplay.app.repositories.LocationRepository;
+import com.mariekd.letsplay.app.services.LocationService;
 import org.springframework.stereotype.Service;
 
 @Service
-public class LocationServiceImpl {
+public class LocationServiceImpl implements LocationService {
 
     final LocationRepository locationRepository;
 
