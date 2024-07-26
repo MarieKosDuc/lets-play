@@ -70,14 +70,11 @@ export class AuthStorageService {
     const index = currentUser.likedAds.indexOf(adId);
 
     if (index === -1) {
-      // Ajouter l'annonce aux favoris si elle n'est pas déjà présente
       currentUser.likedAds.push(adId);
     } else {
-      // Retirer l'annonce des favoris si elle est déjà présente
       currentUser.likedAds.splice(index, 1);
     }
 
-    // Enregistrer l'objet utilisateur mis à jour dans le localStorage
     this.saveUser(currentUser);
   }
 

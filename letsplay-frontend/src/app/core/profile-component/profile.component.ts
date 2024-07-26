@@ -11,7 +11,7 @@ import { AdService } from '../services/ad.service';
 
 import { User } from '../../authentication/models/user.model';
 import { Ad } from '../models/ad.model';
-import { profileToUpdate } from '../../shared/models/profileToUpdate.model';
+import { profileToUpdate } from '../models/profileToUpdate.model';
 import { Subscription, tap } from 'rxjs';
 
 @Component({

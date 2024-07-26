@@ -116,6 +116,31 @@ body {
     width: 10%;
     margin: auto;
   }
+
+  #ads-list {
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    box-sizing: border-box;
+  
+    .card {
+      width: 100%;
+      background-color: #ffffff;
+      border-bottom: 1px solid #d1d5db;
+      display: flex;
+      align-items: stretch;
+      justify-content: space-between;
+      margin: 1rem 0; 
+    }
+  }
+  
+  #no-ads-found{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 }
 
 @media (min-width: 375px) {
@@ -258,4 +283,6 @@ body {
       margin-bottom: 1px;
     }
   }
+
+
 }

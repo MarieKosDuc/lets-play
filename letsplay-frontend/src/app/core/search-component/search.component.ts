@@ -119,10 +119,7 @@ export class SearchComponent {
     const selectedMusicStyles =
       this.adForm.get('selectedMusicStyles')?.value ?? [];
 
-    this.adService.searchAds
-      .call(
-        this.adService,
-        searching,
+    this.adService.searchAds(searching,
         this.adForm.get('selectedMusicianTypeFrom')?.value.code ?? '',
         selectedMusicStyles.map((style: DropdownItems) => style.code),
         this.adForm.get('selectedLocation')?.value.code ?? ''

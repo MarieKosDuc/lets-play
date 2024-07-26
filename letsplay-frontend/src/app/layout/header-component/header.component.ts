@@ -73,7 +73,7 @@ export class HeaderComponent implements OnInit {
 
     this.eventBusSubscription = this.eventBusService.on('logout', () => {
       console.log('Logout event received');
-      this.logOut();
+      this.handleLogoutSuccess();
     });
 
     this.items = [
@@ -194,18 +194,14 @@ export class HeaderComponent implements OnInit {
   }
 
   public logOut() {
-    let logoutHandled = false;
-    
     this.authService.logout().subscribe(
       {
       next: () => {
         this.handleLogoutSuccess();
-        logoutHandled = true;
       },
       error: (error) => {
         console.error(error);
         this.handleLogoutSuccess();
-        logoutHandled = true;
       },
     });
   }

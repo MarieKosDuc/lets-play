@@ -37,6 +37,10 @@ export class LoginComponent {
     const name = form.value.email;
     const password = form.value.password;
 
+    this.performAuth(name, password);
+  }
+
+  protected performAuth(name: string, password: string): void {
     this.authService.login(name, password).subscribe({
       next: (response) => {
         this.authStorageService.saveUser(response);

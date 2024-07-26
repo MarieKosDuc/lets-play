@@ -10,7 +10,7 @@ import { MessageService } from 'primeng/api';
   styleUrls: ['./signup.component.css'],
 })
 export class SignupComponent {
-  protected signupForm!: FormGroup;
+  public signupForm!: FormGroup;
 
   protected registerOk: boolean = false;
   protected loading: boolean = false;

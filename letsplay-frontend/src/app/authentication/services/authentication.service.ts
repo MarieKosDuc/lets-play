@@ -5,11 +5,12 @@ import { environment } from 'src/environments/environment';
 import { BehaviorSubject, Observable, catchError, tap, throwError } from 'rxjs';
 
 import { User } from 'src/app/authentication/models/user.model'
-import { profileToUpdate } from '../../shared/models/profileToUpdate.model';
+import { profileToUpdate } from '../../core/models/profileToUpdate.model';
 
 
 const httpOptions = {
-  headers: new HttpHeaders({ 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' })
+  headers: new HttpHeaders({ 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }),
+  withCredentials: true
 };
 
 const AUTH_API = `${environment.apiUrl}/users`;
@@ -24,10 +25,6 @@ export class AuthenticationService {
   private currentUser: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
 
   constructor(private http: HttpClient) { }
-
-  getUserById(id: String): Observable<User> {
-    return this.http.get<User>(`${AUTH_API}/${id}`, httpOptions);
-  }
 
   login(name: string, password: string): Observable<User> {
     return this.http.post<User>(AUTH_API + '/login', { name, password }, httpOptions).pipe(
@@ -92,6 +89,10 @@ export class AuthenticationService {
         this.currentUser.next(user);
       })
     );
+  }
+  
+  getUserById(id: String): Observable<User> {
+    return this.http.get<User>(`${AUTH_API}/${id}`, httpOptions);
   }
 
   deleteUser(id: String): Observable<any> {

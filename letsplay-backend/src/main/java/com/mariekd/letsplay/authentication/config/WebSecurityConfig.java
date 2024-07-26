@@ -35,7 +35,9 @@ public class WebSecurityConfig {
             new AntPathRequestMatcher("/api/users/refreshtoken"),
             new AntPathRequestMatcher("/api/users/logout"),
             new AntPathRequestMatcher("/api/ads/get/**"),
-            new AntPathRequestMatcher("/api/ads/search")
+            new AntPathRequestMatcher("/api/ads/search"),
+            new AntPathRequestMatcher("/v3/api-docs/**"),
+            new AntPathRequestMatcher("/swagger-ui/**")
     );
 
     @Qualifier("handlerExceptionResolver")
@@ -82,6 +84,8 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/users/logout").permitAll()
                         .requestMatchers("/api/ads/get/**").permitAll()
                         .requestMatchers("/api/ads/search").permitAll()
+                        .requestMatchers("/v3/api-docs/**").permitAll()
+                        .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole(RolesEnum.ADMIN.name())
                         .anyRequest().authenticated()
                 )

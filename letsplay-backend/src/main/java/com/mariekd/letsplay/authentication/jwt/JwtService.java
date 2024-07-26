@@ -22,7 +22,7 @@ public class JwtService {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtService.class);
 
-    private final Key secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512); //TODO : check ERROR 6856 JWT signature is invalid: JWT signature does not match locally computed signature. JWT validity cannot be asserted
+    private final Key secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
     private final String jwtCookieName = "jwt";
 
