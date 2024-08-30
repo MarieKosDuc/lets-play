@@ -53,7 +53,6 @@ public class AdController {
     public List<AdDTO> getSearchedAds(@RequestParam String from, @RequestParam String searching,
                                       @RequestParam List<String> styles, @RequestParam String location) {
         List<Ad> ads = adService.getSearchedAds(from, searching, styles, location);
-        ads.sort(Comparator.comparing(Ad::getCreatedAt).reversed());
         return ads.stream().map(AdMapper::toAdDTO).toList();
     }
 
