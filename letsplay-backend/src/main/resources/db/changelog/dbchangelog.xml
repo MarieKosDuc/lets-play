@@ -482,5 +482,15 @@
                 deleteCascade="true"
         />
     </changeSet>
+    <changeSet id="fix-varchar" author="Marie-KD">
+        <modifyDataType
+                tableName="ad"
+                columnName="title"
+                newDataType="varchar(255)"/>
+        <modifyDataType
+                tableName="ad"
+                columnName="image"
+                newDataType="varchar(255)"/>
+    </changeSet>
 
 </databaseChangeLog>

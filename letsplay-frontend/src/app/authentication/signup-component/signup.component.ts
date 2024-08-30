@@ -16,7 +16,7 @@ export class SignupComponent {
   protected loading: boolean = false;
 
   protected passwordRegex =
-    /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/;
+    /^(?=.*[0-9])(?=.*[!@#$%^&*'])[a-zA-Z0-9!@#$%^&*']{8,}$/;
 
   protected defaultProfilePicture: String =
     'https://res.cloudinary.com/daotbgmy2/image/upload/v1711275248/profile_pic_default.jpg';
@@ -48,6 +48,7 @@ export class SignupComponent {
         detail:
           'Le mot de passe doit contenir au moins 8 caractères, une lettre, un chiffre et un caractère spécial',
       });
+      this.loading = false; 
       return;
     }
 
