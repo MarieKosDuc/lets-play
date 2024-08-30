@@ -40,20 +40,9 @@ export class AdComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.authStorageService.user$.subscribe({
-      next: (user) => {
-        this.connectedUser = user;
-        if (Object.keys(this.connectedUser).length !== 0) {
-          this.isUserConnected = true;
-          this.isFavorite =
-            this.connectedUser.likedAds?.includes(this.ad.id) ?? false;
-          this.starIcon = this.isFavorite ? 'pi pi-star-fill' : 'pi pi-star';
-        }
-      },
-    });
-
     const currentRoute = this.route.snapshot.routeConfig?.path;
     if (currentRoute === 'home' || currentRoute === 'search') {
+      this.getLikedStatus();
       this.isSingleAd = false;
       this.ad.description = this.truncateText(this.ad.description);
     }
@@ -64,6 +53,7 @@ export class AdComponent implements OnInit {
       this.adService.getAdById(adId).subscribe({
         next: (ad: Ad) => {
           this.ad = ad;
+          this.getLikedStatus();
           this.transformAd(this.ad);
         },
         error: (error) => {
@@ -75,6 +65,20 @@ export class AdComponent implements OnInit {
         },
       });
     }
+  }
+
+  protected getLikedStatus(): void {
+    this.authStorageService.user$.subscribe({
+      next: (user) => {
+        this.connectedUser = user;
+        if (Object.keys(this.connectedUser).length !== 0) {
+          this.isUserConnected = true;
+          this.isFavorite =
+            this.connectedUser.likedAds?.includes(this.ad.id) ?? false;
+          this.starIcon = this.isFavorite ? 'pi pi-star-fill' : 'pi pi-star';
+        }
+      },
+    });
   }
 
   protected isAdmin(): boolean {

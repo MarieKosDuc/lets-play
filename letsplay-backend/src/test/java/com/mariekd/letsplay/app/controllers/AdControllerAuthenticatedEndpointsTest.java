@@ -118,9 +118,10 @@ public class AdControllerAuthenticatedEndpointsTest {
      * @throws Exception
      */
     @Test
-    @WithMockUser(username = "validUser", roles = {"USER"})
+    @WithMockUser(username = "validUser")
     void createAd_ReturnsOk_WhenAdIsCreated() throws Exception {
-       CreateAdRequest createAdRequest = new CreateAdRequest("Test Ad", musicianType1.getName(), musicianType2.getName(), "band.jpg", styles, location.getName(), "test description");
+       CreateAdRequest createAdRequest = new CreateAdRequest("Test Ad", musicianType1.getName(), musicianType2.getName(),
+               "band.jpg", styles, location.getName(), "test description");
 
         Mockito.when(userService.getUserById(testUuid)).thenReturn(testUser);
         Mockito.when(userService.getUserFromRequest(Mockito.any())).thenReturn(testUser);
@@ -164,10 +165,12 @@ public class AdControllerAuthenticatedEndpointsTest {
     @WithMockUser(username = "validUser", roles = {"USER"})
     void updateAdByUser_ReturnsOk_WhenUserIsAdAuthor() throws Exception {
         UUID userId = UUID.randomUUID();
-        User user = new User(userId, "validUser", "validUser@example.com", "password", "profilePicture", true, null, null, null);
+        User user = new User(userId, "validUser", "validUser@example.com", "password",
+                "profilePicture", true, null, null, null);
         int adId = 1;
 
-        CreateAdRequest updateAdRequest = new CreateAdRequest("Updated Ad", musicianType1.getName(), musicianType2.getName(), "band.jpg", styles, location.getName(), "Updated test description");
+        CreateAdRequest updateAdRequest = new CreateAdRequest("Updated Ad", musicianType1.getName(),
+                musicianType2.getName(), "band.jpg", styles, location.getName(), "Updated test description");
         String updateAdRequestJson = objectMapper.writeValueAsString(updateAdRequest);
 
         Mockito.when(userService.getUserFromRequest(Mockito.any())).thenReturn(user);
