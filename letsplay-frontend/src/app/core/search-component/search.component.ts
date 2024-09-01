@@ -129,8 +129,26 @@ export class SearchComponent {
       .subscribe({
         next: (ads: Ad[]) => {
           this.searchedAds = ads;
+          this.transformAds(ads);
           this.showToastResults(ads);
         },
       });
+  }
+
+  private transformStyles(styles: string[]): string[] {
+    return styles.map(
+      (style) => MusicStylesEnum[style as keyof typeof MusicStylesEnum] || style
+    );
+  }
+
+  private transformLocation(location: string): string {
+    return LocationsEnum[location as keyof typeof LocationsEnum] || location;
+  }
+
+  private transformAds(ads: Ad[]) {
+    for (const ad of ads) {
+      ad.styles = this.transformStyles(ad.styles);
+      ad.location = this.transformLocation(ad.location);
+    }
   }
 }
