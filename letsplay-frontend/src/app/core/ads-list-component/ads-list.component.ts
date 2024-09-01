@@ -49,6 +49,8 @@ export class AdsListComponent implements OnInit {
     } else if (this.router.url === '/my-ads') {
       this.isRecap = true;
       this.getUserAds();
+    } else if (this.router.url === '/search') {
+      this.ads = [];
     } else {
       this.ads = this.adService.ads;
     }
