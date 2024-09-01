@@ -26,7 +26,7 @@ export class SearchComponent {
   protected submitted: boolean = false;
   protected adForm!: FormGroup;
 
-  protected ads!: Ad[];
+  protected searchedAds!: Ad[];
 
   // musician type dropdowns settings
   protected fromMusicianTypes: DropdownItems[] = [
@@ -76,6 +76,8 @@ export class SearchComponent {
   ) {}
 
   ngOnInit() {
+    this.searchedAds = [];
+
     // Form Group creation
     this.adForm = new FormGroup({
       selectedMusicianTypeFrom: new FormControl<DropdownItems | null>(null),
@@ -126,7 +128,7 @@ export class SearchComponent {
       )
       .subscribe({
         next: (ads: Ad[]) => {
-          this.ads = ads;
+          this.searchedAds = ads;
           this.showToastResults(ads);
         },
       });
